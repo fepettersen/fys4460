@@ -14,11 +14,13 @@ public:
     void Initialize();
     void InitializePositions();
     void InitializeVelocities();
+    void output();
     //std::vector<Particle*> list;    //find a better solution
     Particle *list;
 private:
     int particles;
     int cells;
+    double b;   //lattice constant
 
 };
 
