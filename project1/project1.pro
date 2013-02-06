@@ -3,11 +3,11 @@ CONFIG += console
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    balle.cpp \
-    particle.cpp
+    particle.cpp \
+    system.cpp
 
 HEADERS += \
     project1.h \
-    balle.h \
-    particle.h
+    particle.h \
+    system.h
 

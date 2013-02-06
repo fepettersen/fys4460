@@ -10,6 +10,7 @@ Headerfile for diffusion porject
 #include <iomanip>
 #include <time.h>
 #include <fstream>
+#include <vector>
 
 /*from lib.h*/
 #include <new>
