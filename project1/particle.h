@@ -2,11 +2,12 @@
 #define PARTICLE_H
 #include <string>
 #include <armadillo>
+//#include "system.h"
 
-class Particle
+class Particle //: public System
 {
 public:
-    Particle(std::string pt);
+    Particle();
     std::string gettype() {return particlename;}
     void settype(std::string newPt) {particlename = newPt;}
     arma::vec pos;

@@ -2,9 +2,9 @@
 using namespace std;
 using namespace arma;
 
-Particle::Particle(string pt)
+Particle::Particle()
     {
-    particlename = pt;
+    particlename = "type";
     pos = zeros<vec>(3);
     velocity = zeros<vec>(3);
     };

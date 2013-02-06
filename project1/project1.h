@@ -19,8 +19,8 @@ Headerfile for diffusion porject
 #include <cstring>
 
 
-using namespace std;
-using namespace arma;
+//using namespace std;
+//using namespace arma;
 
 
 #ifndef PROJECT1_H
