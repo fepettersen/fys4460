@@ -7,18 +7,11 @@ using namespace arma;
 
 int main(/*int argc, char** argv*/)
 {
-    int nparticles = 8;//atoi(argv[1]);
-    System test(nparticles);
-    /*
-    vector<Particle*> list;
-    Particle  *p1;
-
-    for(int i=0; i<nparticles; i++){
-        p1 = new Particle("Ar");
-        list.push_back(p1);
-    }
-    */
-
+    int ncells = 2;//atoi(argv[1]);
+    /*some time stuff*/
+    System test(ncells);
+    /*loop over time and evolve system*/
+    test.output();
     cout << "it works" << endl;
     return 0;
 }

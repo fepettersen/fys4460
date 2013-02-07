@@ -9,7 +9,7 @@ System::System(int ncells)
     //cout<<"her"<<endl;
     list = new Particle[particles];
     Initialize();
-    cout<<" "<<list[6].gettype()<<endl;
+    cout<<" "<<list[1].gettype()<<list[6].getpos()<< endl;
 }
 
 void System::Initialize()
@@ -35,13 +35,15 @@ void System::InitializePositions(){
     int counter = 0;
     for(int x=0; x<cells; x++){
         for(int y=0; y<cells; y++){
-            for(int z=0; z<0; z++){
+            for(int z=0; z<cells; z++){
                 for(int k=0; k<3; k++){
-                    counter ++;
+                    //cout<<counter<<endl;
                     if(counter<particles){
-                        tmp(0) = x+xCoors[k]; tmp(1) = y+yCoors[k]; tmp(2) = z+zCoors[k];
+                        //cout<<"her"<<endl;
+                        tmp(0) = b*x+xCoors[k]; tmp(1) = b*y+yCoors[k]; tmp(2) = b*z+zCoors[k];
                         list[counter].pos = tmp;
                     }
+                    counter ++;
                 }
             }
         }
@@ -58,8 +60,10 @@ void System::output(){
     **N is the size of the array*/
     ofstream outfile;
     outfile.open("test.xyz");
+    outfile<<particles<<endl;
+    outfile<<"This is a commentline for comments"<<endl;
     for(int i=0;i<particles;i++){
-        outfile<<list[i].gettype()<< list[i].pos<<list[i].velocity<< endl;
+        outfile<<list[i].gettype()<<" "<<list[i].getpos()<<" "<<list[i].getvel()<<endl;
     }
     outfile.close();
 }

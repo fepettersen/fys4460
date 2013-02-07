@@ -10,6 +10,8 @@ public:
     Particle();
     std::string gettype() {return particlename;}
     void settype(std::string newPt) {particlename = newPt;}
+    char *getpos();
+    char *getvel();
     arma::vec pos;
     arma::vec velocity;
 private:
