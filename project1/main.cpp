@@ -7,7 +7,10 @@ using namespace arma;
 
 int main(/*int argc, char** argv*/)
 {
-    int ncells = 2;//atoi(argv[1]);
+    int ncells = 8;//atoi(argv[1]);
+    double T = 100;
+    double k_B = 1.38e-23;
+
     /*some time stuff*/
     System test(ncells);
     /*loop over time and evolve system*/

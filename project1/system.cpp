@@ -1,5 +1,6 @@
 #include "system.h"
 using namespace std;
+using namespace arma;
 
 System::System(int ncells)
 {
@@ -27,9 +28,9 @@ void System::Initialize()
 }
 
 void System::InitializePositions(){
-    double xCoors[] = {0,0.5*b,0,0.5*b};
-    double yCoors[] = {0,0.5*b,0.5*b,0};
-    double zCoors[] = {0,0,0.5*b,0.5*b};
+    double xCoors[] = {0,0.5,0,0.5};
+    double yCoors[] = {0,0.5,0.5,0};
+    double zCoors[] = {0,0,0.5,0.5};
     arma::vec tmp;
     tmp = arma::zeros<arma::vec>(3);
     int counter = 0;
@@ -40,7 +41,7 @@ void System::InitializePositions(){
                     //cout<<counter<<endl;
                     if(counter<particles){
                         //cout<<"her"<<endl;
-                        tmp(0) = b*x+xCoors[k]; tmp(1) = b*y+yCoors[k]; tmp(2) = b*z+zCoors[k];
+                        tmp(0) = b*(x+xCoors[k]); tmp(1) = b*(y+yCoors[k]); tmp(2) = b*(z+zCoors[k]);
                         list[counter].pos = tmp;
                     }
                     counter ++;
@@ -50,7 +51,9 @@ void System::InitializePositions(){
     }
 }
 void System::InitializeVelocities(){
-
+    for(int i=0;i<particles; i++){
+        list[i].velocity = (2*randn<vec>(3)-1);
+    }
 }
 void System::output(){
     /*outfile is an ofstram-object letting us open a file
