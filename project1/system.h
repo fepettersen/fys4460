@@ -15,7 +15,7 @@ public:
     void Initialize();
     void InitializePositions();
     void InitializeVelocities();
-    void output();
+    void output(int nr);
     void update(double dt);
     //std::vector<Particle*> list;    //find a better solution
     Particle *list;

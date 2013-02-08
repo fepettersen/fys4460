@@ -56,7 +56,7 @@ void System::InitializeVelocities(){
         list[i].velocity = (2*randn<vec>(3)-1);
     }
 }
-void System::output(){
+void System::output(int nr){
     /*outfile is an ofstram-object letting us open a file
     **u is an armadillo-object containing the solution at time n
     **n is the timestep number
