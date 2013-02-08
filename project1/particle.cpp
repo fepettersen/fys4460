@@ -5,6 +5,7 @@ using namespace arma;
 Particle::Particle()
     {
     particlename = "Ar";
+    mass = 39.948*1.66053886e-27;
     pos = zeros<vec>(3);
     velocity = zeros<vec>(3);
     };

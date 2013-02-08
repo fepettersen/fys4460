@@ -1,5 +1,6 @@
 #include "project1.h"
 #include "particle.h"
+//#include "integrator_md.h"
 #include <string>
 #include <vector>
 #ifndef BALLE_H
@@ -15,12 +16,14 @@ public:
     void InitializePositions();
     void InitializeVelocities();
     void output();
+    void update(double dt);
     //std::vector<Particle*> list;    //find a better solution
     Particle *list;
 private:
     int particles;
     int cells;
     double b;   //lattice constant
+    //Integrator_md *integrator;
 
 };
 

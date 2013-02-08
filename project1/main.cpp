@@ -12,9 +12,16 @@ int main(/*int argc, char** argv*/)
     double k_B = 1.38e-23;
 
     /*some time stuff*/
+    double time = 0; double Time_end = 1e-10;
+    double dt = 1e-11;
     System test(ncells);
     /*loop over time and evolve system*/
-    test.output();
+    while(time<Time_end){
+        test.update(dt);
+        test.output();
+        time += dt;
+    }
+
     cout << "it works" << endl;
     return 0;
 }

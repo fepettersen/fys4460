@@ -23,6 +23,7 @@ void System::Initialize()
         cout<<"dette er "<<&list[i]<<endl;
     }
     */
+    //integrator = new Integrator_md;
     InitializePositions();
     InitializeVelocities();
 }
@@ -31,8 +32,8 @@ void System::InitializePositions(){
     double xCoors[] = {0,0.5,0,0.5};
     double yCoors[] = {0,0.5,0.5,0};
     double zCoors[] = {0,0,0.5,0.5};
-    arma::vec tmp;
-    tmp = arma::zeros<arma::vec>(3);
+    vec tmp;
+    tmp = zeros<vec>(3);
     int counter = 0;
     for(int x=0; x<cells; x++){
         for(int y=0; y<cells; y++){
@@ -69,4 +70,12 @@ void System::output(){
         outfile<<list[i].gettype()<<" "<<list[i].getpos()<<" "<<list[i].getvel()<<endl;
     }
     outfile.close();
+}
+void System::update(double dt){
+    for(int i=0; i<particles; i++){
+        list[i].velocity = list[i].velocity + zeros<vec>(3)*(dt/2*list[i].getmass());
+        list[i].pos = list[i].pos +list[i].velocity*dt;
+        //update forces???
+        list[i].velocity = list[i].velocity + zeros<vec>(3)*(dt/2*list[i].getmass());
+    }
 }
