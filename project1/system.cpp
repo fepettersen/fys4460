@@ -29,16 +29,16 @@ void System::Initialize()
 }
 
 void System::InitializePositions(){
-    double xCoors[] = {0,0.5,0,0.5};
-    double yCoors[] = {0,0.5,0.5,0};
-    double zCoors[] = {0,0,0.5,0.5};
+    double xCoors[] = {0.25,0.75,0.25,0.75};
+    double yCoors[] = {0.25,0.75,0.75,0.25};
+    double zCoors[] = {0.25,0.25,0.75,0.75};
     vec tmp;
     tmp = zeros<vec>(3);
     int counter = 0;
     for(int x=0; x<cells; x++){
         for(int y=0; y<cells; y++){
             for(int z=0; z<cells; z++){
-                for(int k=0; k<3; k++){
+                for(int k=0; k<4; k++){
                     //cout<<counter<<endl;
                     if(counter<particles){
                         //cout<<"her"<<endl;
@@ -57,11 +57,7 @@ void System::InitializeVelocities(){
     }
 }
 void System::output(int nr){
-    /*outfile is an ofstram-object letting us open a file
-    **u is an armadillo-object containing the solution at time n
-    **n is the timestep number
-    **scheme is an integer telling what scheme is used to obtain the solution
-    **N is the size of the array*/
+    /*Loops through all particles and writes their positions to a numbered .xyz file*/
 
     char* buffer = new char[60];
     sprintf(buffer,"results_%03d.xyz",nr);
