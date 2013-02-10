@@ -7,10 +7,11 @@ System::System(int ncells)
     particles = 4*ncells*ncells*ncells;
     cells = ncells;
     b = 5.260e-10;
+    L = cells*b;
     //cout<<"her"<<endl;
-    list = new Particle[particles];
+    particle = new Particle[particles];
     Initialize();
-    cout<<" "<<list[1].gettype()<<list[6].getpos()<< endl;
+    cout<<" "<<particle[1].gettype()<<particle[6].getpos()<< endl;
 }
 
 void System::Initialize()
@@ -43,7 +44,7 @@ void System::InitializePositions(){
                     if(counter<particles){
                         //cout<<"her"<<endl;
                         tmp(0) = b*(x+xCoors[k]); tmp(1) = b*(y+yCoors[k]); tmp(2) = b*(z+zCoors[k]);
-                        list[counter].pos = tmp;
+                        particle[counter].r = tmp;
                     }
                     counter ++;
                 }
@@ -53,7 +54,7 @@ void System::InitializePositions(){
 }
 void System::InitializeVelocities(){
     for(int i=0;i<particles; i++){
-        list[i].velocity = (2*randn<vec>(3)-1);
+        particle[i].v = (2*randn<vec>(3)-1);
     }
 }
 void System::output(int nr){
@@ -67,15 +68,29 @@ void System::output(int nr){
     outfile<<particles<<endl;
     outfile<<"This is a commentline for comments"<<endl;
     for(int i=0;i<particles;i++){
-        outfile<<list[i].gettype()<<" "<<list[i].getpos()<<" "<<list[i].getvel()<<endl;
+        outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<" "<<particle[i].getvel()<<endl;
     }
     outfile.close();
 }
 void System::update(double dt){
+    vec F;
     for(int i=0; i<particles; i++){
-        list[i].velocity = list[i].velocity + zeros<vec>(3)*(dt/2*list[i].getmass());
-        list[i].pos = list[i].pos +list[i].velocity*dt;
+        F = zeros<vec>(3);
+        for(int j=0;j<particles;j++){
+            if(j!=i){
+                F += force(particle[i].distanceToAtom(particle[j]));
+            }
+        }
+        particle[i].v = particle[i].v + F*(dt/2*particle[i].getmass());
+        particle[i].r = particle[i].r +particle[i].v*dt;
         //update forces???
-        list[i].velocity = list[i].velocity + zeros<vec>(3)*(dt/2*list[i].getmass());
+        particle[i].v = particle[i].v + F*(dt/2*particle[i].getmass());
+        particle[i].checkpos(L);
     }
+}
+
+vec System::force(vec dr){
+    double epsilon = 119.8*k_B;
+    double simga = 3.405e-10;
+
 }

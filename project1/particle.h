@@ -14,8 +14,11 @@ public:
     char *getvel();
     double getmass() {return mass;}
     void setmass(double newmass) {mass = newmass;}
-    arma::vec pos;
-    arma::vec velocity;
+    void checkpos(double L);
+    arma::vec &distanceToAtom(Particle *atom, double L);
+    arma::vec r;
+    arma::vec v;
+
 private:
     std::string particlename;
     double mass;

@@ -17,12 +17,14 @@ public:
     void InitializeVelocities();
     void output(int nr);
     void update(double dt);
+    void boundary_pos();
     //std::vector<Particle*> list;    //find a better solution
-    Particle *list;
+    Particle *particle;
 private:
     int particles;
     int cells;
     double b;   //lattice constant
+    double L;
     //Integrator_md *integrator;
 
 };
