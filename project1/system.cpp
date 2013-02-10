@@ -62,8 +62,12 @@ void System::output(int nr){
     **n is the timestep number
     **scheme is an integer telling what scheme is used to obtain the solution
     **N is the size of the array*/
+
+    char* buffer = new char[60];
+    sprintf(buffer,"results_%03d.xyz",nr);
     ofstream outfile;
-    outfile.open("test.xyz");
+    cout<<buffer<<endl;
+    outfile.open(buffer);
     outfile<<particles<<endl;
     outfile<<"This is a commentline for comments"<<endl;
     for(int i=0;i<particles;i++){
