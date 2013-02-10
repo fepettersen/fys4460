@@ -4,10 +4,12 @@ CONFIG -= qt
 
 SOURCES += main.cpp \
     particle.cpp \
-    system.cpp
+    system.cpp \
+    integrator_md.cpp
 
 HEADERS += \
     project1.h \
     particle.h \
-    system.h
+    system.h \
+    integrator_md.h
 
