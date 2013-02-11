@@ -1,0 +1,9 @@
+*.txt
+*.aux
+tmp*
+*.png
+*.eps
+*.log
+*.md
+*.xyz
+*.o
