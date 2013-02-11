@@ -36,6 +36,7 @@ void System::InitializePositions(){
                         //cout<<"her"<<endl;
                         tmp(0) = b*(x+xCoors[k]); tmp(1) = b*(y+yCoors[k]); tmp(2) = b*(z+zCoors[k]);
                         particle[counter].r = tmp;
+                        particle[counter].r_tmp = tmp;
                     }
                     counter ++;
                 }
@@ -44,7 +45,7 @@ void System::InitializePositions(){
     }
 }
 void System::InitializeVelocities(){
-    vec sumvec = zeros<vec>(3);
+    vec3 sumvec = zeros(3);
     for(int i=0;i<particles; i++){
         particle[i].v = randn<vec>(3);
         sumvec += particle[i].v;
@@ -72,32 +73,49 @@ void System::output(int nr){
 void System::update(double dt){
     //vec F;
     for(int i=0; i<particles; i++){
-        //F.print("se her");
-        particle[i].v = particle[i].v + particle[i].F*(dt/(2.0*particle[i].getmass()));
-        particle[i].r = particle[i].r +particle[i].v*dt;
-        particle[i].F = grad_U(i);
+        particle[i].v = particle[i].v + particle[i].F*(dt/2.0);
+        particle[i].r_tmp = particle[i].r +particle[i].v*dt;
+
         if(i==0){
-            particle[i].v.print("hastighet!");}
-        particle[i].v = particle[i].v + particle[i].F*(dt/(2.0*particle[i].getmass()));
-        particle[i].checkpos(L);
+            cout << particle[i].F << endl;
+        }
+    }
+    accept();
+    for(int i=0;i<particles;i++){
+        particle[i].F = grad_U(i);
+        particle[i].v = particle[i].v + particle[i].F*(dt/2.0);
+
     }
 }
 
 vec System::force(vec dr){
     //double k_B = 1.38e-23;
-    double eps = 1.0; //actually eps/k_B
-    double sigma = 1.0;   //Aangstroms
-    double r = norm(dr,2);
-    vec F = (24*eps*pow(sigma,6)/pow(r,7))*(2*pow((sigma/r),6)-1)*(dr/r);
+    //double eps = 1.0; //actually eps/k_B
+    //double sigma = 1.0;   //Aangstroms
+    double r2 = dot(dr,dr);
+    double r6 = r2*r2*r2;
+    double r12 = r6*r6;
+    //vec F = (24*eps*pow(sigma,6)/pow(r,7))*(2*pow((sigma/r),6)-1)*(dr/r);
+    vec F = 24*(2.0/r12 -1.0/r6)*(dr/r2);
     return  F;
 }
 
 vec System::grad_U(int i){
-    vec F = zeros<vec>(3);
-    for(int j=0;j<particles;j++){
-        if(j!=i){
-            F += force(particle[i].distanceToAtom(&particle[j],L));
-        }
+    vec3 F = zeros(3);
+    for(int j=0;j<i;j++){
+        F += force(particle[i].distanceToAtom(&particle[j],L));
     }
-    return F;
+    for(int j=i+1;j<particles;j++){
+//        vec3 test = particle[i].distanceToAtom(&particle[j],L);
+//        cout << "test = " << test << endl;
+
+        F += force(particle[i].distanceToAtom(&particle[j],L));
+    }
+    return -F;
+}
+void System::accept(){
+    for(int i=0; i<particles;i++){
+        particle[i].r = particle[i].r_tmp;
+        particle[i].checkpos(L);
+    }
 }

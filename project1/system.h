@@ -19,6 +19,7 @@ public:
     void update(double dt);
     void boundary_pos();
     arma::vec grad_U(int i);
+    void accept();
     //std::vector<Particle*> list;    //find a better solution
     Particle *particle;
 private:

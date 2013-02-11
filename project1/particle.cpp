@@ -9,6 +9,7 @@ Particle::Particle()
     r = zeros<vec>(3);
     v = zeros<vec>(3);
     F = zeros<vec>(3);
+    r_tmp = zeros<vec>(3);
     };
 char *Particle::getpos()
 {
@@ -30,8 +31,9 @@ void Particle::checkpos(double L){
     r(2) = fmod(r(2)+ 100*L,L);
 }
 
-vec &Particle::distanceToAtom(Particle *atom, double L) {
-    vec dr = atom->r-r;
+vec3 Particle::distanceToAtom(Particle *atom, double L) {
+    vec3 dr = atom->r-r;
+//    cout << "dr = " << r << endl;
 
     for(int i=0;i<3;i++) {
         if(dr(i) > L/2.0){
@@ -41,10 +43,11 @@ vec &Particle::distanceToAtom(Particle *atom, double L) {
             dr(i) += L;
         }
     }
-    for(int i=0;i<3;i++){
-        dr(i) = (dr(i)/fabs(dr(i)))*max(dr(i),0.8);
-    }
+//    for(int i=0;i<3;i++){
+//        dr(i) = (dr(i)/fabs(dr(i)))*max(dr(i),0.8);
+//    }
     //dr.print("before");
+
     return dr;
 }
 /*
