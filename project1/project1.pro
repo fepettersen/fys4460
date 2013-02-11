@@ -13,3 +13,7 @@ HEADERS += \
     system.h \
     integrator_md.h
 
+LIBS += \
+    -llapack \
+    -lblas \
+    -larmadillo

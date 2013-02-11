@@ -6,25 +6,16 @@ System::System(int ncells)
 {
     particles = 4*ncells*ncells*ncells;
     cells = ncells;
-    b = 5.260e-10;
+    b = 5.260/3.405; //Aangstroms
     L = cells*b;
     //cout<<"her"<<endl;
     particle = new Particle[particles];
     Initialize();
-    cout<<" "<<particle[1].gettype()<<particle[6].getpos()<< endl;
+    //cout<<" "<<particle[1].gettype()<<particle[6].getpos()<< endl;
 }
 
 void System::Initialize()
 {
-    /*
-    Particle  *p1;
-    for(int i=0; i<particles; i++){
-        //p1 = new Particle();
-        //list[i] = p1;
-        cout<<"dette er "<<&list[i]<<endl;
-    }
-    */
-    //integrator = new Integrator_md;
     InitializePositions();
     InitializeVelocities();
 }
@@ -53,8 +44,14 @@ void System::InitializePositions(){
     }
 }
 void System::InitializeVelocities(){
+    vec sumvec = zeros<vec>(3);
     for(int i=0;i<particles; i++){
-        particle[i].v = (2*randn<vec>(3)-1);
+        particle[i].v = randn<vec>(3);
+        sumvec += particle[i].v;
+    }
+    sumvec /=particles;
+    for(int i=0;i<particles; i++){
+        particle[i].v -=sumvec;
     }
 }
 void System::output(int nr){
@@ -68,29 +65,39 @@ void System::output(int nr){
     outfile<<particles<<endl;
     outfile<<"This is a commentline for comments"<<endl;
     for(int i=0;i<particles;i++){
-        outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<" "<<particle[i].getvel()<<endl;
+        outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<setprecision(12)<<" "<<particle[i].getvel()<<setprecision(12)<<endl;
     }
     outfile.close();
 }
 void System::update(double dt){
-    vec F;
+    //vec F;
     for(int i=0; i<particles; i++){
-        F = zeros<vec>(3);
-        for(int j=0;j<particles;j++){
-            if(j!=i){
-                F += force(particle[i].distanceToAtom(particle[j]));
-            }
-        }
-        particle[i].v = particle[i].v + F*(dt/2*particle[i].getmass());
+        //F.print("se her");
+        particle[i].v = particle[i].v + particle[i].F*(dt/(2.0*particle[i].getmass()));
         particle[i].r = particle[i].r +particle[i].v*dt;
-        //update forces???
-        particle[i].v = particle[i].v + F*(dt/2*particle[i].getmass());
+        particle[i].F = grad_U(i);
+        if(i==0){
+            particle[i].v.print("hastighet!");}
+        particle[i].v = particle[i].v + particle[i].F*(dt/(2.0*particle[i].getmass()));
         particle[i].checkpos(L);
     }
 }
 
 vec System::force(vec dr){
-    double epsilon = 119.8*k_B;
-    double simga = 3.405e-10;
+    //double k_B = 1.38e-23;
+    double eps = 1.0; //actually eps/k_B
+    double sigma = 1.0;   //Aangstroms
+    double r = norm(dr,2);
+    vec F = (24*eps*pow(sigma,6)/pow(r,7))*(2*pow((sigma/r),6)-1)*(dr/r);
+    return  F;
+}
 
+vec System::grad_U(int i){
+    vec F = zeros<vec>(3);
+    for(int j=0;j<particles;j++){
+        if(j!=i){
+            F += force(particle[i].distanceToAtom(&particle[j],L));
+        }
+    }
+    return F;
 }

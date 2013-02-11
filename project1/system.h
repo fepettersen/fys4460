@@ -18,6 +18,7 @@ public:
     void output(int nr);
     void update(double dt);
     void boundary_pos();
+    arma::vec grad_U(int i);
     //std::vector<Particle*> list;    //find a better solution
     Particle *particle;
 private:
@@ -25,6 +26,7 @@ private:
     int cells;
     double b;   //lattice constant
     double L;
+    arma::vec force(arma::vec dr);
     //Integrator_md *integrator;
 
 };

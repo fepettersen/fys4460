@@ -18,6 +18,7 @@ public:
     arma::vec &distanceToAtom(Particle *atom, double L);
     arma::vec r;
     arma::vec v;
+    arma::vec F;
 
 private:
     std::string particlename;

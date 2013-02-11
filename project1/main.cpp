@@ -7,14 +7,14 @@ using namespace arma;
 
 int main(/*int argc, char** argv*/)
 {
-    int ncells = 2;//atoi(argv[1]);
+    int ncells = 8;//atoi(argv[1]);
     double T = 100;
     double k_B = 1.38e-23;
     int counter = 0;
 
     /*some time stuff*/
-    double time = 0; double Time_end = 1e-10;
-    double dt = 1e-12;
+    double time = 0; double Time_end = 1.0;
+    double dt = 1e-2;
     System test(ncells);
     /*loop over time and evolve system*/
     while(time<Time_end){
