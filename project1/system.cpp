@@ -5,11 +5,12 @@ using namespace arma;
 System::System(int ncells)
 {
     particles = 4*ncells*ncells*ncells;
-    cells = ncells;
+    cells = 27;
     b = 5.260/3.405; //Aangstroms
-    L = cells*b;
-    //cout<<"her"<<endl;
+    L = ncells*b;
+    r_cut = 3;
     particle = new Particle[particles];
+    cell = new Cell[cells];
     Initialize();
     //cout<<" "<<particle[1].gettype()<<particle[6].getpos()<< endl;
 }
@@ -18,6 +19,7 @@ void System::Initialize()
 {
     InitializePositions();
     InitializeVelocities();
+    //setupCells();
 }
 
 void System::InitializePositions(){
@@ -106,9 +108,6 @@ vec System::grad_U(int i){
         F += force(particle[i].distanceToAtom(&particle[j],L));
     }
     for(int j=i+1;j<particles;j++){
-//        vec3 test = particle[i].distanceToAtom(&particle[j],L);
-//        cout << "test = " << test << endl;
-
         F += force(particle[i].distanceToAtom(&particle[j],L));
     }
     return -F;
@@ -117,5 +116,36 @@ void System::accept(){
     for(int i=0; i<particles;i++){
         particle[i].r = particle[i].r_tmp;
         particle[i].checkpos(L);
+    }
+}
+
+void System::setupCells(){
+    /*Give cellnumbers*/
+    for(int i=0;i<cells;i++){
+        cell[i].setCell_no(i);
+    }
+    int xcells,ycells,zcells;
+    xcells=ycells=zcells= 3;    //should be set another place
+    /*Give cells positions*/
+    vec3 tmp;
+    tmp = zeros(3);
+    int counter = 0;
+    for(int x=0; x<xcells; x++){
+        for(int y=0; y<ycells; y++){
+            for(int z=0; z<zcells; z++){
+                tmp(0) = x*r_cut; tmp(1) = y*r_cut; tmp(2) = z*r_cut;
+                cell[counter].setPos(tmp);
+            }
+        }
+    }
+    /*Find neighbours*/
+    double dr;
+    for(int i=0; i<cells;i++){
+        for(int j=0; j<cells;j++){
+            dr = norm(cell[i].distanceToCell(&cell[j],L),2);
+            if(dr<=r_cut){
+                cell[i].neighbours[i] = cell[j].getCell_no();
+            }
+        }
     }
 }

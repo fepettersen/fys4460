@@ -1,6 +1,6 @@
 #include "project1.h"
 #include "particle.h"
-//#include "integrator_md.h"
+#include "cell.h"
 #include <string>
 #include <vector>
 #ifndef BALLE_H
@@ -9,6 +9,7 @@
 class System
 {
 public:
+    /*Methods*/
     System(int ncells);
     int getParticles(){return particles;}
     void setBalle(int newParticles){particles = newParticles;}
@@ -20,16 +21,21 @@ public:
     void boundary_pos();
     arma::vec grad_U(int i);
     void accept();
-    //std::vector<Particle*> list;    //find a better solution
+    void setupCells();
+
+    /*values*/
     Particle *particle;
+    Cell *cell;
+    double r_cut;
 private:
+    /*Methods*/
+    arma::vec force(arma::vec dr);
+
+    /*values*/
     int particles;
     int cells;
     double b;   //lattice constant
     double L;
-    arma::vec force(arma::vec dr);
-    //Integrator_md *integrator;
-
 };
 
 #endif // BALLE_H
