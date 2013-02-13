@@ -148,4 +148,12 @@ void System::setupCells(){
             }
         }
     }
+    /*Place particles in cells*/
+    for(int i=0; i<cells;i++){
+        for(int j=0; j<particles; j++){
+            if(cell[i].isincell(&particle[j],r_cut)){
+                cell[i].addParticle(&particle[j]);
+            }
+        }
+    }
 }

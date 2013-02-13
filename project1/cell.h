@@ -1,6 +1,8 @@
 #ifndef CELL_H
 #define CELL_H
 #include "project1.h"
+#include "particle.h"
+#include <vector>
 //#include <armadillo>
 
 class Cell
@@ -13,8 +15,11 @@ public:
     arma::vec3 getPos(){return pos;}
     void setPos(arma::vec3 Newpos){pos = Newpos;}
     arma::vec3 distanceToCell(Cell *cell,double L);
+    int isincell(Particle *atom,double r_cut);
+    void addParticle(Particle *atom);
     /*values*/
     int *neighbours;
+    std::vector<Particle*> particles;
 private:
     /*Methods*/
 
