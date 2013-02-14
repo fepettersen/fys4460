@@ -11,7 +11,7 @@ Cell::Cell()
     }
     pos = zeros(3);
 
-    particles = new vector<Particle*>;
+    //particles.;
 }
 vec3 Cell::distanceToCell(Cell *cell, double L){
       vec3 dr = cell->getPos()-pos;
@@ -42,5 +42,26 @@ int Cell::isincell(Particle *atom, double r_cut){
     return (x+y+z)/3;
 }
 void Cell::addParticle(Particle *atom){
-    particles.push_back(&atom);
+    particles.push_back(atom);
+}
+void Cell::FindNeighbours(Cell *cell,double r_cut,double L,int j){
+    vec3 dr;
+    int x,y,z;
+    x = y = z = 0;
+
+    dr = distanceToCell(cell,L);
+    if(dr(0)<=(r_cut+0.033)){
+        x=1;
+    }
+    if(dr(1)<=(r_cut+0.033)){
+        y=1;
+    }
+    if(dr(2)<=(r_cut+0.033)){
+        z=1;
+    }
+    if(x+y+z/3){
+        neighbours[j] = cell->getCell_no();
+    }
+
+
 }

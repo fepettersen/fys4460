@@ -5,10 +5,10 @@ using namespace arma;
 System::System(int ncells)
 {
     particles = 4*ncells*ncells*ncells;
-    cells = 27;
     b = 5.260/3.405; //Aangstroms
     L = ncells*b;
     r_cut = 3;
+    cells = 27;//L/r_cut;
     particle = new Particle[particles];
     cell = new Cell[cells];
     Initialize();
@@ -19,7 +19,7 @@ void System::Initialize()
 {
     InitializePositions();
     InitializeVelocities();
-    //setupCells();
+    setupCells();
 }
 
 void System::InitializePositions(){
@@ -47,7 +47,7 @@ void System::InitializePositions(){
     }
 }
 void System::InitializeVelocities(){
-    vec3 sumvec = zeros(3);
+    vec3 sumvec = zeros(3); new Cell[cells];
     for(int i=0;i<particles; i++){
         particle[i].v = randn<vec>(3);
         sumvec += particle[i].v;
@@ -89,6 +89,50 @@ void System::update(double dt){
 
     }
 }
+void System::update_all(double dt){
+    //This will eventually be the update function utilizing neighbour lists
+    int index = 0;
+    int n = 0;
+//    Particle atom;
+    for(int a=0;a<cells;a++){
+        for(list<Particle*>::iterator it1 = cell[a].particles.begin(); it1 != cell[a].particles.end(); it1++){
+            /*SRSLY you guys, I hate you guys so much!*/
+            /*Legg en god forklaring paa dette et setd!*/
+            (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
+            (*it1)->r_tmp = (*it1)->r + (*it1)->v*dt;
+        }
+    }
+//    move particles within cells
+    accept();
+
+        /*
+        cell[a].accept();   //In which there must be a check_pos() method
+        cell[a].newForces();
+        cell[a].last_move();
+        */
+
+    for(int j=0; j<cells;j++){
+         for(list<Particle*>::iterator it1 = cell[j].particles.begin(); it1 != cell[j].particles.end(); it1++){
+             index = sizeof(cell[j].particles);
+             for(int y=0;y<index;y++){
+                 (*it1)->F = /*Modifisert versjon av gammel force funksjon*/0;
+             }
+             for(int k=0; k<26;k++){
+                 n = cell[j].neighbours[k];
+                  for(list<Particle*>::iterator it2 = cell[n].particles.begin(); it2 != cell[n].particles.end(); it2++){
+                      (*it1)->F -= force((*it1)->distanceToAtom(*it2,L));
+                  }
+             }
+         }
+    }
+//        accept();
+//        for(int i=0;i<particles;i++){
+//            particle[i].F = grad_U(i);
+//            particle[i].v = particle[i].v + particle[i].F*(dt/2.0);
+
+//        }
+
+}
 
 vec System::force(vec dr){
     //double k_B = 1.38e-23;
@@ -101,7 +145,18 @@ vec System::force(vec dr){
     vec F = 24*(2.0/r12 -1.0/r6)*(dr/r2);
     return  F;
 }
-
+/*
+vec3 System::newForce(vec3 dr){
+    if (norm(dr)>r_cut){
+        return zeros(3);
+    }
+    double r2 = dot(dr,dr);
+    double r6 = r2*r2*r2;
+    double r12 = r6*r6;
+    vec F = 24*(2.0/r12 -1.0/r6)*(dr/r2);
+    return  F;
+}
+*/
 vec System::grad_U(int i){
     vec3 F = zeros(3);
     for(int j=0;j<i;j++){
@@ -118,14 +173,23 @@ void System::accept(){
         particle[i].checkpos(L);
     }
 }
-
+/*
+void System::acceptInCell(){
+    for(int i=0; i<particles;i++){
+        particle[i].r = particle[i].r_tmp;
+        particle[i].checkpos(L);
+    }
+}
+*/
 void System::setupCells(){
+
     /*Give cellnumbers*/
     for(int i=0;i<cells;i++){
         cell[i].setCell_no(i);
     }
     int xcells,ycells,zcells;
     xcells=ycells=zcells= 3;    //should be set another place
+
     /*Give cells positions*/
     vec3 tmp;
     tmp = zeros(3);
@@ -135,19 +199,21 @@ void System::setupCells(){
             for(int z=0; z<zcells; z++){
                 tmp(0) = x*r_cut; tmp(1) = y*r_cut; tmp(2) = z*r_cut;
                 cell[counter].setPos(tmp);
+                counter++;
             }
         }
     }
+
     /*Find neighbours*/
-    double dr;
     for(int i=0; i<cells;i++){
-        for(int j=0; j<cells;j++){
-            dr = norm(cell[i].distanceToCell(&cell[j],L),2);
-            if(dr<=r_cut){
-                cell[i].neighbours[i] = cell[j].getCell_no();
-            }
+        for(int j=0; j<i;j++){
+            cell[i].FindNeighbours(&cell[j],r_cut,L,j);
+        }
+        for(int j=i+1; j<cells;j++){
+            cell[i].FindNeighbours(&cell[j],r_cut,L,j-1);
         }
     }
+
     /*Place particles in cells*/
     for(int i=0; i<cells;i++){
         for(int j=0; j<particles; j++){
@@ -156,4 +222,5 @@ void System::setupCells(){
             }
         }
     }
+//    cout<<"cell[3].particle: "<<cell[7].particles(3)'' <<endl;
 }

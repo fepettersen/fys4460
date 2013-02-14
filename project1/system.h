@@ -3,8 +3,8 @@
 #include "cell.h"
 #include <string>
 #include <vector>
-#ifndef BALLE_H
-#define BALLE_H
+#ifndef SYSTEM_H
+#define SYSTEM_H
 
 class System
 {
@@ -22,6 +22,7 @@ public:
     arma::vec grad_U(int i);
     void accept();
     void setupCells();
+    void update_all(double dt);
 
     /*values*/
     Particle *particle;

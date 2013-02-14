@@ -19,7 +19,7 @@ int main(/*int argc, char** argv*/)
     /*loop over time and evolve system*/
 
     while(time<Time_end){
-        test.update(dt);
+        test.update_all(dt);
         test.output(counter);
         time += dt;
         counter ++;
