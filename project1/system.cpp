@@ -104,34 +104,20 @@ void System::update_all(double dt){
     }
 //    move particles within cells
     accept();
-
-        /*
-        cell[a].accept();   //In which there must be a check_pos() method
-        cell[a].newForces();
-        cell[a].last_move();
-        */
-
     for(int j=0; j<cells;j++){
-         for(list<Particle*>::iterator it1 = cell[j].particles.begin(); it1 != cell[j].particles.end(); it1++){
-             index = sizeof(cell[j].particles);
-             for(int y=0;y<index;y++){
-                 (*it1)->F = /*Modifisert versjon av gammel force funksjon*/0;
-             }
-             for(int k=0; k<26;k++){
-                 n = cell[j].neighbours[k];
-                  for(list<Particle*>::iterator it2 = cell[n].particles.begin(); it2 != cell[n].particles.end(); it2++){
-                      (*it1)->F -= force((*it1)->distanceToAtom(*it2,L));
-                  }
-             }
-         }
+        index = 0;
+        for(list<Particle*>::iterator it1 = cell[j].particles.begin(); it1 != cell[j].particles.end(); it1++){
+            (*it1)->F = grad_U_new(&cell[j],index,*it1);
+            index++;
+            for(int k=0; k<26;k++){
+                n = cell[j].neighbours[k];
+                for(list<Particle*>::iterator it2 = cell[n].particles.begin(); it2 != cell[n].particles.end(); it2++){
+                    (*it1)->F -= force((*it1)->distanceToAtom(*it2,L));
+                }
+            }
+            (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
+        }
     }
-//        accept();
-//        for(int i=0;i<particles;i++){
-//            particle[i].F = grad_U(i);
-//            particle[i].v = particle[i].v + particle[i].F*(dt/2.0);
-
-//        }
-
 }
 
 vec System::force(vec dr){
@@ -157,13 +143,27 @@ vec3 System::newForce(vec3 dr){
     return  F;
 }
 */
-vec System::grad_U(int i){
+vec3 System::grad_U(int i){
     vec3 F = zeros(3);
     for(int j=0;j<i;j++){
         F += force(particle[i].distanceToAtom(&particle[j],L));
     }
     for(int j=i+1;j<particles;j++){
         F += force(particle[i].distanceToAtom(&particle[j],L));
+    }
+    return -F;
+}
+vec3 System::grad_U_new(Cell *box,int thisIndex, Particle *thisParticle){
+    //løp over partiklene i en celle
+    vec3 F = zeros(3);
+//    int thisIndex = 0;
+    for(list<Particle*>::iterator it2 = box->particles.begin(); it2 != box->particles.end(); it2++){
+        if(thisIndex==(distance(box->particles.begin(),it2))){
+            advance(*it2,1);
+        }
+
+        F += force(thisParticle->distanceToAtom(*it2,L));
+//        thisIndex++;
     }
     return -F;
 }

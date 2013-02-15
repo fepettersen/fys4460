@@ -19,10 +19,11 @@ public:
     void output(int nr);
     void update(double dt);
     void boundary_pos();
-    arma::vec grad_U(int i);
+    arma::vec3 grad_U(int i);
     void accept();
     void setupCells();
     void update_all(double dt);
+    arma::vec3 grad_U_new(Cell *box, int thisIndex, Particle *thisParticle);
 
     /*values*/
     Particle *particle;
