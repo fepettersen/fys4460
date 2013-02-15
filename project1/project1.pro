@@ -5,11 +5,15 @@ CONFIG -= qt
 SOURCES += main.cpp \
     particle.cpp \
     system.cpp \
-    integrator_md.cpp
+    cell.cpp
 
 HEADERS += \
     project1.h \
     particle.h \
     system.h \
-    integrator_md.h
+    cell.h
 
+LIBS += \
+    -llapack \
+    -lblas \
+    -larmadillo
