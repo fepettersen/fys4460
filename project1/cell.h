@@ -1,10 +1,5 @@
 #ifndef CELL_H
 #define CELL_H
-#include "project1.h"
-#include "particle.h"
-#include <vector>
-#include <list>
-//#include <armadillo>
 
 class Cell
 {
@@ -19,17 +14,20 @@ public:
     int isincell(Particle *atom,double r_cut);
     void addParticle(Particle *atom);
     void FindNeighbours(Cell *cell,double r_cut,double L,int j);
+    void setLenght(double length){cellLength = length;}
+    double getLength(){return cellLength;}
     /*values*/
     int *neighbours;
-//    std::vector<Particle*> particles;
-    std::list<Particle*> particles;
+    std::vector<Particle*> particles;
+//    std::list<Particle*> particles;
 private:
     /*Methods*/
 
     /*values*/
     int cell_no;
+    double cellLength;
     arma::vec3 pos;
 
 };
 
-#endif // INTEGRATOR_MD_H
+#endif // CELL_H

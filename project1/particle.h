@@ -1,8 +1,6 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
-#include <string>
-#include <armadillo>
-//#include "system.h"
+
 
 class Particle //: public System
 {
@@ -20,10 +18,12 @@ public:
     arma::vec3 v;
     arma::vec3 F;
     arma::vec3 r_tmp;
+    int cellID;
 
 private:
     std::string particlename;
     double mass;
+
 
 };
 

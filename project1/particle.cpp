@@ -1,4 +1,8 @@
-#include "particle.h"
+
+
+
+#include "project1.h"
+
 using namespace std;
 using namespace arma;
 
@@ -10,6 +14,7 @@ Particle::Particle()
     v = zeros<vec>(3);
     F = zeros<vec>(3);
     r_tmp = zeros<vec>(3);
+    cellID = 99;
     };
 char *Particle::getpos()
 {

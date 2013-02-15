@@ -1,7 +1,5 @@
-#include <iostream>
-#include <project1.h>
-#include "particle.h"
-#include "system.h"
+#include "project1.h"
+
 using namespace std;
 using namespace arma;
 
@@ -17,13 +15,13 @@ int main(/*int argc, char** argv*/)
     double dt = 5e-3;
     System test(ncells);
     /*loop over time and evolve system*/
-
-    while(time<Time_end){
-        test.update_all(dt);
-        test.output(counter);
-        time += dt;
-        counter ++;
-    }
+    test.output(counter);
+//    while(time<Time_end){
+//        test.update_all(dt);
+//        test.output(counter);
+//        time += dt;
+//        counter ++;
+//    }
 
     cout << "it works" << endl;
     return 0;

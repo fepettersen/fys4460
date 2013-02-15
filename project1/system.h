@@ -1,8 +1,4 @@
-#include "project1.h"
-#include "particle.h"
-#include "cell.h"
-#include <string>
-#include <vector>
+
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
@@ -27,7 +23,7 @@ public:
 
     /*values*/
     Particle *particle;
-    Cell *cell;
+    std::vector<Cell*> cell;
     double r_cut;
 private:
     /*Methods*/
@@ -36,6 +32,8 @@ private:
     /*values*/
     int particles;
     int cells;
+    int Ncells;
+    int xcells;
     double b;   //lattice constant
     double L;
 };
