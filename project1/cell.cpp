@@ -50,11 +50,12 @@ void Cell::addParticle(Particle *atom){
 //    cout << particles.capacity() << "  " << particles.size() << "   " << this->getCell_no() << endl;
     particles.push_back(atom);
 }
+/*
 void Cell::FindNeighbours(Cell *cell,double r_cut,double L,int j){
     vec3 dr = zeros(3);
+    cout<<"Balle nummer "<<this->cell_no<<" har pos "<<this->pos<<endl;
     int x,y,z;
     x = y = z = 0;
-
     dr = distanceToCell(cell,L);
     if(dr(0)<=(cellLength+0.033)){
         x=1;
@@ -70,4 +71,31 @@ void Cell::FindNeighbours(Cell *cell,double r_cut,double L,int j){
     }
 
 
+}
+*/
+void Cell::FindNeighbours(Cell *cell,double L,int j){
+    vec3 dr = cell->getPos()-pos;
+    for(int i=0;i<3;i++) {
+        if(dr(i) > L/2.0){
+            dr(i) -= L;
+        }
+        else if(dr(i)< -L/2.0){
+            dr(i) += L;
+        }
+    }
+    double length = cellLength+0.001;
+    int x,y,z;
+    x = y = z = 0;
+    if(dr(0) <= length){
+        x = 1;
+    }
+    if(dr(1) <= length){
+        y = 1;
+    }
+    if(dr(2) <= length){
+        z = 1;
+    }
+    if((x+y+z)/3 == 1){
+        neighbours[j] = cell->getCell_no();
+    }
 }

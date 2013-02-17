@@ -14,7 +14,7 @@ System::System(int ncells)
     xcells = L/r_cut;
     cells = xcells*xcells*xcells;
     particle = new Particle[particles];
-//    cell = new Cell*[cells];
+
     for(int i = 0; i < cells; i++) {
         cell.push_back(new Cell());
     }
@@ -65,7 +65,6 @@ void System::setupCells(){
 
     /*Give cellnumbers*/
     for(int i=0;i<cells;i++){
-        Cell* celli = cell[i];
         cell[i]->setCell_no(i);
         cell[i]->setLenght(L/((double) xcells));
     }
@@ -85,22 +84,57 @@ void System::setupCells(){
             }
         }
     }
-
+    vec3 dr = zeros(3);
+    vec3 r1 = zeros(3);
+    vec3 r2 = zeros(3);
+    double length = L/((double) xcells)+0.001;
+    double limit = sqrt(3)*L/((double) xcells)+0.001;
+    int dummy;
     /*Find neighbours*/
     for(int i=0; i<cells;i++){
-        cout<<i<<endl;
+        r1 = cell[i]->getPos();
+        dummy = 0;
         for(int j=0; j<i;j++){
-            cell.at(i)->FindNeighbours(cell.at(j),r_cut,L,j);
+            r2 = cell[j]->getPos();
+            dr = r2-r1;
+            for(int k=0;k<3;k++) {
+                if(dr(k) > L/2.0){
+                    dr(k) -= L;
+                }
+                else if(dr(k)< -L/2.0){
+                    dr(k) += L;
+                }
+            }
+
+            length = norm(dr,2);
+            if(length <=limit){
+                cell[i]->neighbours[dummy] = cell[j]->getCell_no();
+                dummy++;
+            }
         }
         for(int j=i+1; j<cells;j++){
-            cell.at(i)->FindNeighbours(cell.at(j),r_cut,L,j-1);
+            r2 = cell[j]->getPos();
+            dr = r2-r1;
+            for(int l=0;l<3;l++) {
+                if(dr(l) > L/2.0){
+                    dr(l) -= L;
+                }
+                else if(dr(l)< -L/2.0){
+                    dr(l) += L;
+                }
+            }
+
+            length = norm(dr,2);
+            if(length <=limit){
+                cell[i]->neighbours[dummy] = cell[j]->getCell_no();
+                dummy++;
+            }
         }
     }
 
     /*Place particles in cells*/
 
     for(int i=0; i<cells;i++){
-        cout<<"balle "<<i<<endl;
         for(int j=0; j<particles; j++){
             if(cell[i]->isincell(&particle[j],r_cut)){
                 particle[j].cellID = cell[i]->getCell_no();
@@ -116,16 +150,11 @@ void System::output(int nr){
     sprintf(buffer,"results_%03d.xyz",nr);
     ofstream outfile;
     cout<<buffer<<endl;
-
-//    cout<<particles<<endl;
     outfile.open(buffer);
 
     outfile<<particles<<endl;
-//    cout<<"This is a commentline for comments"<<endl;
-
     outfile<<"This is a commentline for comments"<<endl;
     for(int i=0;i<particles;i++){
-//        cout << i << endl;
         outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<setprecision(12)<<" "<<particle[i].getvel()<<setprecision(12)
               <<" "<<particle[i].cellID<<endl;
     }
@@ -152,7 +181,6 @@ void System::update_all(double dt){
     //This will eventually be the update function utilizing neighbour lists
     int index = 0;
     int n = 0;
-//    Particle atom;
     for(int a=0;a<cells;a++){
         for(vector<Particle*>::iterator it1 = cell[a]->particles.begin(); it1 != cell[a]->particles.end(); it1++){
             /*SRSLY you guys, I hate you guys so much!*/
@@ -161,14 +189,14 @@ void System::update_all(double dt){
             (*it1)->r_tmp = (*it1)->r + (*it1)->v*dt;
         }
     }
-//    move particles within cells
     accept();
+    PlaceInCells();
     for(int j=0; j<cells;j++){
         index = 0;
         for(vector<Particle*>::iterator it1 = cell[j]->particles.begin(); it1 != cell[j]->particles.end(); it1++){
             (*it1)->F = grad_U_new(cell[j],index,*it1);
             index++;
-            for(int k=0; k<26;k++){
+            for(int k=0; k<sizeof(cell[j]->neighbours)/sizeof(cell[j]->neighbours[0]);k++){
                 n = cell[j]->neighbours[k];
                 for(vector<Particle*>::iterator it2 = cell[n]->particles.begin(); it2 != cell[n]->particles.end(); it2++){
                     (*it1)->F -= force((*it1)->distanceToAtom(*it2,L));
@@ -177,9 +205,10 @@ void System::update_all(double dt){
             (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
         }
     }
+    cout<<cell[0]->particles[0]->r<<endl;
 }
 
-vec System::force(vec dr){
+vec3 System::force(vec dr){
 //    if (norm(dr)>r_cut){
 //        return zeros(3);
 //    }
@@ -187,7 +216,7 @@ vec System::force(vec dr){
     double r6 = r2*r2*r2;
     double r12 = r6*r6;
     //vec F = (24*eps*pow(sigma,6)/pow(r,7))*(2*pow((sigma/r),6)-1)*(dr/r);
-    vec F = 24*(2.0/r12 -1.0/r6)*(dr/r2);
+    vec3 F = 24*(2.0/r12 -1.0/r6)*(dr/r2);
     return  F;
 }
 
@@ -205,14 +234,10 @@ vec3 System::grad_U(int i){
 vec3 System::grad_U_new(Cell *box,int thisIndex, Particle *thisParticle){
     //løp over partiklene i en celle
     vec3 F = zeros(3);
-//    int thisIndex = 0;
     for(vector<Particle*>::iterator it2 = box->particles.begin(); it2 != box->particles.end(); it2++){
-        if(thisIndex==(distance(box->particles.begin(),it2))){
-            advance(*it2,1);
+        if(*it2 != thisParticle){
+            F += force(thisParticle->distanceToAtom(*it2,L));
         }
-
-        F += force(thisParticle->distanceToAtom(*it2,L));
-//        thisIndex++;
     }
     return -F;
 }
@@ -223,4 +248,15 @@ void System::accept(){
     }
 }
 
+void System::PlaceInCells(){
+    for(int i=0; i<cells;i++){
+        cell[i]->particles.clear();
+        for(int j=0; j<particles; j++){
+            if(cell[i]->isincell(&particle[j],r_cut)){
+                particle[j].cellID = cell[i]->getCell_no();
+                cell[i]->addParticle(&particle[j]);
+            }
+        }
+    }
+}
 

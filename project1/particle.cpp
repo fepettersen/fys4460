@@ -38,8 +38,6 @@ void Particle::checkpos(double L){
 
 vec3 Particle::distanceToAtom(Particle *atom, double L) {
     vec3 dr = atom->r-r;
-//    cout << "dr = " << r << endl;
-
     for(int i=0;i<3;i++) {
         if(dr(i) > L/2.0){
             dr(i) -= L;
@@ -51,17 +49,5 @@ vec3 Particle::distanceToAtom(Particle *atom, double L) {
 //    for(int i=0;i<3;i++){
 //        dr(i) = (dr(i)/fabs(dr(i)))*max(dr(i),0.8);
 //    }
-    //dr.print("before");
-
     return dr;
 }
-/*
-  This is what we want to have after implementing neighbour-lists
-vec Particle::calculateForce(){
-    for(int j=0;j<neighbours;j++){
-        if(j!=i){
-            F +=neighbour[i].distanceToAtom(particle[j]);
-        }
-    }
-}
-*/

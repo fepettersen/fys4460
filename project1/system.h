@@ -20,6 +20,7 @@ public:
     void setupCells();
     void update_all(double dt);
     arma::vec3 grad_U_new(Cell *box, int thisIndex, Particle *thisParticle);
+    void PlaceInCells();
 
     /*values*/
     Particle *particle;
@@ -27,7 +28,7 @@ public:
     double r_cut;
 private:
     /*Methods*/
-    arma::vec force(arma::vec dr);
+    arma::vec3 force(arma::vec dr);
 
     /*values*/
     int particles;

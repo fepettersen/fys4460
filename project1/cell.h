@@ -13,13 +13,14 @@ public:
     arma::vec3 distanceToCell(Cell *cell,double L);
     int isincell(Particle *atom,double r_cut);
     void addParticle(Particle *atom);
-    void FindNeighbours(Cell *cell,double r_cut,double L,int j);
+    void FindNeighbours(Cell *cell, double L, int j);
     void setLenght(double length){cellLength = length;}
     double getLength(){return cellLength;}
+
     /*values*/
     int *neighbours;
     std::vector<Particle*> particles;
-//    std::list<Particle*> particles;
+
 private:
     /*Methods*/
 
