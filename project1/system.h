@@ -19,7 +19,7 @@ public:
     void accept();
     void setupCells();
     void update_all(double dt);
-    arma::vec3 grad_U_new(Cell *box, int thisIndex, Particle *thisParticle);
+    arma::vec3 grad_U_new(Cell *box, Particle *thisParticle);
     void PlaceInCells();
 
     /*values*/

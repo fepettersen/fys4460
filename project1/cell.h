@@ -11,7 +11,7 @@ public:
     arma::vec3 getPos(){return pos;}
     void setPos(arma::vec3 Newpos){pos = Newpos;}
     arma::vec3 distanceToCell(Cell *cell,double L);
-    int isincell(Particle *atom,double r_cut);
+    int isincell(Particle *atom);
     void addParticle(Particle *atom);
     void FindNeighbours(Cell *cell, double L, int j);
     void setLenght(double length){cellLength = length;}
@@ -20,6 +20,7 @@ public:
     /*values*/
     int *neighbours;
     std::vector<Particle*> particles;
+    arma::vec3 pos2;
 
 private:
     /*Methods*/

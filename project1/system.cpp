@@ -80,6 +80,9 @@ void System::setupCells(){
             for(int z=0; z<xcells; z++){
                 tmp(0) = x*len; tmp(1) = y*len; tmp(2) = z*len;
                 cell.at(counter)->setPos(tmp);
+                for(int b=0;b<3;b++){
+                    cell[counter]->pos2(b) = fmod(tmp(b),len);
+                }
                 counter++;
             }
         }
@@ -131,12 +134,18 @@ void System::setupCells(){
             }
         }
     }
-
+//    for(int u=0;u<cells;u++){
+//        cout<<"cell["<<u<<"]"<<endl;
+//        for(int k=0; k<sizeof(cell[u]->neighbours)/sizeof(cell[u]->neighbours[0]);k++){
+//            cout<<sizeof(cell[u]->neighbours)/sizeof(cell[u]->neighbours[0])<<endl;
+//            cout<<cell[k]->getCell_no()<<endl;
+//        }
+//    }
     /*Place particles in cells*/
 
     for(int i=0; i<cells;i++){
         for(int j=0; j<particles; j++){
-            if(cell[i]->isincell(&particle[j],r_cut)){
+            if(cell[i]->isincell(&particle[j])){
                 particle[j].cellID = cell[i]->getCell_no();
                 cell[i]->addParticle(&particle[j]);
             }
@@ -153,10 +162,10 @@ void System::output(int nr){
     outfile.open(buffer);
 
     outfile<<particles<<endl;
-    outfile<<"This is a commentline for comments"<<endl;
+    outfile<<"Argon atoms using Lennard - Jones potential. timestep "<<nr<<endl;
     for(int i=0;i<particles;i++){
         outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<setprecision(12)<<" "<<particle[i].getvel()<<setprecision(12)
-              <<" "<<particle[i].cellID<<endl;
+              <<" "<<particle[i].cellID<<"  "<<norm(particle->F,2)<<setprecision(12)<<endl;
     }
       outfile.close();
 }
@@ -181,6 +190,7 @@ void System::update_all(double dt){
     //This will eventually be the update function utilizing neighbour lists
     int index = 0;
     int n = 0;
+    double length = cell[0]->getLength();
     for(int a=0;a<cells;a++){
         for(vector<Particle*>::iterator it1 = cell[a]->particles.begin(); it1 != cell[a]->particles.end(); it1++){
             /*SRSLY you guys, I hate you guys so much!*/
@@ -191,16 +201,19 @@ void System::update_all(double dt){
     }
     accept();
     PlaceInCells();
+
     for(int j=0; j<cells;j++){
         index = 0;
         for(vector<Particle*>::iterator it1 = cell[j]->particles.begin(); it1 != cell[j]->particles.end(); it1++){
-            (*it1)->F = grad_U_new(cell[j],index,*it1);
+            (*it1)->F = grad_U_new(cell[j],*it1);
             index++;
-            for(int k=0; k<sizeof(cell[j]->neighbours)/sizeof(cell[j]->neighbours[0]);k++){
+            for(int k=0; k<26;k++){ //FIXXXX
                 n = cell[j]->neighbours[k];
+                (*it1)->F += grad_U_new(cell[n],*it1);
+                /*
                 for(vector<Particle*>::iterator it2 = cell[n]->particles.begin(); it2 != cell[n]->particles.end(); it2++){
                     (*it1)->F -= force((*it1)->distanceToAtom(*it2,L));
-                }
+                }*/
             }
             (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
         }
@@ -231,7 +244,7 @@ vec3 System::grad_U(int i){
     return -F;
 }
 
-vec3 System::grad_U_new(Cell *box,int thisIndex, Particle *thisParticle){
+vec3 System::grad_U_new(Cell *box,Particle *thisParticle){
     //løp over partiklene i en celle
     vec3 F = zeros(3);
     for(vector<Particle*>::iterator it2 = box->particles.begin(); it2 != box->particles.end(); it2++){
@@ -252,8 +265,8 @@ void System::PlaceInCells(){
     for(int i=0; i<cells;i++){
         cell[i]->particles.clear();
         for(int j=0; j<particles; j++){
-            if(cell[i]->isincell(&particle[j],r_cut)){
-                particle[j].cellID = cell[i]->getCell_no();
+            if(cell[i]->isincell(&particle[j])){
+                //particle[j].cellID = cell[i]->getCell_no();
                 cell[i]->addParticle(&particle[j]);
             }
         }

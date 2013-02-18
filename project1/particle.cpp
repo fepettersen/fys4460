@@ -31,9 +31,9 @@ char *Particle::getvel()
 }
 
 void Particle::checkpos(double L){
-    r(0) = fmod(r(0)+ 100*L,L);
-    r(1) = fmod(r(1)+ 100*L,L);
-    r(2) = fmod(r(2)+ 100*L,L);
+    r(0) = fmod(r(0),L) + L*(r(0) < 0);
+    r(1) = fmod(r(1),L) + L*(r(1) < 0);
+    r(2) = fmod(r(2),L) + L*(r(2) < 0);
 }
 
 vec3 Particle::distanceToAtom(Particle *atom, double L) {
@@ -46,6 +46,20 @@ vec3 Particle::distanceToAtom(Particle *atom, double L) {
             dr(i) += L;
         }
     }
+
+//    for(int i=0;i<3;i++){
+//        dr(i) = (dr(i)/fabs(dr(i)))*max(dr(i),0.8);
+//    }
+    return dr;
+}
+vec3 Particle::NewdistanceToAtom(Particle *atom, double cell_length, double L) {
+    vec3 dr = atom->r-r;
+    for(int i=0;i<3;i++) {
+        if(fabs(dr(i))> 2*cell_length){
+        dr(i) = fmod(r(i) +100*cell_length,cell_length);
+        }
+    }
+
 //    for(int i=0;i<3;i++){
 //        dr(i) = (dr(i)/fabs(dr(i)))*max(dr(i),0.8);
 //    }

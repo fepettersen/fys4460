@@ -14,6 +14,7 @@ public:
     void setmass(double newmass) {mass = newmass;}
     void checkpos(double L);
     arma::vec3 distanceToAtom(Particle *atom, double L);
+    arma::vec3 NewdistanceToAtom(Particle *atom, double cell_length, double L);
     arma::vec3 r;
     arma::vec3 v;
     arma::vec3 F;

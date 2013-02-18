@@ -12,7 +12,7 @@ int main(/*int argc, char** argv*/)
 
     /*some time stuff*/
     double time = 0; double Time_end = 1.0;
-    double dt = 1e-3;
+    double dt = 5e-3;
     System test(ncells);
     /*loop over time and evolve system*/
 //    test.output(counter);

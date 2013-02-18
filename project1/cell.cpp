@@ -15,6 +15,7 @@ Cell::Cell()
         neighbours[i] = 0;
     }
     pos = zeros(3);
+    pos2 = zeros(3);
     cellLength = 0;
 
 }
@@ -30,7 +31,7 @@ vec3 Cell::distanceToCell(Cell *cell, double L){
     }
     return dr;
 }
-int Cell::isincell(Particle *atom, double r_cut){
+int Cell::isincell(Particle *atom){
     int x = 0;
     int y = 0;
     int z = 0;
