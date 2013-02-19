@@ -48,12 +48,14 @@ class Data():
 			self.mean[j] = self.v[:,j].mean()
 			self.std[j] = self.v[:,j].std()
 
-		ball = np.zeros(len(self.nparticles))
-		for i in xrange(len(self.nparticles)):
+		ball = np.zeros(self.nparticles)
+		for i in xrange(self.nparticles):
 			ball[i] = np.linalg.norm(self.v[i,:],2)
-		mean[3] = ball.mean()
-		std[3] = ball.std()
-		return mean,std
+
+		self.mean[3] = ball.mean()
+		self.std[3] = ball.std()
+
+		return self.std[3], self.mean[3]
 
 	def energy(self,timestep_no):
 		self.getResults(timestep_no)
