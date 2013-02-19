@@ -93,6 +93,7 @@ void System::setupCells(){
     double length = L/((double) xcells)+0.001;
     double limit = sqrt(3)*L/((double) xcells)+0.001;
     int dummy;
+
     /*Find neighbours*/
     for(int i=0; i<cells;i++){
         r1 = cell[i]->getPos();
@@ -134,13 +135,7 @@ void System::setupCells(){
             }
         }
     }
-//    for(int u=0;u<cells;u++){
-//        cout<<"cell["<<u<<"]"<<endl;
-//        for(int k=0; k<sizeof(cell[u]->neighbours)/sizeof(cell[u]->neighbours[0]);k++){
-//            cout<<sizeof(cell[u]->neighbours)/sizeof(cell[u]->neighbours[0])<<endl;
-//            cout<<cell[k]->getCell_no()<<endl;
-//        }
-//    }
+
     /*Place particles in cells*/
 
     for(int i=0; i<cells;i++){
@@ -164,8 +159,8 @@ void System::output(int nr){
     outfile<<particles<<endl;
     outfile<<"Argon atoms using Lennard - Jones potential. timestep "<<nr<<endl;
     for(int i=0;i<particles;i++){
-        outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<setprecision(12)<<" "<<particle[i].getvel()<<setprecision(12)
-              <<" "<<particle[i].cellID<<"  "<<norm(particle->F,2)<<setprecision(12)<<endl;
+        outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<" "<<particle[i].getvel()
+              <<" "<<particle[i].cellID<<"  "<<particle[i].getForce()<<endl;
     }
       outfile.close();
 }
@@ -207,13 +202,9 @@ void System::update_all(double dt){
         for(vector<Particle*>::iterator it1 = cell[j]->particles.begin(); it1 != cell[j]->particles.end(); it1++){
             (*it1)->F = grad_U_new(cell[j],*it1);
             index++;
-            for(int k=0; k<26;k++){ //FIXXXX
+            for(int k=0; k<cell[j]->number_of_neighbours;k++){ //FIXXXX
                 n = cell[j]->neighbours[k];
                 (*it1)->F += grad_U_new(cell[n],*it1);
-                /*
-                for(vector<Particle*>::iterator it2 = cell[n]->particles.begin(); it2 != cell[n]->particles.end(); it2++){
-                    (*it1)->F -= force((*it1)->distanceToAtom(*it2,L));
-                }*/
             }
             (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
         }

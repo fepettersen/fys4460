@@ -10,6 +10,7 @@ public:
     void settype(std::string newPt) {particlename = newPt;}
     char *getpos();
     char *getvel();
+    char *getForce();
     double getmass() {return mass;}
     void setmass(double newmass) {mass = newmass;}
     void checkpos(double L);

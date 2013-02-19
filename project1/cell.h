@@ -19,6 +19,7 @@ public:
 
     /*values*/
     int *neighbours;
+    int number_of_neighbours;
     std::vector<Particle*> particles;
     arma::vec3 pos2;
 

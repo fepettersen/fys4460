@@ -9,9 +9,9 @@ using namespace arma;
 Cell::Cell()
 {
     cell_no = 0;
-
-    neighbours = new int[26];
-    for(int i=0; i<26; i++){
+    number_of_neighbours = 26;
+    neighbours = new int[number_of_neighbours];
+    for(int i=0; i<number_of_neighbours; i++){
         neighbours[i] = 0;
     }
     pos = zeros(3);

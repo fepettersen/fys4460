@@ -29,7 +29,12 @@ char *Particle::getvel()
     sprintf(buffer, "%.12g  %.12g  %.12g", v(0), v(1), v(2));
     return buffer;
 }
-
+char *Particle::getForce()
+{
+    char* buffer = new char[60];
+    sprintf(buffer, "%.12g  %.12g  %.12g", F(0), F(1), F(2));
+    return buffer;
+}
 void Particle::checkpos(double L){
     r(0) = fmod(r(0),L) + L*(r(0) < 0);
     r(1) = fmod(r(1),L) + L*(r(1) < 0);
