@@ -1,0 +1,65 @@
+\documentclass[a4paper,english, 10pt, twoside]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsfonts, amssymb, amsmath}
+\usepackage{listings}
+\usepackage{float}	%force figures in place with command \begin{figure}[H]
+
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+
+
+
+%opening
+\title{Project 1, FYS4460}
+\author{Fredrik E Pettersen\\ f.e.pettersen@fys.uio.no}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+\begin{abstract}
+In this project we will look at a simple linear second order differential equation.
+\end{abstract}
+\tableofcontents
+\newpage
+
+
+\section{About the problem}
+The goal of this project is to model systems of Argon atoms using the Lennard-Jones potential. 
+
+\section{The algorithm}
+\section{Analytic solution}
+\section{Results}
+First of all, the initial distribution of Argon is visualized in figure \ref{first}. This 
+is a so called face centered cubic lattice, where one cube consists of $5\times5\times5 = 25$ 
+Argon atoms.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{blalbalbla.png}
+\caption{The initial configuration of Argon atoms makes a face-centered cubic lattice }
+\label{first}
+\end{figure} 
+
+Having placed the atoms in the correct formation, we give each atom an initial random velocity 
+from the Bolzmann distribution depending on the temperature. \\
+For the temperature $T = 119.8K = 1$ in MD units the velocity distribution has 0 mean and 
+standard deviation 1. We can check this for the first resultfile (see figure \ref{distribution}).
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{}
+\caption{Velocity distribution at t=0.}
+\label{distribution}
+\end{figure} 
+\section{Stability and precision}
+\section{Final comments}
+
+\appendix
+\section{Source code}
+\lstinputlisting{system.cpp}
+\lstinputlisting{cell.cpp}
+\lstinputlisting{particle.cpp}
+\end{document}

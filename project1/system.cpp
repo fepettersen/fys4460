@@ -4,8 +4,10 @@
 using namespace std;
 using namespace arma;
 
-System::System(int ncells)
+System::System(int ncells, int Timesteps, double Temperature)
 {
+    timesteps = Timesteps;
+    T = Temperature;
     particles = 4*ncells*ncells*ncells;
     b = 5.260/3.405; //Aangstroms
     L = ncells*b;
@@ -14,6 +16,8 @@ System::System(int ncells)
     xcells = L/r_cut;
     cells = xcells*xcells*xcells;
     particle = new Particle[particles];
+    U = 0;
+    res = zeros<vec>(timesteps+1);
 
     for(int i = 0; i < cells; i++) {
         cell.push_back(new Cell());
@@ -24,7 +28,7 @@ System::System(int ncells)
 void System::Initialize()
 {
     InitializePositions();
-    InitializeVelocities();
+    InitializeVelocities(T);
     setupCells();
 }
 
@@ -43,6 +47,7 @@ void System::InitializePositions(){
                         tmp(0) = b*(x+xCoors[k]); tmp(1) = b*(y+yCoors[k]); tmp(2) = b*(z+zCoors[k]);
                         particle[counter].r = tmp;
                         particle[counter].r_tmp = tmp;
+                        particle[counter].r0 = tmp;
                     }
                     counter ++;
                 }
@@ -50,10 +55,11 @@ void System::InitializePositions(){
         }
     }
 }
-void System::InitializeVelocities(){
+
+void System::InitializeVelocities(double T){
     vec3 sumvec = zeros(3);
     for(int i=0;i<particles; i++){
-        particle[i].v = randn<vec>(3);
+        particle[i].v = sqrt(T)*randn<vec>(3);
         sumvec += particle[i].v;
     }
     sumvec /=particles;
@@ -61,6 +67,7 @@ void System::InitializeVelocities(){
         particle[i].v -=sumvec;
     }
 }
+
 void System::setupCells(){
 
     /*Give cellnumbers*/
@@ -147,6 +154,7 @@ void System::setupCells(){
         }
     }
 }
+
 void System::output(int nr){
     /*Loops through all particles and writes their positions to a numbered .xyz file*/
 
@@ -155,12 +163,11 @@ void System::output(int nr){
     ofstream outfile;
     cout<<buffer<<endl;
     outfile.open(buffer);
-
     outfile<<particles<<endl;
-    outfile<<"Argon atoms using Lennard - Jones potential. timestep "<<nr<<endl;
+    outfile<<"Argon atoms using Lennard - Jones potential. timestep "<<nr<<"  "<<U<<setprecision(12)<<endl;
     for(int i=0;i<particles;i++){
         outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<" "<<particle[i].getvel()
-              <<" "<<particle[i].cellID<<"  "<<particle[i].getForce()<<endl;
+              <<" "<<particle[i].cellID<<"  "<<particle[i].getForce()<<"  "<<endl;
     }
       outfile.close();
 }
@@ -183,6 +190,7 @@ void System::update(double dt){
 }
 void System::update_all(double dt){
     //This will eventually be the update function utilizing neighbour lists
+    U = 0;
     int index = 0;
     int n = 0;
     double length = cell[0]->getLength();
@@ -192,6 +200,7 @@ void System::update_all(double dt){
             /*Legg en god forklaring paa dette et setd!*/
             (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
             (*it1)->r_tmp = (*it1)->r + (*it1)->v*dt;
+            (*it1)->delta_r += distance((*it1)->r_tmp,(*it1)->r);
         }
     }
     accept();
@@ -220,6 +229,7 @@ vec3 System::force(vec dr){
     double r6 = r2*r2*r2;
     double r12 = r6*r6;
     //vec F = (24*eps*pow(sigma,6)/pow(r,7))*(2*pow((sigma/r),6)-1)*(dr/r);
+//    U += 4*(1/r12 -1/r6);
     vec3 F = 24*(2.0/r12 -1.0/r6)*(dr/r2);
     return  F;
 }
@@ -245,6 +255,7 @@ vec3 System::grad_U_new(Cell *box,Particle *thisParticle){
     }
     return -F;
 }
+
 void System::accept(){
     for(int i=0; i<particles;i++){
         particle[i].r = particle[i].r_tmp;
@@ -257,10 +268,39 @@ void System::PlaceInCells(){
         cell[i]->particles.clear();
         for(int j=0; j<particles; j++){
             if(cell[i]->isincell(&particle[j])){
-                //particle[j].cellID = cell[i]->getCell_no();
                 cell[i]->addParticle(&particle[j]);
             }
         }
     }
 }
 
+void System::mean_square(int nr){
+    for(int i=0; i<particles; i++){
+        U += dot(particle[i].delta_r,particle[i].delta_r);
+
+    }
+    res(nr)=U;
+}
+void System::outputMeanSquare(){
+    char* buffer = new char[60];
+    sprintf(buffer,"total_movement_.txt");
+    ofstream outfile;
+    outfile.open(buffer);
+    for(int i=0;i<=timesteps;i++){
+        outfile<<res(i)<<setprecision(12)<<endl;
+    }
+    outfile.close();
+}
+
+vec3 System::distance(vec3 r_new, vec3 r_old){
+    vec3 dr = r_new-r_old;
+    for(int i=0;i<3;i++) {
+        if(dr(i) > L/2.0){
+            dr(i) -= L;
+        }
+        else if(dr(i)< -L/2.0){
+            dr(i) += L;
+        }
+    }
+    return dr;
+}

@@ -10,10 +10,11 @@ Particle::Particle()
     {
     particlename = "Ar";
     mass = 1.0; //atomic units *1.66053886e-27
-    r = zeros<vec>(3);
-    v = zeros<vec>(3);
-    F = zeros<vec>(3);
-    r_tmp = zeros<vec>(3);
+    r = zeros(3);
+    v = zeros(3);
+    F = zeros(3);
+    delta_r = zeros(3);
+    r_tmp = zeros(3);
     cellID = 99;
     };
 char *Particle::getpos()
@@ -69,4 +70,10 @@ vec3 Particle::NewdistanceToAtom(Particle *atom, double cell_length, double L) {
 //        dr(i) = (dr(i)/fabs(dr(i)))*max(dr(i),0.8);
 //    }
     return dr;
+}
+char *Particle::distanceMoved(){
+//    vec3 g = delta_r-r0;
+    char* buffer = new char[60];
+    sprintf(buffer, "%.12g  %.12g  %.12g", delta_r(0), delta_r(1), delta_r(2));
+    return buffer;
 }

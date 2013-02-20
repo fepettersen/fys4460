@@ -6,8 +6,9 @@ class Data():
 		self.tmp = infile.readlines()
 		infile.close()
 		self.nparticles = int(self.tmp[0])
-		self.ntimesteps = len(self.tmp)/self.nparticles
+		self.ntimesteps = len(self.tmp)/(self.nparticles+2)
 		self.E_k = 0
+		self.U_tot = 0
 		self.mean = [0 for i in range(4)]
 		self.std = [0 for i in range(4)]
 		self.v = np.zeros((self.nparticles,3))
@@ -17,6 +18,7 @@ class Data():
 	def getResults(self,timestep_no):
 		counter = 0
 		i= int(timestep_no*self.nparticles +2*(timestep_no+1))
+		self.U_tot = float(self.tmp[timestep_no+1].split()[-1])
 		while counter<self.nparticles:
 			dummy = self.tmp[i].split()[4:]
 			dummy2 = self.tmp[i].split()[1:4]
@@ -60,23 +62,21 @@ class Data():
 	def energy(self,timestep_no):
 		self.getResults(timestep_no)
 		kin_en = 0
-		pot_en = 0
-		def U(r):
-			r2 = np.dot(r,r)
-			return 4*(1/(r2**6) - 1/(r2**3))
 
 		def Kinetic(v):
 			return 0.5*np.dot(v,v)
-		U_tot = 0
 		
 		for i in xrange(self.nparticles):
-			pot_en += U(self.r[i,:])
 			kin_en += Kinetic(self.v[i,:])
 
 		self.E_k = kin_en
-		U_tot = pot_en
-		Energy = U_tot+self.E_k
+		Energy = self.U_tot+self.E_k
 		return Energy
 
 	def temperature(self):
 		return 2*self.E_k/(3*self.nparticles)
+
+	def DiffusionConstant(self,filename):
+		meanr2 = np.loadtxt(filename)
+		meanr2 /= self.nparticles
+		return meanr2

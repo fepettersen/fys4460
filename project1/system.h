@@ -6,12 +6,12 @@ class System
 {
 public:
     /*Methods*/
-    System(int ncells);
+    System(int ncells, int Timesteps,double Temperature);
     int getParticles(){return particles;}
     void setBalle(int newParticles){particles = newParticles;}
     void Initialize();
     void InitializePositions();
-    void InitializeVelocities();
+    void InitializeVelocities(double T);
     void output(int nr);
     void update(double dt);
     void boundary_pos();
@@ -21,7 +21,11 @@ public:
     void update_all(double dt);
     arma::vec3 grad_U_new(Cell *box, Particle *thisParticle);
     void PlaceInCells();
+    void mean_square(int nr);
+    void outputMeanSquare();
 
+    arma::vec3 distance(arma::vec3 r_new, arma::vec3 r_old);
+    arma::vec res;
     /*values*/
     Particle *particle;
     std::vector<Cell*> cell;
@@ -37,6 +41,9 @@ private:
     int xcells;
     double b;   //lattice constant
     double L;
+    double U;
+    int timesteps;
+    double T;
 };
 
 #endif // BALLE_H
