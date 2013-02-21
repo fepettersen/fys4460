@@ -4,6 +4,8 @@
 using namespace std;
 using namespace arma;
 
+
+/* Initializers*/
 System::System(int ncells, int Timesteps, double Temperature)
 {
     timesteps = Timesteps;
@@ -17,7 +19,9 @@ System::System(int ncells, int Timesteps, double Temperature)
     cells = xcells*xcells*xcells;
     particle = new Particle[particles];
     U = 0;
-    res = zeros<vec>(timesteps+1);
+    pressure = 0;
+    potential = 0;
+    res = zeros<mat>(timesteps+1,2);
 
     for(int i = 0; i < cells; i++) {
         cell.push_back(new Cell());
@@ -29,6 +33,9 @@ void System::Initialize()
 {
     InitializePositions();
     InitializeVelocities(T);
+    for(int i=0;i<particles;i++){
+        particle[i].F = grad_U(i);
+    }
     setupCells();
 }
 
@@ -155,22 +162,8 @@ void System::setupCells(){
     }
 }
 
-void System::output(int nr){
-    /*Loops through all particles and writes their positions to a numbered .xyz file*/
+/*Updaters*/
 
-    char* buffer = new char[60];
-    sprintf(buffer,"results_%03d.xyz",nr);
-    ofstream outfile;
-    cout<<buffer<<endl;
-    outfile.open(buffer);
-    outfile<<particles<<endl;
-    outfile<<"Argon atoms using Lennard - Jones potential. timestep "<<nr<<"  "<<U<<setprecision(12)<<endl;
-    for(int i=0;i<particles;i++){
-        outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<" "<<particle[i].getvel()
-              <<" "<<particle[i].cellID<<"  "<<particle[i].getForce()<<"  "<<endl;
-    }
-      outfile.close();
-}
 void System::update(double dt){
     //vec F;
     for(int i=0; i<particles; i++){
@@ -191,6 +184,8 @@ void System::update(double dt){
 void System::update_all(double dt){
     //This will eventually be the update function utilizing neighbour lists
     U = 0;
+    pressure = 0;
+    potential = 0;
     int index = 0;
     int n = 0;
     double length = cell[0]->getLength();
@@ -221,6 +216,35 @@ void System::update_all(double dt){
     cout<<cell[0]->particles[0]->r<<endl;
 }
 
+void System::accept(){
+    for(int i=0; i<particles;i++){
+        particle[i].r = particle[i].r_tmp;
+        particle[i].checkpos(L);
+    }
+}
+
+void System::PlaceInCells(){
+    for(int i=0; i<cells;i++){
+        cell[i]->particles.clear();
+        for(int j=0; j<particles; j++){
+            if(cell[i]->isincell(&particle[j])){
+                cell[i]->addParticle(&particle[j]);
+            }
+        }
+    }
+}
+
+void System::mean_square(int nr){
+    for(int i=0; i<particles; i++){
+        U += dot(particle[i].delta_r,particle[i].delta_r);
+
+    }
+    res(nr,0)=U;
+    res(nr,1)=pressure/2.0;
+}
+
+/*Helper functions*/
+
 vec3 System::force(vec dr){
 //    if (norm(dr)>r_cut){
 //        return zeros(3);
@@ -229,8 +253,9 @@ vec3 System::force(vec dr){
     double r6 = r2*r2*r2;
     double r12 = r6*r6;
     //vec F = (24*eps*pow(sigma,6)/pow(r,7))*(2*pow((sigma/r),6)-1)*(dr/r);
-//    U += 4*(1/r12 -1/r6);
     vec3 F = 24*(2.0/r12 -1.0/r6)*(dr/r2);
+    pressure += dot(F,dr);
+    potential += 4*(1.0/r12-1.0/r6);
     return  F;
 }
 
@@ -256,42 +281,6 @@ vec3 System::grad_U_new(Cell *box,Particle *thisParticle){
     return -F;
 }
 
-void System::accept(){
-    for(int i=0; i<particles;i++){
-        particle[i].r = particle[i].r_tmp;
-        particle[i].checkpos(L);
-    }
-}
-
-void System::PlaceInCells(){
-    for(int i=0; i<cells;i++){
-        cell[i]->particles.clear();
-        for(int j=0; j<particles; j++){
-            if(cell[i]->isincell(&particle[j])){
-                cell[i]->addParticle(&particle[j]);
-            }
-        }
-    }
-}
-
-void System::mean_square(int nr){
-    for(int i=0; i<particles; i++){
-        U += dot(particle[i].delta_r,particle[i].delta_r);
-
-    }
-    res(nr)=U;
-}
-void System::outputMeanSquare(){
-    char* buffer = new char[60];
-    sprintf(buffer,"total_movement_.txt");
-    ofstream outfile;
-    outfile.open(buffer);
-    for(int i=0;i<=timesteps;i++){
-        outfile<<res(i)<<setprecision(12)<<endl;
-    }
-    outfile.close();
-}
-
 vec3 System::distance(vec3 r_new, vec3 r_old){
     vec3 dr = r_new-r_old;
     for(int i=0;i<3;i++) {
@@ -303,4 +292,35 @@ vec3 System::distance(vec3 r_new, vec3 r_old){
         }
     }
     return dr;
+}
+
+
+/*Output*/
+
+void System::outputMeanSquare(){
+    char* buffer = new char[60];
+    sprintf(buffer,"total_movement_.txt");
+    ofstream outfile;
+    outfile.open(buffer);
+    for(int i=0;i<=timesteps;i++){
+        outfile<<res(i,0)<<setprecision(12)<<"  "<<res(i,1)<<setprecision(12)<<endl;
+    }
+    outfile.close();
+}
+
+void System::output(int nr){
+    /*Loops through all particles and writes their positions to a numbered .xyz file*/
+
+    char* buffer = new char[60];
+    sprintf(buffer,"results_%03d.xyz",nr);
+    ofstream outfile;
+    cout<<buffer<<endl;
+    outfile.open(buffer);
+    outfile<<particles<<endl;
+    outfile<<"Argon atoms using Lennard - Jones potential. timestep "<<nr<<"  "<<potential<<setprecision(12)<<endl;
+    for(int i=0;i<particles;i++){
+        outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<" "<<particle[i].getvel()
+              <<" "<<particle[i].cellID<<"  "<<particle[i].getForce()<<"  "<<endl;
+    }
+      outfile.close();
 }

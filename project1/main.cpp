@@ -5,14 +5,14 @@ using namespace arma;
 
 int main(/*int argc, char** argv*/)
 {
-    int ncells = 2;
+    int ncells = 8;
     int counter = 0;
-    double T = 1;
+    double T = 750/119.8;
 
     /*some time stuff*/
     double time = 0;
-    double Time_end = 0.1;
-    double dt = 2e-2;
+    double Time_end = 3.0;
+    double dt = 5e-3;
     System test(ncells,int (Time_end/dt),T);
 
     /*loop over time and evolve system*/

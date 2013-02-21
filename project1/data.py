@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as mpl
 class Data():
 	def __init__(self,resultfile):
 
@@ -18,7 +19,8 @@ class Data():
 	def getResults(self,timestep_no):
 		counter = 0
 		i= int(timestep_no*self.nparticles +2*(timestep_no+1))
-		self.U_tot = float(self.tmp[timestep_no+1].split()[-1])
+		spoc = timestep_no*(self.nparticles+2)+1
+		self.U_tot = float(self.tmp[spoc].split()[-1])#/self.nparticles
 		while counter<self.nparticles:
 			dummy = self.tmp[i].split()[4:]
 			dummy2 = self.tmp[i].split()[1:4]
@@ -30,6 +32,7 @@ class Data():
 
 	def stats(self,x=False,y=False,z=False,all=False):
 		xx = 0
+
 		if(x):
 			#makeplot_x()
 			xx+=1
@@ -43,7 +46,7 @@ class Data():
 			#makeplot_all()
 			xx+=1
 		if(xx!=0):
-			#plot
+			#mpl.show()
 			print("hei")
 
 		for j in range(len(self.mean)-1):
@@ -69,7 +72,7 @@ class Data():
 		for i in xrange(self.nparticles):
 			kin_en += Kinetic(self.v[i,:])
 
-		self.E_k = kin_en
+		self.E_k = kin_en#/self.nparticles
 		Energy = self.U_tot+self.E_k
 		return Energy
 
@@ -77,6 +80,15 @@ class Data():
 		return 2*self.E_k/(3*self.nparticles)
 
 	def DiffusionConstant(self,filename):
-		meanr2 = np.loadtxt(filename)
-		meanr2 /= self.nparticles
-		return meanr2
+		results = np.loadtxt(filename)
+		meanr2 = results[:,0]/self.nparticles
+		pressure = results[:,1]
+		return meanr2,pressure
+
+	def makeplot(self,vector, y_label= "",x_label = "timestep number"):
+		fig3 = mpl.figure()
+		a3 = fig3.add_subplot(111)
+		a3.plot(range(len(vector)),vector)
+		a3.set_xlabel(x_label)
+		a3.set_ylabel(y_label)
+		return fig3, a3

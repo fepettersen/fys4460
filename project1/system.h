@@ -25,7 +25,7 @@ public:
     void outputMeanSquare();
 
     arma::vec3 distance(arma::vec3 r_new, arma::vec3 r_old);
-    arma::vec res;
+    arma::mat res;
     /*values*/
     Particle *particle;
     std::vector<Cell*> cell;
@@ -42,6 +42,8 @@ private:
     double b;   //lattice constant
     double L;
     double U;
+    double potential;
+    double pressure;
     int timesteps;
     double T;
 };

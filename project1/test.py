@@ -17,29 +17,29 @@ for i in xrange(start,stop):
 	rofl[i] = new.temperature()
 	print i
 
+
 #print yolo.mean()/yolo.std()
-yolo /= new.nparticles
-print yolo.mean()/yolo.std()
-fig1 = plt.figure()
-a1 = fig1.add_subplot(111)
-a1.plot(range(start,stop),yolo)
-a1.set_xlabel('timestep number')
-a1.set_ylabel('energy')
+
+fig1,a1 = new.makeplot(yolo,y_label="energy")
+fig2,a2 = new.makeplot(rofl,y_label = "temperature")
+'''
+something = 0
+for i in xrange(start,stop):
+	something = new.energy(i)
+	yolo[i] = new.E_k
+	rofl[i] = new.U_tot
+
+fig1,a1 = new.makeplot(yolo,y_label = "kinetic energy")
+fig2,a2 = new.makeplot(rofl,y_label = "potential energy")
+'''
+vec,pressure = new.DiffusionConstant("total_movement_.txt")
+fig3,a3 = new.makeplot(pressure, y_label = "pressure")
+#Put in class!!!
+volume = (5.260/3.405)*16
+rho = new.nparticles/volume
+pressure /= (3*volume)
+pressure += rho*rofl
 
 
-fig2 = plt.figure()
-a2 = fig2.add_subplot(111)
-a2.plot(range(start,stop),rofl)
-a2.set_xlabel('timestep number')
-a2.set_ylabel('temperature')
-
-
-vec = new.DiffusionConstant("total_movement_.txt")
-
-fig3 = plt.figure()
-a3 = fig3.add_subplot(111)
-a3.plot(range(len(vec)),vec)
-a3.set_xlabel('timestep number')
-a3.set_ylabel('mean square r(t)-r_0')
 
 plt.show()

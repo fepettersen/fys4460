@@ -47,7 +47,13 @@ Argon atoms.
 Having placed the atoms in the correct formation, we give each atom an initial random velocity 
 from the Bolzmann distribution depending on the temperature. \\
 For the temperature $T = 119.8K = 1$ in MD units the velocity distribution has 0 mean and 
-standard deviation 1.
+standard deviation 1. We can check this for the first resultfile (see figure \ref{distribution}).
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{}
+\caption{Velocity distribution at t=0.}
+\label{distribution}
+\end{figure} 
 \section{Stability and precision}
 \section{Final comments}
 
