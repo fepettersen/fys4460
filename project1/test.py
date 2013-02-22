@@ -1,8 +1,10 @@
 from data import *
 import matplotlib.pyplot as plt
-import numpy
+import numpy,sys
 
-new = Data("results4.xyz")
+infile  = sys.argv[1] if len(sys.argv)>1 else "results.xyz"
+
+new = Data(infile)
 
 start = 0
 stop = new.ntimesteps
@@ -11,7 +13,7 @@ stop = new.ntimesteps
 yolo = numpy.zeros(stop-start)
 rofl = numpy.zeros(stop-start)
 #swag = numpy.zeros(stop-start)
-
+'''
 for i in xrange(start,stop):
 	yolo[i] = new.energy(i)
 	rofl[i] = new.temperature()
@@ -22,7 +24,7 @@ for i in xrange(start,stop):
 
 fig1,a1 = new.makeplot(yolo,y_label="energy")
 fig2,a2 = new.makeplot(rofl,y_label = "temperature")
-'''
+
 something = 0
 for i in xrange(start,stop):
 	something = new.energy(i)
@@ -33,13 +35,16 @@ fig1,a1 = new.makeplot(yolo,y_label = "kinetic energy")
 fig2,a2 = new.makeplot(rofl,y_label = "potential energy")
 '''
 vec,pressure = new.DiffusionConstant("total_movement_.txt")
-fig3,a3 = new.makeplot(pressure, y_label = "pressure")
-#Put in class!!!
+fig3,a3 = new.makeplot(vec, y_label = "mean square stuff")
 volume = (5.260/3.405)*16
 rho = new.nparticles/volume
 pressure /= (3*volume)
-pressure += rho*rofl
-
+new.getResults(0)
+fig,a = new.make_histogram(new.v[:,0],x_label = \
+	"velocity distribution in x direction")
+#pressure += rho*rofl
+#fig3,a3 = new.makeplot(vec, y_label = "mean square stuff")
+#Put in class!!!
 
 
 plt.show()

@@ -23,6 +23,7 @@ public:
     void PlaceInCells();
     void mean_square(int nr);
     void outputMeanSquare();
+    void BerendsenThermostat();
 
     arma::vec3 distance(arma::vec3 r_new, arma::vec3 r_old);
     arma::mat res;

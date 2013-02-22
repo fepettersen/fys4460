@@ -5,9 +5,10 @@ using namespace arma;
 
 int main(/*int argc, char** argv*/)
 {
-    int ncells = 8;
+    int thermostat = 0;
+    int ncells = 12;
     int counter = 0;
-    double T = 750/119.8;
+    double T = 119.8/119.8;
 
     /*some time stuff*/
     double time = 0;
@@ -19,6 +20,9 @@ int main(/*int argc, char** argv*/)
 //    test.output(counter);
     while(time<Time_end){
         test.update_all(dt);
+        if(time < dt*100 && thermostat){
+            test.BerendsenThermostat();
+        }
         test.output(counter);
         test.mean_square(counter);
         time += dt;

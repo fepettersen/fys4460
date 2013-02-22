@@ -34,7 +34,7 @@ class Data():
 		xx = 0
 
 		if(x):
-			#makeplot_x()
+			#self.make_histogram(v[0,:],)
 			xx+=1
 		if(y):
 			#makeplot_y()
@@ -92,3 +92,13 @@ class Data():
 		a3.set_xlabel(x_label)
 		a3.set_ylabel(y_label)
 		return fig3, a3
+
+	def make_histogram(self,vector,x_label="",y_label="Probability"):
+		fig = mpl.figure()
+		a = fig.add_subplot(111)
+		n, bins, patches = a.hist(vector, 50, normed=1, \
+			facecolor='black', alpha=0.75)
+		a.set_xlabel('velocity in x direction')
+		a.set_ylabel('Probability')
+		a.grid(True)
+		return fig,a

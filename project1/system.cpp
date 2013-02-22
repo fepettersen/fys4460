@@ -31,12 +31,23 @@ System::System(int ncells, int Timesteps, double Temperature)
 
 void System::Initialize()
 {
+    cout<<"Initializing "<<particles<<" particles placed in "<<cells<<" cells......";
     InitializePositions();
     InitializeVelocities(T);
-    for(int i=0;i<particles;i++){
-        particle[i].F = grad_U(i);
-    }
     setupCells();
+    int n;
+    for(int j=0; j<cells;j++){
+//        index = 0;
+        for(vector<Particle*>::iterator it1 = cell[j]->particles.begin(); it1 != cell[j]->particles.end(); it1++){
+            (*it1)->F = grad_U_new(cell[j],*it1);
+//            index++;
+            for(int k=0; k<cell[j]->number_of_neighbours;k++){
+                n = cell[j]->neighbours[k];
+                (*it1)->F += grad_U_new(cell[n],*it1);
+            }
+        }
+    }
+    cout<<".. done!"<<endl;
 }
 
 void System::InitializePositions(){
@@ -66,7 +77,8 @@ void System::InitializePositions(){
 void System::InitializeVelocities(double T){
     vec3 sumvec = zeros(3);
     for(int i=0;i<particles; i++){
-        particle[i].v = sqrt(T)*randn<vec>(3);
+//        particle[i].v = sqrt(T)*randn<vec>(3);
+        particle[i].v = sqrt(T)*randu<vec>(3);
         sumvec += particle[i].v;
     }
     sumvec /=particles;
@@ -241,6 +253,19 @@ void System::mean_square(int nr){
     }
     res(nr,0)=U;
     res(nr,1)=pressure/2.0;
+}
+
+void System::BerendsenThermostat(){
+    double tau = 1.0/10;
+    double E_k = 0;
+    for(int i=0; i<particles;i++){
+        E_k += 0.5*dot(particle[i].v,particle[i].v);
+    }
+    double temp = 2*E_k/(3.0*particles);
+    double gamma = sqrt(1 + tau*((T/temp)-1));
+    for(int i=0; i<particles;i++){
+        particle[i].v *= gamma;
+    }
 }
 
 /*Helper functions*/
