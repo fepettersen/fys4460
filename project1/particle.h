@@ -1,7 +1,18 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
-
+/*
+  Each particle object has:
+    a vec3 position -r- which defines where it is in the system
+    a vec3 velocity -v- which defines its velocity
+    a vec3 force -F- which defines the sum of forces on the particle
+    a vec3 position -r_tmp- which is used to make the update go smoothly
+    a vec3 position -r0- which defines it's original position
+    a vec3 position -delta_r- which is used to calculate the total displacement of the particle
+    a cell number which is simply an int ID telling which cell it started out in
+    a mass which is not used (=1)
+    and a name used for output as of now
+  */
 class Particle //: public System
 {
 public:

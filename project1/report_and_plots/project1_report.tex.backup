@@ -69,7 +69,16 @@ Step 3 is to check the increase in speed we get for larger systems after impleme
 and neighbour lists. Put simpliy the increase is formidable for large systems, but not really 
 noticable for small systems. I did one simulation of $131072$ particles after implementing 
 the cells which finished 800 timesteps over night. This simulation would have taken days 
-without the implementation of cells.
+without the implementation of cells.\\
+The last step (not counting dealing with the results) is to implement thermostats on the system. 
+this is done by rescaling the velocities of each atom in the equilibration phase of the simulation. 
+We are asked to implement two thermostats, the Berendsen thermostat 
+$$
+\gamma = \sqrt{1+{\Delta t\over\tau}\left({T_{bath}\over T}-1\right)}
+$$
+and the Andersen thermostat where for each atom a uniform random number is generated at each timestep. 
+If the number is less th
+
 \section{Results}
 First of all, the initial distribution of Argon is visualized in figure \ref{first} for a lattice 
 consisting of 32 atoms. This 
@@ -142,8 +151,15 @@ is proportional to the Diffusion constant. Simulation of 16384 atoms, $T_0=300K$
 \end{figure}
 
 \section{Stability and precision}
+We notice that the system ``creates'' some energy during the simulation. This is of course 
+a non-physical artifact which depends on how large $\Delta t$ we use compared to the forces 
+between the atoms.
 \section{Final comments}
-
+I would like to point out that my program as it is could be more efficient if I'd have 
+implemented Newton's third law. As it stands, all single pair forces are calculated twice which 
+of course is unnececary. However the program seems to be working, and after 2 weeks of 
+debugging I'm happy with that and I can afford to wait twice as long for my program to finish 
+(After all it is not a factor 10). 
 % \appendix
 % \section{Source code}
 % \lstinputlisting{system.cpp}

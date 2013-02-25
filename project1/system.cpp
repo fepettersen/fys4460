@@ -35,12 +35,12 @@ void System::Initialize()
     InitializePositions();
     InitializeVelocities(T);
     setupCells();
+
+    /*Calculate forces for the first timestep*/
     int n;
     for(int j=0; j<cells;j++){
-//        index = 0;
         for(vector<Particle*>::iterator it1 = cell[j]->particles.begin(); it1 != cell[j]->particles.end(); it1++){
             (*it1)->F = grad_U_new(cell[j],*it1);
-//            index++;
             for(int k=0; k<cell[j]->number_of_neighbours;k++){
                 n = cell[j]->neighbours[k];
                 (*it1)->F += grad_U_new(cell[n],*it1);
@@ -51,6 +51,7 @@ void System::Initialize()
 }
 
 void System::InitializePositions(){
+    /*Gices each atom a position in an FCC lattice*/
     double xCoors[] = {0.25,0.75,0.25,0.75};
     double yCoors[] = {0.25,0.75,0.75,0.25};
     double zCoors[] = {0.25,0.25,0.75,0.75};
@@ -75,6 +76,7 @@ void System::InitializePositions(){
 }
 
 void System::InitializeVelocities(double T){
+    /*Gives each particle a random velocity*/
     vec3 sumvec = zeros(3);
     for(int i=0;i<particles; i++){
 //        particle[i].v = sqrt(T)*randn<vec>(3);
@@ -120,7 +122,7 @@ void System::setupCells(){
     double limit = sqrt(3)*L/((double) xcells)+0.001;
     int dummy;
 
-    /*Find neighbours*/
+    /*Find neighbour cells*/
     for(int i=0; i<cells;i++){
         r1 = cell[i]->getPos();
         dummy = 0;
@@ -177,7 +179,7 @@ void System::setupCells(){
 /*Updaters*/
 
 void System::update(double dt){
-    //vec F;
+    /*The brute force function - no cells*/
     for(int i=0; i<particles; i++){
         particle[i].v = particle[i].v + particle[i].F*(dt/2.0);
         particle[i].r_tmp = particle[i].r +particle[i].v*dt;
@@ -194,7 +196,7 @@ void System::update(double dt){
     }
 }
 void System::update_all(double dt){
-    //This will eventually be the update function utilizing neighbour lists
+    /*The update function using cells and neighbours*/
     U = 0;
     pressure = 0;
     potential = 0;
@@ -207,17 +209,15 @@ void System::update_all(double dt){
             /*Legg en god forklaring paa dette et setd!*/
             (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
             (*it1)->r_tmp = (*it1)->r + (*it1)->v*dt;
-            (*it1)->delta_r += distance((*it1)->r_tmp,(*it1)->r);
+            (*it1)->delta_r += distance((*it1)->r_tmp,(*it1)->r);   //Calculate total displacement from initial pos
         }
     }
     accept();
     PlaceInCells();
-
+    /*Calculates the forces*/
     for(int j=0; j<cells;j++){
-        index = 0;
         for(vector<Particle*>::iterator it1 = cell[j]->particles.begin(); it1 != cell[j]->particles.end(); it1++){
             (*it1)->F = grad_U_new(cell[j],*it1);
-            index++;
             for(int k=0; k<cell[j]->number_of_neighbours;k++){ //FIXXXX
                 n = cell[j]->neighbours[k];
                 (*it1)->F += grad_U_new(cell[n],*it1);
@@ -229,6 +229,7 @@ void System::update_all(double dt){
 }
 
 void System::accept(){
+    /*updates the positions off all atoms*/
     for(int i=0; i<particles;i++){
         particle[i].r = particle[i].r_tmp;
         particle[i].checkpos(L);
@@ -236,6 +237,7 @@ void System::accept(){
 }
 
 void System::PlaceInCells(){
+    /*Removes all atoms from cells and places new ones*/
     for(int i=0; i<cells;i++){
         cell[i]->particles.clear();
         for(int j=0; j<particles; j++){
@@ -247,6 +249,7 @@ void System::PlaceInCells(){
 }
 
 void System::mean_square(int nr){
+    /*calculates total displacement*/
     for(int i=0; i<particles; i++){
         U += dot(particle[i].delta_r,particle[i].delta_r);
 
@@ -256,6 +259,7 @@ void System::mean_square(int nr){
 }
 
 void System::BerendsenThermostat(){
+    /*rescales the velocities aff all atoms*/
     double tau = 1.0/10;
     double E_k = 0;
     for(int i=0; i<particles;i++){
@@ -271,6 +275,7 @@ void System::BerendsenThermostat(){
 /*Helper functions*/
 
 vec3 System::force(vec dr){
+    /*Calculates single-pair forces*/
 //    if (norm(dr)>r_cut){
 //        return zeros(3);
 //    }
@@ -285,6 +290,7 @@ vec3 System::force(vec dr){
 }
 
 vec3 System::grad_U(int i){
+    /*from brute force version. caculates sum F on a particle*/
     vec3 F = zeros(3);
     for(int j=0;j<i;j++){
         F += force(particle[i].distanceToAtom(&particle[j],L));
@@ -296,7 +302,7 @@ vec3 System::grad_U(int i){
 }
 
 vec3 System::grad_U_new(Cell *box,Particle *thisParticle){
-    //løp over partiklene i en celle
+    /*calculates sum F on an atom from all atoms in a cell*/
     vec3 F = zeros(3);
     for(vector<Particle*>::iterator it2 = box->particles.begin(); it2 != box->particles.end(); it2++){
         if(*it2 != thisParticle){
@@ -307,6 +313,7 @@ vec3 System::grad_U_new(Cell *box,Particle *thisParticle){
 }
 
 vec3 System::distance(vec3 r_new, vec3 r_old){
+    /*for displacement calculation*/
     vec3 dr = r_new-r_old;
     for(int i=0;i<3;i++) {
         if(dr(i) > L/2.0){

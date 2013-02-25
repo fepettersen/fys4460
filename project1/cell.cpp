@@ -32,6 +32,7 @@ vec3 Cell::distanceToCell(Cell *cell, double L){
     return dr;
 }
 int Cell::isincell(Particle *atom){
+    /*checks if an atom is in the cell*/
     int x = 0;
     int y = 0;
     int z = 0;
@@ -48,33 +49,12 @@ int Cell::isincell(Particle *atom){
     return (x+y+z)/3;
 }
 void Cell::addParticle(Particle *atom){
-//    cout << particles.capacity() << "  " << particles.size() << "   " << this->getCell_no() << endl;
+    /*adds an atom to a cell*/
     particles.push_back(atom);
 }
-/*
-void Cell::FindNeighbours(Cell *cell,double r_cut,double L,int j){
-    vec3 dr = zeros(3);
-    cout<<"Balle nummer "<<this->cell_no<<" har pos "<<this->pos<<endl;
-    int x,y,z;
-    x = y = z = 0;
-    dr = distanceToCell(cell,L);
-    if(dr(0)<=(cellLength+0.033)){
-        x=1;
-    }
-    if(dr(1)<=(cellLength+0.033)){
-        y=1;
-    }
-    if(dr(2)<=(cellLength+0.033)){
-        z=1;
-    }
-    if((x+y+z)/3){
-        neighbours[j] = cell->getCell_no();
-    }
 
-
-}
-*/
 void Cell::FindNeighbours(Cell *cell,double L,int j){
+    /*I dont think I am using this... dont think it works*/
     vec3 dr = cell->getPos()-pos;
     for(int i=0;i<3;i++) {
         if(dr(i) > L/2.0){

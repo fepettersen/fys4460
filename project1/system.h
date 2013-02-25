@@ -1,7 +1,13 @@
 
 #ifndef SYSTEM_H
 #define SYSTEM_H
-
+/*
+  The system object updates and keeps track of the cells and the particles.
+  Though it has a lot of values, theese are mostly service values. The system
+  constructor takes in an int value ncells which is NOT the number of cells
+  (the number of cells is calculated from r_cut which is the cutoff lenght).
+  The number of particles in the system is 4*pow(ncells,3).
+  */
 class System
 {
 public:

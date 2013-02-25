@@ -19,6 +19,7 @@ Particle::Particle()
     };
 char *Particle::getpos()
 {
+    /*for pretty output*/
     char* buffer = new char[60];
     sprintf(buffer, "%.12g  %.12g  %.12g", r(0), r(1), r(2));
     return buffer;
@@ -26,23 +27,27 @@ char *Particle::getpos()
 
 char *Particle::getvel()
 {
+    /*for pretty output*/
     char* buffer = new char[60];
     sprintf(buffer, "%.12g  %.12g  %.12g", v(0), v(1), v(2));
     return buffer;
 }
 char *Particle::getForce()
 {
+    /*for pretty output*/
     char* buffer = new char[60];
     sprintf(buffer, "%.12g  %.12g  %.12g", F(0), F(1), F(2));
     return buffer;
 }
 void Particle::checkpos(double L){
+    /*ensures particles stay in a reasonable place*/
     r(0) = fmod(r(0),L) + L*(r(0) < 0);
     r(1) = fmod(r(1),L) + L*(r(1) < 0);
     r(2) = fmod(r(2),L) + L*(r(2) < 0);
 }
 
 vec3 Particle::distanceToAtom(Particle *atom, double L) {
+    /*distance between the atom you are and another*/
     vec3 dr = atom->r-r;
     for(int i=0;i<3;i++) {
         if(dr(i) > L/2.0){
@@ -59,6 +64,7 @@ vec3 Particle::distanceToAtom(Particle *atom, double L) {
     return dr;
 }
 vec3 Particle::NewdistanceToAtom(Particle *atom, double cell_length, double L) {
+    /*dont think I am using this...*/
     vec3 dr = atom->r-r;
     for(int i=0;i<3;i++) {
         if(fabs(dr(i))> 2*cell_length){
@@ -72,7 +78,7 @@ vec3 Particle::NewdistanceToAtom(Particle *atom, double cell_length, double L) {
     return dr;
 }
 char *Particle::distanceMoved(){
-//    vec3 g = delta_r-r0;
+    /*for pretty output*/
     char* buffer = new char[60];
     sprintf(buffer, "%.12g  %.12g  %.12g", delta_r(0), delta_r(1), delta_r(2));
     return buffer;
