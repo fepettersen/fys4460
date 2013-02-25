@@ -5,7 +5,7 @@ using namespace arma;
 
 int main(/*int argc, char** argv*/)
 {
-    int thermostat = 0;
+    int thermostat = 1;
     int ncells = 12;
     int counter = 0;
     double T = 119.8/119.8;

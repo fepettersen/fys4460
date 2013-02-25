@@ -85,10 +85,16 @@ class Data():
 		pressure = results[:,1]
 		return meanr2,pressure
 
-	def makeplot(self,vector, y_label= "",x_label = "timestep number"):
+	def makeplot(self,vector,other=None, y_label= "",x_label = "timestep number"):
+		
+		if other is not None:
+			against = other 
+		else:
+			against = range(len(vector))
+
 		fig3 = mpl.figure()
 		a3 = fig3.add_subplot(111)
-		a3.plot(range(len(vector)),vector)
+		a3.plot(against,vector)
 		a3.set_xlabel(x_label)
 		a3.set_ylabel(y_label)
 		return fig3, a3
