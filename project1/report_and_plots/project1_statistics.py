@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
-
+'''
 makeplot = False
 x_plot = False
 y_plot = False
@@ -116,4 +116,3 @@ plt.plot(x,np.zeros(len(x)))
 plt.xlabel('r [in \sigma]')
 plt.ylabel('U(r)')
 plt.show()
-'''

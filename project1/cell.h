@@ -1,11 +1,14 @@
 #ifndef CELL_H
 #define CELL_H
-#include "project1.h"
-#include "particle.h"
-#include <vector>
-#include <list>
-//#include <armadillo>
-
+/*
+  Each cell object has:
+    a vec3 position which defines where it is in the system
+    a cell number which is simply an int ID
+    an std-vector of particle-poiters which are the particles within the cell
+    an int-array containing the cellnumber of all 26 neighbours
+    a cell-length value
+    a vec3 pos2 which is the position divided by the cell-length (debugging)
+  */
 class Cell
 {
 public:
@@ -16,20 +19,26 @@ public:
     arma::vec3 getPos(){return pos;}
     void setPos(arma::vec3 Newpos){pos = Newpos;}
     arma::vec3 distanceToCell(Cell *cell,double L);
-    int isincell(Particle *atom,double r_cut);
+    int isincell(Particle *atom);
     void addParticle(Particle *atom);
-    void FindNeighbours(Cell *cell,double r_cut,double L,int j);
+    void FindNeighbours(Cell *cell, double L, int j);
+    void setLenght(double length){cellLength = length;}
+    double getLength(){return cellLength;}
+
     /*values*/
     int *neighbours;
-//    std::vector<Particle*> particles;
-    std::list<Particle*> particles;
+    int number_of_neighbours;
+    std::vector<Particle*> particles;
+    arma::vec3 pos2;
+
 private:
     /*Methods*/
 
     /*values*/
     int cell_no;
+    double cellLength;
     arma::vec3 pos;
 
 };
 
-#endif // INTEGRATOR_MD_H
+#endif // CELL_H

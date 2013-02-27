@@ -1,29 +1,35 @@
 /*
 Headerfile for diffusion porject
 */
+#ifndef PROJECT1_H
+#define PROJECT1_H
 
-#include <cstdlib>
+
+
 #include <omp.h>
-#include <armadillo>
 #include <cmath>
+
 #include <iostream>
 #include <iomanip>
-#include <time.h>
-#include <fstream>
 #include <vector>
+#include <fstream>
+
+#include <time.h>
+#include <armadillo>
 
 /*from lib.h*/
-#include <new>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+//#include <cstring>
+
+
+#include "particle.h"
+#include "cell.h"
+#include "system.h"
 
 
 //using namespace std;
 //using namespace arma;
 
 
-#ifndef PROJECT1_H
-#define PROJECT1_H
+
 
 #endif // PROJECT1_H
