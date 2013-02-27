@@ -5,10 +5,11 @@ using namespace arma;
 
 int main(/*int argc, char** argv*/)
 {
-    int thermostat = 1;
-    int ncells = 12;
+    int thermostat = 0;
+    int ncells = 10;
     int counter = 0;
-    double T = 119.8/119.8;
+    double T_kelvin = 119;
+    double T = T_kelvin/119.8;
 
     /*some time stuff*/
     double time = 0;
@@ -17,11 +18,11 @@ int main(/*int argc, char** argv*/)
     System test(ncells,int (Time_end/dt),T);
 
     /*loop over time and evolve system*/
-//    test.output(counter);
     while(time<Time_end){
         test.update_all(dt);
         if(time < dt*100 && thermostat){
-            test.BerendsenThermostat();
+//            test.BerendsenThermostat();
+            test.AndersenThermostat(dt);
         }
         test.output(counter);
         test.mean_square(counter);
@@ -29,7 +30,7 @@ int main(/*int argc, char** argv*/)
         counter ++;
     }
     test.outputMeanSquare();
-    cout << "it works" << endl;
+    cout << "simulation finished" << endl;
     return 0;
 }
 

@@ -21,9 +21,9 @@
 \maketitle
 
 \newpage
-\begin{abstract}
-In this project we will look at a simple linear second order differential equation.
-\end{abstract}
+% \begin{abstract}
+% In this project we will modell a collection of interacting Argon atoms confined in a box.\\
+% \end{abstract}
 \tableofcontents
 \newpage
 
@@ -107,12 +107,13 @@ Listed below are some plots of temperature and total energy for a few simulation
 difference in the mean square of the total displacement of an atom from before implementing the 
 Berendsen thermostat to after this is implemented (figures \ref{displacement_750K} and 
 \ref{displacement_300K_berendsen})
+
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{plot_energy_8cells_T750.png}
-\caption{Temperature of a system of 2048 particles starting out at $T=750K \simeq 6$ in MD 
+\caption{Total energy of a system of 2048 particles starting out at $T=750K \simeq 6$ in MD 
 units. $\Delta t = 0.005$}
-\label{distribution}
+\label{energy_750K}
 \end{figure}
 
 \begin{figure}[H]
@@ -120,7 +121,7 @@ units. $\Delta t = 0.005$}
 \includegraphics[scale=0.5]{plot_temperature_8cells_T750.png}
 \caption{Temperature of a system of 2048 particles starting out at $T=750K \simeq 6$ in MD 
 units.$\Delta t = 0.005$}
-\label{distribution}
+\label{temperature_750K}
 \end{figure}
 
 \begin{figure}[H]
@@ -136,14 +137,15 @@ is proportional to the Diffusion constant. Simulation of 2048 atoms, $T_0=750K$,
 \includegraphics[scale=0.5]{plot_energy_16cells_T300K_thermostat.png}
 \caption{Temperature of a system of 16384 particles starting out at $T=300K \simeq 2.5$ in 
 MD units using the Berendsen thermostat. $\Delta t = 0.005$}
-\label{distribution}
+\label{energy_300K_berendsen}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{plot_temperature_16cells_T300K_thermostat.png}
-\caption{Temperature of a system of 16384 particles starting out at $T=300K \simeq 2.5$ in MD units using the Berendsen thermostat. $\Delta t = 0.005$}
-\label{distribution}
+\caption{Temperature of a system of 16384 particles starting out at $T=300K \simeq 2.5$ in MD units 
+using the Berendsen thermostat. $\Delta t = 0.005$}
+\label{temperature_300K_berendsen}
 \end{figure}
 
 \begin{figure}[H]
@@ -153,7 +155,28 @@ MD units using the Berendsen thermostat. $\Delta t = 0.005$}
 is proportional to the Diffusion constant. Simulation of 16384 atoms, $T_0=300K$, Berendsen thermostat.}
 \label{displacement_300K_berendsen}
 \end{figure}
+The following figures are the results of a simulation where the Andersen thermostat was implemented.
 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{plot_meansquare_16cells_T200_andersen.png}
+\caption{RMS of the total displacement from initial position. The slope of the graph 
+is proportional to the Diffusion constant. Simulation of 16384 atoms, $T_0=200K$, Andersen thermostat.}
+\label{displacement_300K_andersen}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{plot_temperature_16cells_T200K_andersen.png}
+\caption{RMS of the total displacement from initial position. The slope of the graph 
+is proportional to the Diffusion constant. Simulation of 16384 atoms, $T_0=200K$, Andersen thermostat.}
+\label{temperature_200K_andersen}
+\end{figure}
+There is a considerable difference between the $T(t)$ graphs using the Berendsen and the Andersen thermostat. 
+I think it is a bit weird thatthe temperature drops once the thermostat is turned off (at 100 timesteps). 
+There might be some problem with my implementation.\\
+
+The radial distribution of particles is found by 
 \section{Stability and precision}
 We notice that the system ``creates'' some energy during the simulation. This is of course 
 a non-physical artifact which depends on how large $\Delta t$ we use compared to the forces 

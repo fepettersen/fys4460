@@ -1,6 +1,14 @@
 #ifndef CELL_H
 #define CELL_H
-
+/*
+  Each cell object has:
+    a vec3 position which defines where it is in the system
+    a cell number which is simply an int ID
+    an std-vector of particle-poiters which are the particles within the cell
+    an int-array containing the cellnumber of all 26 neighbours
+    a cell-length value
+    a vec3 pos2 which is the position divided by the cell-length (debugging)
+  */
 class Cell
 {
 public:

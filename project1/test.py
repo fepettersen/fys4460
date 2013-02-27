@@ -13,7 +13,7 @@ stop = new.ntimesteps
 yolo = numpy.zeros(stop-start)
 rofl = numpy.zeros(stop-start)
 #swag = numpy.zeros(stop-start)
-
+'''
 for i in xrange(start,stop):
 	yolo[i] = new.energy(i)
 	rofl[i] = new.temperature()
@@ -24,7 +24,7 @@ for i in xrange(start,stop):
 
 fig1,a1 = new.makeplot(yolo,y_label="energy")
 fig2,a2 = new.makeplot(rofl,y_label = "temperature")
-'''
+
 something = 0
 for i in xrange(start,stop):
 	something = new.energy(i)
@@ -34,8 +34,12 @@ for i in xrange(start,stop):
 fig1,a1 = new.makeplot(yolo,y_label = "kinetic energy")
 fig2,a2 = new.makeplot(rofl,y_label = "potential energy")
 '''
+
+
+new.radial_distribution(260,330,61)
+'''
 vec,pressure = new.DiffusionConstant(\
-	"total_movement_ncells12_T119K_therm.txt")
+	"total_movement_.txt")
 fig3,a3 = new.makeplot(vec, y_label = "mean square stuff")
 volume = (5.260/3.405)*16
 rho = new.nparticles/volume
@@ -50,4 +54,4 @@ fig3,a3 = new.makeplot(pressure[100:],other = rofl[100:], \
 #Put in class!!!
 
 #resultfiles/total_movement_ncells16_T300K_therm.txt
-plt.show()
+plt.show()'''

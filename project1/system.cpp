@@ -195,6 +195,7 @@ void System::update(double dt){
 
     }
 }
+
 void System::update_all(double dt){
     /*The update function using cells and neighbours*/
     U = 0;
@@ -272,6 +273,17 @@ void System::BerendsenThermostat(){
     }
 }
 
+void System::AndersenThermostat(double dt){
+    /*rescales the velocities aff all atoms*/
+    double tau = dt/10;
+    double T_bath = sqrt(T);
+    vec random_number = randu<vec>(particles);
+    for(int i=0; i<particles;i++){
+        if(tau<random_number(i)){
+            particle[i].v = T_bath*randn<vec>(3);
+        }
+    }
+}
 /*Helper functions*/
 
 vec3 System::force(vec dr){

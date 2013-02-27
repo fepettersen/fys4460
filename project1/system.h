@@ -30,6 +30,7 @@ public:
     void mean_square(int nr);
     void outputMeanSquare();
     void BerendsenThermostat();
+    void AndersenThermostat(double dt);
 
     arma::vec3 distance(arma::vec3 r_new, arma::vec3 r_old);
     arma::mat res;

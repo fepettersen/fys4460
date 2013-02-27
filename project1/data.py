@@ -14,6 +14,10 @@ class Data():
 		self.std = [0 for i in range(4)]
 		self.v = np.zeros((self.nparticles,3))
 		self.r = np.zeros((self.nparticles,3))
+		#tmp2 = self.tmp[3].split()[1:4]
+		#tmp3 = self.tmp[4].split()[1:4]
+		self.b = 5.260/3.405#[float(tmp3[y])-float(tmp2[y]) for y in range(3)]
+		#print self.b
 		
 
 	def getResults(self,timestep_no):
@@ -108,3 +112,22 @@ class Data():
 		a.set_ylabel('Probability')
 		a.grid(True)
 		return fig,a
+
+	def radial_distribution(self,start,stop,n):
+		r_max = 0.5*self.b*(self.nparticles/4)**(1/3.0)
+		zones = np.linspace(0,r_max,n)
+		print zones
+		counter = np.zeros(n)
+		for s in xrange(stop-start):
+			self.getResults(start+s)
+			for i in xrange(self.nparticles):
+				r =np.linalg.norm(self.r[i,:],2)
+				#r = self.r[i,0]
+				for j in xrange(1,n,1):
+					if (r-zones[j])<0 and (r-zones[j-1])>=0:
+						counter[j-1]+=1
+		counter /= (stop-start)
+		print np.sum(counter), "  ", self.nparticles
+		fig,a = self.makeplot(counter,zones,x_label="position",\
+			y_label="number of particles")
+		mpl.show()

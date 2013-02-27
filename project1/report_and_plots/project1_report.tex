@@ -21,9 +21,9 @@
 \maketitle
 
 \newpage
-\begin{abstract}
-In this project we will look at a simple linear second order differential equation.
-\end{abstract}
+% \begin{abstract}
+% In this project we will modell a collection of interacting Argon atoms confined in a box.\\
+% \end{abstract}
 \tableofcontents
 \newpage
 
@@ -143,7 +143,8 @@ MD units using the Berendsen thermostat. $\Delta t = 0.005$}
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{plot_temperature_16cells_T300K_thermostat.png}
-\caption{Temperature of a system of 16384 particles starting out at $T=300K \simeq 2.5$ in MD units using the Berendsen thermostat. $\Delta t = 0.005$}
+\caption{Temperature of a system of 16384 particles starting out at $T=300K \simeq 2.5$ in MD units 
+using the Berendsen thermostat. $\Delta t = 0.005$}
 \label{temperature_300K_berendsen}
 \end{figure}
 
@@ -153,6 +154,43 @@ MD units using the Berendsen thermostat. $\Delta t = 0.005$}
 \caption{RMS of the total displacement from initial position. The slope of the graph 
 is proportional to the Diffusion constant. Simulation of 16384 atoms, $T_0=300K$, Berendsen thermostat.}
 \label{displacement_300K_berendsen}
+\end{figure}
+The following figures are the results of a simulation where the Andersen thermostat was implemented.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{plot_meansquare_16cells_T200_andersen.png}
+\caption{RMS of the total displacement from initial position. The slope of the graph 
+is proportional to the Diffusion constant. Simulation of 16384 atoms, $T_0=200K$, Andersen thermostat.}
+\label{displacement_300K_andersen}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{plot_temperature_16cells_T200K_andersen.png}
+\caption{RMS of the total displacement from initial position. The slope of the graph 
+is proportional to the Diffusion constant. Simulation of 16384 atoms, $T_0=200K$, Andersen thermostat.}
+\label{temperature_200K_andersen}
+\end{figure}
+There is a considerable difference between the $T(t)$ graphs using the Berendsen and the Andersen thermostat. 
+I think it is a bit weird thatthe temperature drops once the thermostat is turned off (at 100 timesteps). 
+There might be some problem with my implementation.\\
+
+The radial distribution of particles is found by dividing the area where $r\in[0,{L\over2}$ into subsections, 
+and counting the paritcles in theese regions. As an added ``safety'' we average this over some timesteps.
+
+\begin{figure}[H]
+\centering
+ \includegraphics[scale=0.6]{plot_radial_ncells10_T119K.png}
+ \caption{Radial distribution of atoms for a crystal structure. Simulation with 4000 particles and no thermostat.}
+ \label{radial_10cells}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+ \includegraphics[scale=0.6]{plot_radial_ncells12_T200K_andersen.png}
+ \caption{Radial distribution of atoms for a liquid phase. Simulation with 6912 particles and Andersen thermostat.}
+ \label{radial_12cells}
 \end{figure}
 
 \section{Stability and precision}
