@@ -6,7 +6,7 @@ using namespace arma;
 int main(/*int argc, char** argv*/)
 {
     int thermostat = 0;
-    int ncells = 10;
+    int ncells = 16;
     int counter = 0;
     double T_kelvin = 250;
     double T = T_kelvin/119.8;

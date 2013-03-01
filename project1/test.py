@@ -13,6 +13,7 @@ stop = new.ntimesteps
 yolo = numpy.zeros(stop-start)
 rofl = numpy.zeros(stop-start)
 #swag = numpy.zeros(stop-start)
+'''
 
 for i in xrange(start,stop):
 	yolo[i] = new.energy(i)
@@ -33,7 +34,6 @@ for i in xrange(start,stop):
 
 fig1,a1 = new.makeplot(yolo,y_label = "kinetic energy")
 fig2,a2 = new.makeplot(rofl,y_label = "potential energy")
-'''
 
 '''
 new.radial_distribution(260,330,61)

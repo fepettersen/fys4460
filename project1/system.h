@@ -40,7 +40,7 @@ public:
     double r_cut;
 private:
     /*Methods*/
-    arma::vec3 force(arma::vec dr, double *U_thread, double *p_thread);
+    arma::vec3 force(arma::vec dr, double &U_thread, double &p_thread);
 
     /*values*/
     int particles;
