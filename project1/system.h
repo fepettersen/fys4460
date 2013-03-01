@@ -25,7 +25,7 @@ public:
     void accept();
     void setupCells();
     void update_all(double dt);
-    arma::vec3 grad_U_new(Cell *box, Particle *thisParticle, double *U_thread, double *p_thread);
+    arma::vec3 grad_U_new(Cell *box, Particle *thisParticle, double &U_thread, double &p_thread);
     void PlaceInCells();
     void mean_square(int nr);
     void outputMeanSquare();

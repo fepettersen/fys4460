@@ -38,22 +38,28 @@ void System::Initialize()
 
     /*Calculate forces for the first timestep*/
     int n;
-    double U_thread = 0;
-    double p_thread = 0;
-#pragma omp parallel for private(p_thread,U_thread)
+
+#pragma omp parallel
+    {
+        double U_thread = 0;
+        double p_thread = 0;
+
+#pragma omp for// private(p_thread,U_thread)
     for(int j=0; j<cells;j++){
         for(vector<Particle*>::iterator it1 = cell[j]->particles.begin(); it1 != cell[j]->particles.end(); it1++){
-            (*it1)->F = grad_U_new(cell[j],*it1,&U_thread, &p_thread);
+            (*it1)->F = grad_U_new(cell[j],*it1,U_thread, p_thread);
             for(int k=0; k<cell[j]->number_of_neighbours;k++){
                 n = cell[j]->neighbours[k];
-                (*it1)->F += grad_U_new(cell[n],*it1,&U_thread,&p_thread);
+                (*it1)->F += grad_U_new(cell[n],*it1,U_thread,p_thread);
             }
         }
     }
 #pragma omp critical
+    {
     pressure += p_thread;
     potential += U_thread;
-
+    }
+    }
 }
 
 void System::InitializePositions(){
@@ -224,22 +230,29 @@ void System::update_all(double dt){
     accept();
     PlaceInCells();
     /*Calculates the forces*/
-    double U_thread =0; double p_thread = 0;
-        #pragma omp parallel for private(U_thread,p_thread)
-    for(int j=0; j<cells;j++){
-        for(vector<Particle*>::iterator it1 = cell[j]->particles.begin(); it1 != cell[j]->particles.end(); it1++){
-            (*it1)->F = grad_U_new(cell[j],*it1,&U_thread, &p_thread);
-            for(int k=0; k<cell[j]->number_of_neighbours;k++){
-                n = cell[j]->neighbours[k];
-                (*it1)->F += grad_U_new(cell[n],*it1,&U_thread,&p_thread);
-            }
-            (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
-        }
-    }
-#pragma omp critical
+
+#pragma omp parallel
     {
-    potential +=  U_thread;
-    pressure += p_thread;
+        double U_thread =0;
+        double p_thread = 0;
+#pragma omp for //private(U_thread,p_thread)
+        for(int j=0; j<cells;j++){
+            for(vector<Particle*>::iterator it1 = cell[j]->particles.begin(); it1 != cell[j]->particles.end(); it1++){
+                (*it1)->F = grad_U_new(cell[j],*it1,U_thread, p_thread);
+                for(int k=0; k<cell[j]->number_of_neighbours;k++){
+                    n = cell[j]->neighbours[k];
+                    (*it1)->F += grad_U_new(cell[n],*it1,U_thread,p_thread);
+                }
+                (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
+            }
+//            cout<<"potential: "<<U_thread<<endl;
+        }
+#pragma omp critical
+        {
+            potential +=  U_thread;
+            pressure += p_thread;
+//            cout<<"potential "<<U_thread<<" total "<<potential<<endl;
+        }
     }
 }
 
@@ -326,7 +339,7 @@ vec3 System::force(vec dr,double &U_thread, double &p_thread){
 //    return -F;
 //}
 
-vec3 System::grad_U_new(Cell *box,Particle *thisParticle,double *U_thread,double *p_thread){
+vec3 System::grad_U_new(Cell *box,Particle *thisParticle,double &U_thread,double &p_thread){
     /*calculates sum F on an atom from all atoms in a cell*/
     vec3 F = zeros(3);
     for(vector<Particle*>::iterator it2 = box->particles.begin(); it2 != box->particles.end(); it2++){
