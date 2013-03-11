@@ -1,8 +1,8 @@
 /*
-Headerfile for diffusion porject
+Headerfile for advanced md project
 */
-#ifndef PROJECT1_H
-#define PROJECT1_H
+#ifndef PROJECT2_H
+#define PROJECT2_H
 
 
 
@@ -21,9 +21,9 @@ Headerfile for diffusion porject
 //#include <cstring>
 
 
-#include "particle.h"
-#include "cell.h"
-#include "system.h"
+#include "particle2.h"
+#include "cell2.h"
+#include "system2.h"
 
 
 //using namespace std;
@@ -32,4 +32,4 @@ Headerfile for diffusion porject
 
 
 
-#endif // PROJECT1_H
+#endif // PROJECT2_H

@@ -11,7 +11,7 @@ System::System(int ncells, int Timesteps, double Temperature)
     timesteps = Timesteps;
     T = Temperature;
     particles = 4*ncells*ncells*ncells;
-    b = 5.260/3.405; //Aangstroms
+    b = 5.72/3.405; //Aangstroms 5.260
     L = ncells*b;
     r_cut = 3;
     Ncells = ncells;
@@ -192,23 +192,6 @@ void System::setupCells(){
 
 /*Updaters*/
 
-//void System::update(double dt){
-//    /*The brute force function - no cells*/
-//    for(int i=0; i<particles; i++){
-//        particle[i].v = particle[i].v + particle[i].F*(dt/2.0);
-//        particle[i].r_tmp = particle[i].r +particle[i].v*dt;
-
-//        if(i==0){
-//            cout << particle[i].F << endl;
-//        }
-//    }
-//    accept();
-//    for(int i=0;i<particles;i++){
-//        particle[i].F = grad_U(i);
-//        particle[i].v = particle[i].v + particle[i].F*(dt/2.0);
-
-//    }
-//}
 
 void System::update_all(double dt){
     /*The update function using cells and neighbours*/
@@ -241,16 +224,16 @@ void System::update_all(double dt){
         mat thread_forces = zeros(3,particles);
 #pragma omp for schedule(static,4)
         for(int j=0; j<cells;j++){
-            cout<<"j = "<<j<<endl;
+//            cout<<"j = "<<j<<endl;
             for(it1 = cell[j]->particles.begin(); it1 != cell[j]->particles.end(); it1++){
-                thread_forces.col((*it1)->sysIndex) += grad_U_new(cell[j], *it1, U_thread, p_thread);
-//                (*it1)->F = grad_U_new(cell[j],*it1,U_thread, p_thread);
+//                thread_forces.col((*it1)->sysIndex) += grad_U_new(cell[j], *it1, U_thread, p_thread);
+                (*it1)->F = grad_U_new(cell[j],*it1,U_thread, p_thread);
                 for(int k=0; k<cell[j]->number_of_neighbours;k++){
                     n = cell[j]->neighbours[k];
-                    thread_forces.col((*it1)->sysIndex) += grad_U_new(cell[n],*it1,U_thread,p_thread);
-//                    (*it1)->F += grad_U_new(cell[n],*it1,U_thread,p_thread);
+//                    thread_forces.col((*it1)->sysIndex) += grad_U_new(cell[n],*it1,U_thread,p_thread);
+                    (*it1)->F += grad_U_new(cell[n],*it1,U_thread,p_thread);
                 }
-//                (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
+                (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
             }
         }
 #pragma omp critical
@@ -261,10 +244,10 @@ void System::update_all(double dt){
             //            cout<<"potential "<<U_thread<<" total "<<potential<<endl;
         }
     }
-    for(int i=0;i<particles;i++){
-        particle[i].F = forces.col(particle[i].sysIndex);
-        particle[i].v = particle[i].v + particle[i].F*(dt/2.0);
-    }
+//    for(int i=0;i<particles;i++){
+//        particle[i].F = forces.col(particle[i].sysIndex);
+//        particle[i].v = particle[i].v + particle[i].F*(dt/2.0);
+//    }
 
 }
 
@@ -323,6 +306,18 @@ void System::AndersenThermostat(double dt){
         }
     }
 }
+
+void System::Cylinder(double radius){
+    double R = radius/(3.405e-10); //Remember to give radius in meters
+    double pos_R = L/2.0;
+    string newtype = "Stationary";
+    for(int i =0; i<particles;i++){
+        if(fabs(pos_R - particle[i].r(0))>R && fabs(pos_R - particle[i].r(1))>R){
+            particle[i].settype(newtype);
+        }
+    }
+}
+
 /*Helper functions*/
 
 vec3 System::force(vec dr,double &U_thread, double &p_thread){
@@ -339,17 +334,6 @@ vec3 System::force(vec dr,double &U_thread, double &p_thread){
     return  F;
 }
 
-//vec3 System::grad_U(int i){
-//    /*from brute force version. caculates sum F on a particle*/
-//    vec3 F = zeros(3);
-//    for(int j=0;j<i;j++){
-//        F += force(particle[i].distanceToAtom(&particle[j],L));
-//    }
-//    for(int j=i+1;j<particles;j++){
-//        F += force(particle[i].distanceToAtom(&particle[j],L));
-//    }
-//    return -F;
-//}
 
 vec3 System::grad_U_new(Cell *box,Particle *thisParticle,double &U_thread,double &p_thread){
     /*calculates sum F on an atom from all atoms in a cell*/

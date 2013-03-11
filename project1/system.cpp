@@ -11,7 +11,7 @@ System::System(int ncells, int Timesteps, double Temperature)
     timesteps = Timesteps;
     T = Temperature;
     particles = 4*ncells*ncells*ncells;
-    b = 5.260/3.405; //Aangstroms
+    b = 5.72/3.405; //Aangstroms 5.260
     L = ncells*b;
     r_cut = 3;
     Ncells = ncells;
@@ -241,7 +241,7 @@ void System::update_all(double dt){
         mat thread_forces = zeros(3,particles);
 #pragma omp for schedule(static,4)
         for(int j=0; j<cells;j++){
-            cout<<"j = "<<j<<endl;
+//            cout<<"j = "<<j<<endl;
             for(it1 = cell[j]->particles.begin(); it1 != cell[j]->particles.end(); it1++){
                 thread_forces.col((*it1)->sysIndex) += grad_U_new(cell[j], *it1, U_thread, p_thread);
 //                (*it1)->F = grad_U_new(cell[j],*it1,U_thread, p_thread);
@@ -323,6 +323,64 @@ void System::AndersenThermostat(double dt){
         }
     }
 }
+
+void System::Cylinder(double radius){
+    double R = radius/3.405;
+    string newtype = "Stargon";
+    double r = 0;
+    double rx = 0;
+    double ry = 0;
+    for(int i = 0; i<particles; i++){
+        rx = L/2.0 - particle[i].r(0);
+        ry = L/2.0 - particle[i].r(1);
+        r = sqrt(rx*rx+ry*ry);
+        if(fabs(r)>R){
+            particle[i].settype(newtype);
+        }
+    }
+    ofstream new_outfile;
+    new_outfile.open("Setup.xyz");
+    new_outfile<<particles<<endl;
+    new_outfile<<"Commentline for comments"<<endl;
+    for(int i=0; i<particles; i++) {
+        new_outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<" "<<particle[i].getvel()
+              <<" "<<particle[i].cellID<<"  "<<particle[i].getForce()<<"  "<<endl;
+    }
+    new_outfile.close();
+}
+
+void System::Spheres(int numSpheres, double rmin, double rmax){
+    rmin /= 3.405;
+    rmax /= 3.405;
+    string newtype = "Stargon";
+    mat positions = rmin + (L-rmin)*randu<mat>(3,numSpheres);
+    vec radii = rmin + (rmax-rmin)*randu<vec>(numSpheres);
+    positions.print("positions");
+    radii.print("radii");
+    double R = 0;
+    double r, rx,ry,rz;
+    for(int j = 0; j<numSpheres;j++){
+        for(int i=0; i<particles;i++){
+            rx = positions(0,j) - particle[i].r(0);
+            ry = positions(1,j) - particle[i].r(1);
+            rz = positions(2,j) - particle[i].r(2);
+            r = sqrt(rx*rx + ry*ry + rz*rz);
+            if(r > radii[j]){
+                particle[i].settype(newtype);
+            }
+        }
+    }
+    ofstream new_outfile;
+    new_outfile.open("Setup.xyz");
+    new_outfile<<particles<<endl;
+    new_outfile<<"Commentline for comments"<<endl;
+    for(int i=0; i<particles; i++) {
+        new_outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<" "<<particle[i].getvel()
+              <<" "<<particle[i].cellID<<"  "<<particle[i].getForce()<<"  "<<endl;
+    }
+    new_outfile.close();
+}
+
 /*Helper functions*/
 
 vec3 System::force(vec dr,double &U_thread, double &p_thread){
@@ -405,4 +463,13 @@ void System::output(int nr){
               <<" "<<particle[i].cellID<<"  "<<particle[i].getForce()<<"  "<<endl;
     }
       outfile.close();
+}
+
+void System::Input(){
+    string line;
+    ifstream infile ("Setup.xyz");
+    while (infile.good()){
+        getline(infile,line);
+        cout<<line<<endl;
+    }
 }

@@ -2,14 +2,15 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= qt
 
-SOURCES += main.cpp \
-    particle.cpp \
-    cell.cpp \
-    system.cpp
+SOURCES += \
+    cell2.cpp \
+    main2.cpp \
+    particle2.cpp \
+    system2.cpp
 
 HEADERS += \
-    particle.h \
-    cell.h \
-    system.h \
-    project2.h
+    project2.h \
+    cell2.h \
+    particle2.h \
+    system2.h
 

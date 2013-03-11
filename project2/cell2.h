@@ -1,5 +1,5 @@
-#ifndef CELL_H
-#define CELL_H
+#ifndef CELL2_H
+#define CELL2_H
 /*
   Each cell object has:
     a vec3 position which defines where it is in the system
@@ -41,4 +41,4 @@ private:
 
 };
 
-#endif // CELL_H
+#endif // CELL2_H

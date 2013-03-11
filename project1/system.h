@@ -31,6 +31,9 @@ public:
     void outputMeanSquare();
     void BerendsenThermostat();
     void AndersenThermostat(double dt);
+    void Cylinder(double radius);
+    void Spheres(int numSpheres, double rmin, double rmax);
+    void Input();
 
     arma::vec3 distance(arma::vec3 r_new, arma::vec3 r_old);
     arma::mat res;

@@ -1,5 +1,5 @@
-#ifndef PARTICLE_H
-#define PARTICLE_H
+#ifndef PARTICLE2_H
+#define PARTICLE2_H
 
 /*
   Each particle object has:
@@ -44,4 +44,4 @@ private:
 
 };
 
-#endif // PARTICLE_H
+#endif // PARTICLE2_H

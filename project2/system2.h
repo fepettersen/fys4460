@@ -1,6 +1,6 @@
 
-#ifndef SYSTEM_H
-#define SYSTEM_H
+#ifndef SYSTEM2_H
+#define SYSTEM2_H
 /*
   The system object updates and keeps track of the cells and the particles.
   Though it has a lot of values, theese are mostly service values. The system
@@ -14,7 +14,7 @@ public:
     /*Methods*/
     System(int ncells, int Timesteps,double Temperature);
     int getParticles(){return particles;}
-    void setBalle(int newParticles){particles = newParticles;}
+//    void setBalle(int newParticles){particles = newParticles;}
     void Initialize();
     void InitializePositions();
     void InitializeVelocities(double T);
@@ -31,6 +31,7 @@ public:
     void outputMeanSquare();
     void BerendsenThermostat();
     void AndersenThermostat(double dt);
+    void Cylinder(double radius);
 
     arma::vec3 distance(arma::vec3 r_new, arma::vec3 r_old);
     arma::mat res;
@@ -56,4 +57,4 @@ private:
     double T;
 };
 
-#endif // BALLE_H
+#endif // SYSTEM2_H
