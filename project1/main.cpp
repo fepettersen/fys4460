@@ -16,7 +16,7 @@ int main(/*int argc, char** argv*/)
     double Time_end = 1.0;
     double dt = 5e-3;
     System test(ncells,int (Time_end/dt),T);
-    test.Spheres(2,20,30);
+    test.Spheres(20,20,30);
 //    test.Input();
 //    /*loop over time and evolve system*/
 //    while(time<Time_end){

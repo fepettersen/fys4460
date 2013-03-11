@@ -365,8 +365,9 @@ void System::Spheres(int numSpheres, double rmin, double rmax){
             ry = positions(1,j) - particle[i].r(1);
             rz = positions(2,j) - particle[i].r(2);
             r = sqrt(rx*rx + ry*ry + rz*rz);
-            if(r > radii[j]){
+            if(r < radii[j]){
                 particle[i].settype(newtype);
+//                cout<<"balle"<<endl;
             }
         }
     }
@@ -468,6 +469,7 @@ void System::output(int nr){
 void System::Input(){
     string line;
     ifstream infile ("Setup.xyz");
+//    particle = new particle[infile ] //define a new array of particles the same lenght as the file -2
     while (infile.good()){
         getline(infile,line);
         cout<<line<<endl;
