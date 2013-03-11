@@ -1,5 +1,5 @@
 
-#include "project1.h"
+#include "project2.h"
 
 using namespace std;
 using namespace arma;
