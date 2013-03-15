@@ -477,7 +477,12 @@ void System::output(int nr){
 //    cout<<buffer<<endl;
     outfile.open(buffer,ios::binary);
     outfile<<particles<<endl;
-    outfile<<"Argon atoms using Lennard - Jones potential. timestep "<<nr<<"  "<<potential<<setprecision(12)<<endl;
+    if(nr==0){
+        outfile<<timesteps<<" Argon atoms using Lennard - Jones potential. timestes "<<nr<<"  "<<potential<<setprecision(12)<<endl;
+    }
+    else{
+        outfile<<"Argon atoms using Lennard - Jones potential. timestep "<<nr<<"  "<<potential<<setprecision(12)<<endl;
+    }
     for(int i=0;i<particles;i++){
         outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<" "<<particle[i].getvel()
               <<" "<<particle[i].cellID<<"  "<<particle[i].getForce()<<"  "<<endl;

@@ -4,13 +4,20 @@ import os
 class Data():
 	def __init__(self,resultfile):
 
-		infile = open(resultfile,"r")
+		extension = resultfile.split('.')[-1]
+		if extension == 'dat':
+			infile = open(resultfile,"rb")
+		else:
+			infile = open(resultfile,"r")
 
-#		infile.close()
 		self.nparticles = int(infile.readline())
-		length = os.stat(resultfile)
-		print length
-		self.ntimesteps = len(infile)/(self.nparticles+2)
+		#length = os.stat(resultfile)
+		dummy = infile.readline().split()
+		steps = dummy[0]
+		if steps == '0' or type(steps) == str:
+			steps = int(raw_input("Please provide number of timesteps:  "))
+
+		self.ntimesteps = steps
 		print self.ntimesteps
 		self.E_k = 0
 		self.U_tot = 0
@@ -20,11 +27,30 @@ class Data():
 		self.r = np.zeros((self.nparticles,3))
 		#tmp2 = self.tmp[3].split()[1:4]
 		#tmp3 = self.tmp[4].split()[1:4]
-		self.b = 5.720/3.405#[float(tmp3[y])-float(tmp2[y]) for y in range(3)]
-		#print self.b
+		b = dummy[1]
+		if type(b) != float:
+			b = float(raw_input("Please provide the lattice constant b not divided by sigma! :  "))
+			b /= 3.405
+		self.b = b
+		infile.close()
+		if extension == 'dat':
+			self.infile = open(resultfile,"rb")
+		else:
+			self.infile = open(resultfile,"r")
 		
 
 	def getResults(self,timestep_no):
+
+		self.infile.readline()
+		self.U_tot = float(self.infile.readline().split()[-1])
+		for i in xrange(self.nparticles):
+			tmp =self.infile.readline().split()
+			dummy = tmp[4:]
+			dummy2 = tmp[1:4]
+			for j in xrange(3):
+				self.v[i,j] = float(dummy[j])
+				self.r[i,j] = float(dummy2[j])
+		'''		
 		counter = 0
 		i= int(timestep_no*self.nparticles +2*(timestep_no+1))
 		spoc = timestep_no*(self.nparticles+2)+1
@@ -37,6 +63,7 @@ class Data():
 				self.r[counter,j] = float(dummy2[j])
 			i += 1
 			counter += 1
+		'''
 
 	def stats(self,x=False,y=False,z=False,all=False):
 		xx = 0
