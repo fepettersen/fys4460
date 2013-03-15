@@ -34,6 +34,7 @@ public:
     void Cylinder(double radius);
     void Spheres(int numSpheres, double rmin, double rmax);
     void Input();
+    void AdjustDensity(double factor);
 
     arma::vec3 distance(arma::vec3 r_new, arma::vec3 r_old);
     arma::mat res;

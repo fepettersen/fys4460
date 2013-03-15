@@ -8,6 +8,9 @@ using namespace arma;
 /* Initializers*/
 System::System(int ncells, int Timesteps, double Temperature)
 {
+//    bool StartFromInput = true;
+//    bool rescale = true;
+//    double factor = 2.0;
     timesteps = Timesteps;
     T = Temperature;
     particles = 4*ncells*ncells*ncells;
@@ -15,6 +18,16 @@ System::System(int ncells, int Timesteps, double Temperature)
     L = ncells*b;
     r_cut = 3;
     Ncells = ncells;
+
+//    if(StartFromInput){
+//        ifstream infile ("Setup.xyz");
+//        string line;
+//        getline(infile,line);
+//        particles =  atoi(line.c_str());
+//    }
+//    if(rescale){
+//        L*=factor;
+//    }
     xcells = L/r_cut;
     cells = xcells*xcells*xcells;
     particle = new Particle[particles];
@@ -215,23 +228,24 @@ void System::update_all(double dt){
     U = 0;
     pressure = 0;
     potential = 0;
-
+    string type = "Ar";
 
 #pragma omp parallel for
     for(int a=0;a<cells;a++){
         for(vector<Particle*>::iterator it1 = cell[a]->particles.begin(); it1 != cell[a]->particles.end(); it1++){
             /*SRSLY you guys, I hate you guys so much!*/
             /*Legg en god forklaring paa dette et setd!*/
-            (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
-            (*it1)->r_tmp = (*it1)->r + (*it1)->v*dt;
-            (*it1)->delta_r += distance((*it1)->r_tmp,(*it1)->r);   //Calculate total displacement from initial pos
+            if((*it1)->gettype()==type){
+                (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
+                (*it1)->r_tmp = (*it1)->r + (*it1)->v*dt;
+                (*it1)->delta_r += distance((*it1)->r_tmp,(*it1)->r);   //Calculate total displacement from initial pos
+            }
         }
     }
     accept();
     PlaceInCells();
     /*Calculates the forces*/
     mat forces = zeros(3,particles);
-
 #pragma omp parallel
     {
         vector<Particle*>::iterator it1 ;
@@ -243,14 +257,16 @@ void System::update_all(double dt){
         for(int j=0; j<cells;j++){
 //            cout<<"j = "<<j<<endl;
             for(it1 = cell[j]->particles.begin(); it1 != cell[j]->particles.end(); it1++){
-                thread_forces.col((*it1)->sysIndex) += grad_U_new(cell[j], *it1, U_thread, p_thread);
-//                (*it1)->F = grad_U_new(cell[j],*it1,U_thread, p_thread);
-                for(int k=0; k<cell[j]->number_of_neighbours;k++){
-                    n = cell[j]->neighbours[k];
-                    thread_forces.col((*it1)->sysIndex) += grad_U_new(cell[n],*it1,U_thread,p_thread);
-//                    (*it1)->F += grad_U_new(cell[n],*it1,U_thread,p_thread);
+//                thread_forces.col((*it1)->sysIndex) += grad_U_new(cell[j], *it1, U_thread, p_thread);
+                if((*it1)->gettype() == type){
+                    (*it1)->F = grad_U_new(cell[j],*it1,U_thread, p_thread);
+                    for(int k=0; k<cell[j]->number_of_neighbours;k++){
+                        n = cell[j]->neighbours[k];
+//                        thread_forces.col((*it1)->sysIndex) += grad_U_new(cell[n],*it1,U_thread,p_thread);
+                        (*it1)->F += grad_U_new(cell[n],*it1,U_thread,p_thread);
+                    }
+                    (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
                 }
-//                (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
             }
         }
 #pragma omp critical
@@ -261,10 +277,10 @@ void System::update_all(double dt){
             //            cout<<"potential "<<U_thread<<" total "<<potential<<endl;
         }
     }
-    for(int i=0;i<particles;i++){
-        particle[i].F = forces.col(particle[i].sysIndex);
-        particle[i].v = particle[i].v + particle[i].F*(dt/2.0);
-    }
+//    for(int i=0;i<particles;i++){
+//        particle[i].F = forces.col(particle[i].sysIndex);
+//        particle[i].v = particle[i].v + particle[i].F*(dt/2.0);
+//    }
 
 }
 
@@ -353,11 +369,14 @@ void System::Spheres(int numSpheres, double rmin, double rmax){
     rmin /= 3.405;
     rmax /= 3.405;
     string newtype = "Stargon";
+    string oldtype = particle[0].gettype();
+    for(int n=0;n<particles;n++)
+        particle[n].settype(newtype);
+
     mat positions = rmin + (L-rmin)*randu<mat>(3,numSpheres);
     vec radii = rmin + (rmax-rmin)*randu<vec>(numSpheres);
     positions.print("positions");
     radii.print("radii");
-    double R = 0;
     double r, rx,ry,rz;
     for(int j = 0; j<numSpheres;j++){
         for(int i=0; i<particles;i++){
@@ -366,8 +385,7 @@ void System::Spheres(int numSpheres, double rmin, double rmax){
             rz = positions(2,j) - particle[i].r(2);
             r = sqrt(rx*rx + ry*ry + rz*rz);
             if(r < radii[j]){
-                particle[i].settype(newtype);
-//                cout<<"balle"<<endl;
+                particle[i].settype(oldtype);
             }
         }
     }
@@ -453,10 +471,11 @@ void System::output(int nr){
     /*Loops through all particles and writes their positions to a numbered .xyz file*/
 
     char* buffer = new char[60];
-    sprintf(buffer,"results_%03d.xyz",nr);
+//    sprintf(buffer,"results_%04d.xyz",nr);
+    sprintf(buffer,"results_%04d.bin",nr);
     ofstream outfile;
-    cout<<buffer<<endl;
-    outfile.open(buffer);
+//    cout<<buffer<<endl;
+    outfile.open(buffer,ios::binary);
     outfile<<particles<<endl;
     outfile<<"Argon atoms using Lennard - Jones potential. timestep "<<nr<<"  "<<potential<<setprecision(12)<<endl;
     for(int i=0;i<particles;i++){
@@ -467,11 +486,103 @@ void System::output(int nr){
 }
 
 void System::Input(){
+    cout<<"Importing nanoporous matrix...";
     string line;
     ifstream infile ("Setup.xyz");
-//    particle = new particle[infile ] //define a new array of particles the same lenght as the file -2
-    while (infile.good()){
+    getline(infile,line);
+    int nparticles = atoi(line.c_str());
+    vec tmp = zeros<vec>(10);
+    int celltmp = -1;
+    int counter,k;
+    getline(infile,line);
+    string type;
+
+    for(int n=0;n<nparticles;n++){   //while(infile.good())
         getline(infile,line);
-        cout<<line<<endl;
+        istringstream iss(line);
+        counter = 0;
+        k = 0;
+        do
+        {
+            string sub;
+            iss >> sub;
+            if(counter ==0){
+                type = sub;
+            }
+            else if(counter == 7){
+                celltmp = atoi(sub.c_str());
+            }
+            else {
+                tmp(k) = atof(sub.c_str());
+                k++;
+            }
+            counter ++;
+        } while (iss);
+        particle[n].settype(type);
+        particle[n].cellID = celltmp;
+        for(int t=0; t<3;t++){
+            particle[n].r(t) = tmp(t);
+            particle[n].v(t) = tmp(t+3);
+            particle[n].F(t) = tmp(t+6);
+        }
     }
+    cout<<" done!"<<endl;
+    infile.close();
+}
+
+void System::AdjustDensity(double factor){
+
+
+    cout<<"Reducing density of fluid by factor of "<<factor<<" ...";
+    int nArgon = 0;
+    string emil = "Ar";
+
+    for(int i = 0; i<particles;i++){
+        if(particle[i].gettype() == emil){
+            nArgon ++;
+        }
+    }
+
+    int new_particles = particles - ((int) nArgon/factor);
+    Particle *old_particle, *argon;
+    old_particle = new Particle[particles];
+    argon = new Particle[nArgon];
+
+    for(int i = 0; i<particles;i++){
+        old_particle[i] = particle[i];
+    }
+
+    particle = new Particle[new_particles];
+    int counter = 0;
+    int dummy = 0;
+
+    for(int i = 0; i<particles;i++){
+        if(old_particle[i].gettype() != emil){
+            particle[counter] = old_particle[i];
+            counter ++;
+        }
+        else if(old_particle[i].gettype() == emil && i%2 ==0){
+            argon[dummy] = old_particle[i];
+            dummy++;
+        }
+    }
+//    cout<<counter<<endl;
+    dummy = 0;
+    while(counter <  new_particles){
+        particle[counter] = argon[dummy];
+        counter ++;
+        dummy ++;
+    }
+    particles = new_particles;
+    cout<<"great sucsess! The system now consists of "<<dummy<<" Ar atoms as opposed to "<<nArgon<<endl;
+
+    ofstream new_outfile;
+    new_outfile.open("Setup_test.xyz");
+    new_outfile<<particles<<endl;
+    new_outfile<<"Commentline for comments"<<endl;
+    for(int i=0; i<particles; i++) {
+        new_outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<" "<<particle[i].getvel()
+              <<" "<<particle[i].cellID<<"  "<<particle[i].getForce()<<"  "<<endl;
+    }
+    new_outfile.close();
 }

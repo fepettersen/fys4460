@@ -7,3 +7,5 @@ tmp*
 *.md
 *.xyz
 *.o
+*.bin
+*.dat

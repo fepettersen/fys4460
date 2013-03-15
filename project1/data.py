@@ -1,13 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as mpl
+import os
 class Data():
 	def __init__(self,resultfile):
 
 		infile = open(resultfile,"r")
-		self.tmp = infile.readlines()
-		infile.close()
-		self.nparticles = int(self.tmp[0])
-		self.ntimesteps = len(self.tmp)/(self.nparticles+2)
+
+#		infile.close()
+		self.nparticles = int(infile.readline())
+		length = os.stat(resultfile)
+		print length
+		self.ntimesteps = len(infile)/(self.nparticles+2)
+		print self.ntimesteps
 		self.E_k = 0
 		self.U_tot = 0
 		self.mean = [0 for i in range(4)]
@@ -16,7 +20,7 @@ class Data():
 		self.r = np.zeros((self.nparticles,3))
 		#tmp2 = self.tmp[3].split()[1:4]
 		#tmp3 = self.tmp[4].split()[1:4]
-		self.b = 5.260/3.405#[float(tmp3[y])-float(tmp2[y]) for y in range(3)]
+		self.b = 5.720/3.405#[float(tmp3[y])-float(tmp2[y]) for y in range(3)]
 		#print self.b
 		
 
@@ -131,3 +135,25 @@ class Data():
 		fig,a = self.makeplot(counter,zones,x_label="position",\
 			y_label="number of particles")
 		mpl.show()
+
+	def ClaculateEnergy(self,start = 0, stop = None , makeplot = True):
+		if(stop==None):
+			stop = self.ntimesteps
+		print("Caclulating energy...")
+		yolo = np.zeros(stop-start)
+		rofl = np.zeros(stop-start)
+		step = int ((stop-start)/100)
+		print step
+		for i in xrange(start,stop):
+			yolo[i] = self.energy(i)
+			rofl[i] = self.temperature()
+			print i
+			if(i/step==0):
+				print("%d percent done"%((i/step)*100))
+
+		if(makeplot):
+			fig1,a1 = self.makeplot(yolo,y_label="Energy")
+			fig2,a2 = self.makeplot(rofl,y_label = "Temperature")
+			mpl.show()
+		else:
+			return yolo,rofl
