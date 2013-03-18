@@ -5,32 +5,42 @@ class Data():
 	def __init__(self,resultfile):
 
 		extension = resultfile.split('.')[-1]
-		if extension == 'dat':
+		if extension == 'bin':
 			infile = open(resultfile,"rb")
 		else:
 			infile = open(resultfile,"r")
 
 		self.nparticles = int(infile.readline())
-		#length = os.stat(resultfile)
+		
 		dummy = infile.readline().split()
-		steps = dummy[0]
-		if steps == '0' or type(steps) == str:
-			steps = int(raw_input("Please provide number of timesteps:  "))
+		#steps = dummy[0]
+		try:
+			steps = int(dummy[0])
+		except ValueError:
+			steps = int(raw_input("Please provide number\
+			 of timesteps:  "))
+		#if steps == '0' or type(steps) == str:
+			
 
 		self.ntimesteps = steps
-		print self.ntimesteps
 		self.E_k = 0
 		self.U_tot = 0
 		self.mean = [0 for i in range(4)]
 		self.std = [0 for i in range(4)]
 		self.v = np.zeros((self.nparticles,3))
 		self.r = np.zeros((self.nparticles,3))
-		#tmp2 = self.tmp[3].split()[1:4]
-		#tmp3 = self.tmp[4].split()[1:4]
-		b = dummy[1]
-		if type(b) != float:
+		self.old = False
+	
+		if len(infile.readline().split())> 6:
+			self.old = True
+
+		try:
+			b = float(dummy[1])
+		except ValueError:
 			b = float(raw_input("Please provide the lattice constant b not divided by sigma! :  "))
 			b /= 3.405
+		
+		#if type(b) != float	
 		self.b = b
 		infile.close()
 		if extension == 'dat':
@@ -116,9 +126,10 @@ class Data():
 
 	def DiffusionConstant(self,filename):
 		results = np.loadtxt(filename)
-		meanr2 = results[:,0]/self.nparticles
-		pressure = results[:,1]
-		return meanr2,pressure
+		self.meanr2 = results[:,0]/self.nparticles
+		self.pressure = results[:,1]
+		self.kineticEnergy = results[:,2]
+		self.potentialEnergy = results[:,-1]
 
 	def makeplot(self,vector,other=None, y_label= "",x_label = "timestep number"):
 		
@@ -166,21 +177,35 @@ class Data():
 	def ClaculateEnergy(self,start = 0, stop = None , makeplot = True):
 		if(stop==None):
 			stop = self.ntimesteps
-		print("Caclulating energy...")
-		yolo = np.zeros(stop-start)
-		rofl = np.zeros(stop-start)
-		step = int ((stop-start)/100)
-		print step
-		for i in xrange(start,stop):
-			yolo[i] = self.energy(i)
-			rofl[i] = self.temperature()
-			print i
-			if(i/step==0):
-				print("%d percent done"%((i/step)*100))
+		
+		if self.old:		
+			print("Caclulating energy...")
+			yolo = np.zeros(stop-start)
+			rofl = np.zeros(stop-start)
+			step = int ((stop-start)/100)
+			print step
+			for i in xrange(start,stop):
+				yolo[i] = self.energy(i)
+				rofl[i] = self.temperature()
+				print i
+				if(i/step==0):
+					print("%d percent done"%((i/step)*100))
 
-		if(makeplot):
-			fig1,a1 = self.makeplot(yolo,y_label="Energy")
-			fig2,a2 = self.makeplot(rofl,y_label = "Temperature")
-			mpl.show()
+			if(makeplot):
+				fig1,a1 = self.makeplot(yolo,y_label="Energy")
+				fig2,a2 = self.makeplot(rofl,y_label = "Temperature")
+				mpl.show()
+			else:
+				return yolo,rofl
 		else:
-			return yolo,rofl
+			filename = "MD_results_atoms%d_timesteps%d_.txt"\
+			%(self.nparticles,self.ntimesteps)
+			self.DiffusionConstant(filename)
+			energy = self.kineticEnergy + self.potentialEnergy
+			temperature = 2*self.kineticEnergy/(3*self.nparticles)
+			if(makeplot):
+				fig1,a1 = self.makeplot(energy,y_label="Energy")
+				fig2,a2 = self.makeplot(temperature,y_label = "Temperature")
+				mpl.show()
+			else:
+				return energy

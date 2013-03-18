@@ -14,7 +14,6 @@ public:
     /*Methods*/
     System(int ncells, int Timesteps,double Temperature);
     int getParticles(){return particles;}
-    void setBalle(int newParticles){particles = newParticles;}
     void Initialize();
     void InitializePositions();
     void InitializeVelocities(double T);
@@ -35,7 +34,10 @@ public:
     void Spheres(int numSpheres, double rmin, double rmax);
     void Input();
     void AdjustDensity(double factor);
-
+    void Thermalize(int steps, double dt, bool makespheres, bool ToScreen);
+    char *timeRemaining(double timediff,int totaltimesteps, int completedsteps, int elapsed);
+    double timediff(double time1, double time2);
+    void SimulateFlow(double dt, bool ToScreen);
     arma::vec3 distance(arma::vec3 r_new, arma::vec3 r_old);
     arma::mat res;
     /*values*/
