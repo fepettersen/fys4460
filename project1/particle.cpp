@@ -17,6 +17,7 @@ Particle::Particle()
     r_tmp = zeros(3);
     cellID = 99;
     sysIndex = -1;
+    inttype = -1;
     };
 char *Particle::getpos()
 {
@@ -58,29 +59,16 @@ vec3 Particle::distanceToAtom(Particle *atom, double L) {
             dr(i) += L;
         }
     }
-
-//    for(int i=0;i<3;i++){
-//        dr(i) = (dr(i)/fabs(dr(i)))*max(dr(i),0.8);
-//    }
     return dr;
 }
-vec3 Particle::NewdistanceToAtom(Particle *atom, double cell_length, double L) {
-    /*dont think I am using this...*/
-    vec3 dr = atom->r-r;
-    for(int i=0;i<3;i++) {
-        if(fabs(dr(i))> 2*cell_length){
-        dr(i) = fmod(r(i) +100*cell_length,cell_length);
-        }
-    }
 
-//    for(int i=0;i<3;i++){
-//        dr(i) = (dr(i)/fabs(dr(i)))*max(dr(i),0.8);
-//    }
-    return dr;
-}
 char *Particle::distanceMoved(){
     /*for pretty output*/
     char* buffer = new char[60];
     sprintf(buffer, "%.12g  %.12g  %.12g", delta_r(0), delta_r(1), delta_r(2));
     return buffer;
+}
+
+void Particle::Drift(int direction, double size){
+    F(direction) += size;
 }

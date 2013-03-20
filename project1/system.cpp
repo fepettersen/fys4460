@@ -210,14 +210,14 @@ void System::setupCells(){
 //    }
 //}
 
-void System::update_all(double dt){
+void System::update_all(double dt, bool drive){
     /*The update function using cells and neighbours*/
     U = 0;
     pressure = 0;
     potential = 0;
     string type = "Ar";
 
-//#pragma omp parallel for
+#pragma omp parallel for
     for(int a=0;a<cells;a++){
         for(vector<Particle*>::iterator it1 = cell[a]->particles.begin(); it1 != cell[a]->particles.end(); it1++){
             /*SRSLY you guys, I hate you guys so much!*/
@@ -232,40 +232,44 @@ void System::update_all(double dt){
     accept();
     PlaceInCells();
     /*Calculates the forces*/
-//    mat forces = zeros(3,particles);
+    int oldParticles = 4*Ncells*Ncells*Ncells;
+    mat forces = zeros(3,oldParticles);
 #pragma omp parallel
     {
         vector<Particle*>::iterator it1 ;
         int n = 0;
         double U_thread = 0;
         double p_thread = 0;
-//        mat thread_forces = zeros(3,particles);
-#pragma omp for schedule(static,4)
+        mat thread_forces = zeros(3,oldParticles);
+#pragma omp for schedule(static,1)
         for(int j=0; j<cells;j++){
 //            cout<<"j = "<<j<<endl;
             for(it1 = cell[j]->particles.begin(); it1 != cell[j]->particles.end(); it1++){
-//                thread_forces.col((*it1)->sysIndex) += grad_U_new(cell[j], *it1, U_thread, p_thread);
                 if((*it1)->gettype() == type){
+//                    thread_forces.col((*it1)->sysIndex) += grad_U_new(cell[j], *it1, U_thread, p_thread);
                     (*it1)->F = grad_U_new(cell[j],*it1,U_thread, p_thread);
                     for(int k=0; k<cell[j]->number_of_neighbours;k++){
                         n = cell[j]->neighbours[k];
 //                        thread_forces.col((*it1)->sysIndex) += grad_U_new(cell[n],*it1,U_thread,p_thread);
                         (*it1)->F += grad_U_new(cell[n],*it1,U_thread,p_thread);
                     }
-                    (*it1)->F(2) += 0.1;//*3.0303e-1
+                    if(drive)
+                        (*it1)->Drift(2,-1);
+
                     (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
                 }
             }
         }
 #pragma omp critical
         {
-//            forces += thread_forces;
+            forces += thread_forces;
             potential +=  U_thread;
             pressure += p_thread;
-            //            cout<<"potential "<<U_thread<<" total "<<potential<<endl;
+//          cout<<"potential "<<U_thread<<" total "<<potential<<endl;
         }
     }
-//    for(int i=0;i<particles;i++){
+//    for(int i=0;i<oldParticles;i++){
+////        cout<<i<<endl;
 //        particle[i].F = forces.col(particle[i].sysIndex);
 //        particle[i].v = particle[i].v + particle[i].F*(dt/2.0);
 //    }
@@ -287,6 +291,8 @@ void System::PlaceInCells(){
     /*Removes all atoms from cells and places new ones*/
     for(int i=0; i<cells;i++){
         cell[i]->particles.clear();
+        cell[i]->particles.shrink_to_fit();
+//        cout<<cell[i]->particles.empty()<<endl;
         for(int j=0; j<particles; j++){
             if(cell[i]->isincell(&particle[j])){
                 cell[i]->addParticle(&particle[j]);
@@ -333,7 +339,7 @@ void System::AndersenThermostat(double dt){
 
 void System::Cylinder(double radius){
     double R = radius/3.405;
-    string newtype = "Stargon";
+    string newtype = "Xe";
     double r = 0;
     double rx = 0;
     double ry = 0;
@@ -359,16 +365,18 @@ void System::Cylinder(double radius){
 void System::Spheres(int numSpheres, double rmin, double rmax){
     rmin /= 3.405;
     rmax /= 3.405;
-    string newtype = "Stargon";
+    string newtype = "Xe";
     string oldtype = particle[0].gettype();
-    for(int n=0;n<particles;n++)
-        particle[n].settype(newtype);
 
-    mat positions = rmin + (L-rmin)*randu<mat>(3,numSpheres);
+    for(int n=0;n<particles;n++){
+        particle[n].settype(newtype);
+        particle[n].inttype = 1;
+    }
+//    mat positions = rmin + (L-rmin)*randu<mat>(3,numSpheres);
+    mat positions = L*randu<mat>(3,numSpheres);
     vec radii = rmin + (rmax-rmin)*randu<vec>(numSpheres);
-    //positions.print("positions");
-    //radii.print("radii");
     double r, rx,ry,rz;
+
     for(int j = 0; j<numSpheres;j++){
         for(int i=0; i<particles;i++){
             rx = positions(0,j) - particle[i].r(0);
@@ -377,6 +385,7 @@ void System::Spheres(int numSpheres, double rmin, double rmax){
             r = sqrt(rx*rx + ry*ry + rz*rz);
             if(r < radii[j]){
                 particle[i].settype(oldtype);
+                particle[i].inttype = 0;
             }
         }
     }
@@ -395,9 +404,7 @@ void System::Spheres(int numSpheres, double rmin, double rmax){
 
 vec3 System::force(vec dr,double &U_thread, double &p_thread){
     /*Calculates single-pair forces*/
-//    if (norm(dr)>r_cut){
-//        return zeros(3);
-//    }
+
     double r2 = dot(dr,dr);
     double r6 = r2*r2*r2;
     double r12 = r6*r6;
@@ -450,7 +457,7 @@ vec3 System::distance(vec3 r_new, vec3 r_old){
 void System::outputMeanSquare(){
 
     char* buffer = new char[60];
-    sprintf(buffer,"MD_results_atoms%d_timesteps%d_.txt",particles,timesteps);
+    sprintf(buffer,"MD_results_atoms%d_timesteps%d.txt",particles,timesteps);
 
     res.save(buffer,raw_ascii);
 //    char* buffer = new char[60];
@@ -502,7 +509,8 @@ void System::output(int nr){
 void System::Input(){
     cout<<"Importing nanoporous matrix...";
     string line;
-    ifstream infile ("Cylinder.xyz");
+//    ifstream infile ("Cylinder.xyz");
+    ifstream infile ("Spheres.xyz");
     getline(infile,line);
     int nparticles = atoi(line.c_str());
     vec tmp = zeros<vec>(10);
@@ -570,13 +578,15 @@ void System::AdjustDensity(double factor){
     particle = new Particle[new_particles];
     int counter = 0;
     int dummy = 0;
-
+    double limit = 1.0/factor;
+    vec random;
     for(int i = 0; i<particles;i++){
+        random = randu<vec>(1);
         if(old_particle[i].gettype() != emil){
             particle[counter] = old_particle[i];
             counter ++;
         }
-        else if(old_particle[i].gettype() == emil && i%2 ==0){
+        else if(old_particle[i].gettype() == emil && random(0) >= limit){
             argon[dummy] = old_particle[i];
             dummy++;
         }
@@ -603,29 +613,31 @@ void System::AdjustDensity(double factor){
 }
 
 void System::Thermalize(int steps, double dt, bool makespheres, bool ToScreen){
-    double Time_end = dt*timesteps;
+    int totalsteps = (steps+11);
+    double Time_end = dt*totalsteps;
     double start = 0;
     double stop = 0;
     int counter = 0;
     double time = 0;
     double first = clock();
+    bool drive = false;
     while(time<Time_end){
         start = clock();
-        update_all(dt);
+        update_all(dt,drive);
         if(counter < steps){
             BerendsenThermostat();
 //            test.AndersenThermostat(dt);
         }
         if(counter == steps+10 && makespheres){
-//            Spheres(20,20,30);
-            Cylinder(20);
+            Spheres(17,20,30);
+//            Cylinder(20);
         }
         output(counter);
         mean_square(counter);
         stop = clock();
         if(ToScreen){
-            cout<< "step "<<counter<<" of "<<timesteps<<" : remaining "<<
-                   timeRemaining(timediff(start,stop),timesteps,counter,timediff(first,stop))<<endl;
+            cout<< "step "<<counter<<" of "<<totalsteps<<" : remaining "<<
+                   timeRemaining(timediff(start,stop),totalsteps,counter,timediff(first,stop))<<endl;
         }
         time += dt;
         counter ++;
@@ -642,9 +654,10 @@ void System::SimulateFlow(double dt, bool ToScreen = true){
     Input();
     AdjustDensity(2.0);
     double first = clock();
+    bool drive = true;
     while(time<Time_end){
         start = clock();
-        update_all(dt);
+        update_all(dt,drive);
         output(counter);
         mean_square(counter);
         stop = clock();
@@ -654,6 +667,9 @@ void System::SimulateFlow(double dt, bool ToScreen = true){
         }
         if((counter+1)%250 ==0){
             outputMeanSquare();
+        }
+        if(counter == 1700){
+            drive = false;
         }
         time += dt;
         counter ++;
@@ -679,6 +695,16 @@ char *System::timeRemaining(double timediff,int totaltimesteps, int completedste
     int min = secs/60;
     secs %= 60;
     char* buffer = new char[100];
-    sprintf(buffer, "%d h %d min  %d sec; elapsed %d:%d:%d",hour ,min , secs, hour1, min1, elapsed);
+    sprintf(buffer, "%d h %02d min %02d sec; elapsed %02d:%02d:%02d",hour ,min , secs, hour1, min1, elapsed);
     return buffer;
+}
+
+void System::PrintVelocity(){
+    string type = "Ar";
+    ofstream outfile ("velocityProfile.bin");
+    for(int i = 0;i<particles; i++){
+        if(particle[i].gettype() == type){
+            outfile<<particle[i].getpos()<<" "<<particle[i].getvel()<<endl;
+        }
+    }
 }

@@ -27,7 +27,8 @@ public:
     void checkpos(double L);
     char *distanceMoved();
     arma::vec3 distanceToAtom(Particle *atom, double L);
-    arma::vec3 NewdistanceToAtom(Particle *atom, double cell_length, double L);
+    void Drift(int direction, double size);
+
     arma::vec3 r;
     arma::vec3 v;
     arma::vec3 F;
@@ -36,6 +37,7 @@ public:
     arma::vec3 delta_r;
     int cellID;
     int sysIndex;
+    int inttype;
 
 private:
     std::string particlename;

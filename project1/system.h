@@ -23,7 +23,7 @@ public:
     arma::vec3 grad_U(int i);
     void accept();
     void setupCells();
-    void update_all(double dt);
+    void update_all(double dt, bool drive);
     arma::vec3 grad_U_new(Cell *box, Particle *thisParticle, double &U_thread, double &p_thread);
     void PlaceInCells();
     void mean_square(int nr);
@@ -39,8 +39,10 @@ public:
     double timediff(double time1, double time2);
     void SimulateFlow(double dt, bool ToScreen);
     arma::vec3 distance(arma::vec3 r_new, arma::vec3 r_old);
-    arma::mat res;
+    void PrintVelocity();
+
     /*values*/
+    arma::mat res;
     Particle *particle;
     std::vector<Cell*> cell;
     double r_cut;

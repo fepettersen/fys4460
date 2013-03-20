@@ -11,7 +11,7 @@ int main(/*int argc, char** argv*/)
     double T = T_kelvin/119.8;
 
     /*some time stuff*/
-    double Time_end = 2.5;
+    double Time_end = 12.5;
     double dt = 5e-3;
 
     int timesteps = int (Time_end/dt);
@@ -19,8 +19,7 @@ int main(/*int argc, char** argv*/)
     System MySys(ncells,timesteps,T);
 
     /*loop over time and evolve system*/
-//    MySys.Thermalize(170,dt,true,true);
-//    MySys.Thermalize(200,dt,true,true);
+//    MySys.Thermalize(500,dt,true,true);
     MySys.SimulateFlow(dt,true);
     cout << "simulation finished" << endl;
     return 0;
