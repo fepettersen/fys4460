@@ -34,19 +34,18 @@ vec3 Cell::distanceToCell(Cell *cell, double L){
 int Cell::isincell(Particle *atom){
     /*checks if an atom is in the cell*/
     int x = 0;
-    int y = 0;
-    int z = 0;
+
     vec3 dr = atom->r-pos;
     if(dr[0]<cellLength && dr[0]>0){
-        x = 1;
+        x += 1;
     }
     if(dr[1]<cellLength && dr[1]>0){
-        y = 1;
+        x += 1;
     }
     if(dr[2]<cellLength && dr[2]>0){
-        z = 1;
+        x += 1;
     }
-    return (x+y+z)/3;
+    return x/3;
 }
 void Cell::addParticle(Particle *atom){
     /*adds an atom to a cell*/

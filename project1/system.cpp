@@ -22,7 +22,7 @@ System::System(int ncells, int Timesteps, double Temperature)
     pressure = 0;
     potential = 0;
     res = zeros<mat>(timesteps+1,4);
-
+    type = "Ar";
     for(int i = 0; i < cells; i++) {
         cell.push_back(new Cell());
     }
@@ -47,10 +47,10 @@ void System::Initialize()
 #pragma omp for// private(p_thread,U_thread)
     for(int j=0; j<cells;j++){
         for(vector<Particle*>::iterator it1 = cell[j]->particles.begin(); it1 != cell[j]->particles.end(); it1++){
-            (*it1)->F = grad_U_new(cell[j],*it1,U_thread, p_thread);
+            grad_U_new(cell[j],*it1,U_thread, p_thread);
             for(int k=0; k<cell[j]->number_of_neighbours;k++){
                 n = cell[j]->neighbours[k];
-                (*it1)->F += grad_U_new(cell[n],*it1,U_thread,p_thread);
+                grad_U_new(cell[n],*it1,U_thread,p_thread);
             }
         }
     }
@@ -192,30 +192,13 @@ void System::setupCells(){
 
 /*Updaters*/
 
-//void System::update(double dt){
-//    /*The brute force function - no cells*/
-//    for(int i=0; i<particles; i++){
-//        particle[i].v = particle[i].v + particle[i].F*(dt/2.0);
-//        particle[i].r_tmp = particle[i].r +particle[i].v*dt;
-
-//        if(i==0){
-//            cout << particle[i].F << endl;
-//        }
-//    }
-//    accept();
-//    for(int i=0;i<particles;i++){
-//        particle[i].F = grad_U(i);
-//        particle[i].v = particle[i].v + particle[i].F*(dt/2.0);
-
-//    }
-//}
 
 void System::update_all(double dt, bool drive){
     /*The update function using cells and neighbours*/
     U = 0;
     pressure = 0;
     potential = 0;
-    string type = "Ar";
+
 
 #pragma omp parallel for
     for(int a=0;a<cells;a++){
@@ -232,15 +215,16 @@ void System::update_all(double dt, bool drive){
     accept();
     PlaceInCells();
     /*Calculates the forces*/
-    int oldParticles = 4*Ncells*Ncells*Ncells;
-    mat forces = zeros(3,oldParticles);
+//    int oldParticles = 4*Ncells*Ncells*Ncells;
+//    mat forces = zeros(3,oldParticles);
 #pragma omp parallel
     {
         vector<Particle*>::iterator it1 ;
         int n = 0;
         double U_thread = 0;
         double p_thread = 0;
-        mat thread_forces = zeros(3,oldParticles);
+//        vec3 F_tmp = zeros(3);
+//        mat thread_forces = zeros(3,oldParticles);
 #pragma omp for schedule(static,1)
         for(int j=0; j<cells;j++){
 //            cout<<"j = "<<j<<endl;
@@ -251,18 +235,18 @@ void System::update_all(double dt, bool drive){
                     for(int k=0; k<cell[j]->number_of_neighbours;k++){
                         n = cell[j]->neighbours[k];
 //                        thread_forces.col((*it1)->sysIndex) += grad_U_new(cell[n],*it1,U_thread,p_thread);
-                        (*it1)->F += grad_U_new(cell[n],*it1,U_thread,p_thread);
+                        (*it1)->F +=grad_U_new(cell[n],*it1,U_thread,p_thread);
                     }
-                    if(drive)
+                    if(drive){
                         (*it1)->Drift(2,-1);
-
+                    }
                     (*it1)->v = (*it1)->v + (*it1)->F*(dt/2.0);
                 }
             }
         }
 #pragma omp critical
         {
-            forces += thread_forces;
+//            forces += thread_forces;
             potential +=  U_thread;
             pressure += p_thread;
 //          cout<<"potential "<<U_thread<<" total "<<potential<<endl;
@@ -278,7 +262,6 @@ void System::update_all(double dt, bool drive){
 
 void System::accept(){
     /*updates the positions off all atoms*/
-    string type = "Ar";
     for(int i=0; i<particles;i++){
         if(particle[i].gettype() == type){
             particle[i].r = particle[i].r_tmp;
@@ -291,7 +274,7 @@ void System::PlaceInCells(){
     /*Removes all atoms from cells and places new ones*/
     for(int i=0; i<cells;i++){
         cell[i]->particles.clear();
-        cell[i]->particles.shrink_to_fit();
+//        cell[i]->particles.shrink_to_fit();
 //        cout<<cell[i]->particles.empty()<<endl;
         for(int j=0; j<particles; j++){
             if(cell[i]->isincell(&particle[j])){
@@ -304,8 +287,8 @@ void System::PlaceInCells(){
 void System::mean_square(int nr){
     /*calculates total displacement*/
     for(int i=0; i<particles; i++){
+//        U += (particle[i].delta_r(0)*particle[i].delta_r(0) +particle[i].delta_r(1)*particle[i].delta_r(1)+particle[i].delta_r(2)*particle[i].delta_r(2));
         U += dot(particle[i].delta_r,particle[i].delta_r);
-
     }
     res(nr,0)=U;
     res(nr,1)=pressure/2.0;
@@ -316,12 +299,13 @@ void System::BerendsenThermostat(){
     double tau = 1.0/10;
     double E_k = 0;
     for(int i=0; i<particles;i++){
-        E_k += 0.5*dot(particle[i].v,particle[i].v);
+        E_k += 0.5*(particle[i].v(0)*particle[i].v(0) +particle[i].v(1)*particle[i].v(1)+particle[i].v(2)*particle[i].v(2));
     }
     double temp = 2*E_k/(3.0*particles);
     double gamma = sqrt(1 + tau*((T/temp)-1));
     for(int i=0; i<particles;i++){
-        particle[i].v *= gamma;
+        for(int j= 0; j<3; j++)
+            particle[i].v(j) *= gamma;
     }
 }
 
@@ -402,29 +386,18 @@ void System::Spheres(int numSpheres, double rmin, double rmax){
 
 /*Helper functions*/
 
-vec3 System::force(vec dr,double &U_thread, double &p_thread){
+vec3 System::force(vec3 dr,double &U_thread, double &p_thread){
     /*Calculates single-pair forces*/
-
     double r2 = dot(dr,dr);
+//    double r2 = dr(0)*dr(0) + dr(1)*dr(1) + dr(2)*dr(2);
     double r6 = r2*r2*r2;
     double r12 = r6*r6;
     vec3 F = 24*(2.0/r12 -1.0/r6)*(dr/r2);
-    p_thread += dot(F,dr);
+    p_thread += F(0)*dr(0) + F(1)*dr(1) + F(2)*dr(2);
     U_thread += 4*(1.0/r12-1.0/r6);
     return  F;
 }
 
-//vec3 System::grad_U(int i){
-//    /*from brute force version. caculates sum F on a particle*/
-//    vec3 F = zeros(3);
-//    for(int j=0;j<i;j++){
-//        F += force(particle[i].distanceToAtom(&particle[j],L));
-//    }
-//    for(int j=i+1;j<particles;j++){
-//        F += force(particle[i].distanceToAtom(&particle[j],L));
-//    }
-//    return -F;
-//}
 
 vec3 System::grad_U_new(Cell *box,Particle *thisParticle,double &U_thread,double &p_thread){
     /*calculates sum F on an atom from all atoms in a cell*/
@@ -432,6 +405,7 @@ vec3 System::grad_U_new(Cell *box,Particle *thisParticle,double &U_thread,double
     for(vector<Particle*>::iterator it2 = box->particles.begin(); it2 != box->particles.end(); it2++){
         if(*it2 != thisParticle){
             F += force(thisParticle->distanceToAtom(*it2,L),U_thread,p_thread);
+//            force(thisParticle,*it2,U_thread,p_thread);
         }
     }
     return -F;
@@ -460,15 +434,7 @@ void System::outputMeanSquare(){
     sprintf(buffer,"MD_results_atoms%d_timesteps%d.txt",particles,timesteps);
 
     res.save(buffer,raw_ascii);
-//    char* buffer = new char[60];
-//    sprintf(buffer,"total_movement_.txt");
-//    ofstream outfile;
-//    outfile.open(buffer);
-//    for(int i=0;i<=timesteps;i++){
-//        outfile<<res(i,0)<<setprecision(12)<<"  "<<res(i,1)<<setprecision(12)<<" "<<
-//                 res(i,2)<<" "<<res(i,3)<<endl;
-//    }
-//    outfile.close();
+    free(buffer);
 }
 
 void System::output(int nr){
@@ -483,7 +449,6 @@ void System::output(int nr){
     ofstream outfile;
     outfile.open(buffer,ios::binary);
     outfile<<particles<<endl;
-
     if(nr==0){
         outfile<<timesteps<<" "<<b<<" Argon atoms using Lennard - Jones potential. timestes "<<nr<<endl;
     }
@@ -492,25 +457,28 @@ void System::output(int nr){
     }
 
     for(int i=0;i<particles;i++){
-        outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<" "<<particle[i].cellID<<endl;
+        particle[i].getInfo(buffer);
+        outfile<<buffer<<endl;
+        buffer[0] = '\0';
+//        outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<" "<<particle[i].cellID<<endl;
     }
     outfile.close();
-    double E_k = 0;
-    string type = "Ar";
+
     for(int i=0; i<particles;i++){
         if(particle[i].gettype() == type){
-            E_k += 0.5*dot(particle[i].v,particle[i].v);
+//            res(nr,2) += 0.5*(particle[i].v(0)*particle[i].v(0) +particle[i].v(1)*particle[i].v(1)+particle[i].v(2)*particle[i].v(2));
+            res(nr,2) += 0.5*dot(particle[i].v,particle[i].v);
         }
     }
-    res(nr,2) = E_k;
     res(nr,3) = potential;
+    delete(buffer);
 }
 
 void System::Input(){
     cout<<"Importing nanoporous matrix...";
     string line;
 //    ifstream infile ("Cylinder.xyz");
-    ifstream infile ("Spheres.xyz");
+    ifstream infile ("Setup.xyz");
     getline(infile,line);
     int nparticles = atoi(line.c_str());
     vec tmp = zeros<vec>(10);
@@ -558,10 +526,9 @@ void System::AdjustDensity(double factor){
 
     cout<<"Reducing density of fluid by factor of "<<factor<<" ...";
     int nArgon = 0;
-    string emil = "Ar";
 
     for(int i = 0; i<particles;i++){
-        if(particle[i].gettype() == emil){
+        if(particle[i].gettype() == type){
             nArgon ++;
         }
     }
@@ -582,11 +549,11 @@ void System::AdjustDensity(double factor){
     vec random;
     for(int i = 0; i<particles;i++){
         random = randu<vec>(1);
-        if(old_particle[i].gettype() != emil){
+        if(old_particle[i].gettype() != type){
             particle[counter] = old_particle[i];
             counter ++;
         }
-        else if(old_particle[i].gettype() == emil && random(0) >= limit){
+        else if(old_particle[i].gettype() == type && random(0) >= limit){
             argon[dummy] = old_particle[i];
             dummy++;
         }
@@ -600,16 +567,6 @@ void System::AdjustDensity(double factor){
     }
     particles = new_particles;
     cout<<"great sucsess! The system now consists of "<<dummy<<" Ar atoms as opposed to "<<nArgon<<endl;
-
-    ofstream new_outfile;
-    new_outfile.open("Setup_test.xyz");
-    new_outfile<<particles<<endl;
-    new_outfile<<"Commentline for comments"<<endl;
-    for(int i=0; i<particles; i++) {
-        new_outfile<<particle[i].gettype()<<" "<<particle[i].getpos()<<" "<<particle[i].getvel()
-              <<" "<<particle[i].cellID<<"  "<<particle[i].getForce()<<"  "<<endl;
-    }
-    new_outfile.close();
 }
 
 void System::Thermalize(int steps, double dt, bool makespheres, bool ToScreen){
@@ -621,6 +578,8 @@ void System::Thermalize(int steps, double dt, bool makespheres, bool ToScreen){
     double time = 0;
     double first = clock();
     bool drive = false;
+    char* buffer = new char[100];
+
     while(time<Time_end){
         start = clock();
         update_all(dt,drive);
@@ -636,8 +595,9 @@ void System::Thermalize(int steps, double dt, bool makespheres, bool ToScreen){
         mean_square(counter);
         stop = clock();
         if(ToScreen){
-            cout<< "step "<<counter<<" of "<<totalsteps<<" : remaining "<<
-                   timeRemaining(timediff(start,stop),totalsteps,counter,timediff(first,stop))<<endl;
+            timeRemaining(timediff(start,stop),totalsteps,counter,timediff(first,stop),buffer);
+            cout<< "step "<<counter<<" of "<<totalsteps<<" : remaining "<<buffer<<endl;
+            buffer[0] = '\0';
         }
         time += dt;
         counter ++;
@@ -655,6 +615,8 @@ void System::SimulateFlow(double dt, bool ToScreen = true){
     AdjustDensity(2.0);
     double first = clock();
     bool drive = true;
+    char* buffer = new char[100];
+
     while(time<Time_end){
         start = clock();
         update_all(dt,drive);
@@ -662,8 +624,9 @@ void System::SimulateFlow(double dt, bool ToScreen = true){
         mean_square(counter);
         stop = clock();
         if(ToScreen){
-            cout<< "step "<<counter<<" of "<<timesteps<<" : remaining "<<
-                   timeRemaining(timediff(start,stop),timesteps,counter,timediff(first,stop))<<endl;
+            timeRemaining(timediff(start,stop),timesteps,counter,timediff(first,stop),buffer);
+            cout<< "step "<<counter<<" of "<<timesteps<<" : remaining "<<buffer<<endl;
+            buffer[0] = '\0';
         }
         if((counter+1)%250 ==0){
             outputMeanSquare();
@@ -683,7 +646,7 @@ double System::timediff(double time1, double time2){
 }
 
 
-char *System::timeRemaining(double timediff,int totaltimesteps, int completedsteps,int elapsed){
+void System::timeRemaining(double timediff,int totaltimesteps, int completedsteps,int elapsed, char *buffer){
     elapsed /= 1000;
     int hour1 = elapsed/3600;
     elapsed %= 3600;
@@ -694,13 +657,10 @@ char *System::timeRemaining(double timediff,int totaltimesteps, int completedste
     secs %= 3600;
     int min = secs/60;
     secs %= 60;
-    char* buffer = new char[100];
     sprintf(buffer, "%d h %02d min %02d sec; elapsed %02d:%02d:%02d",hour ,min , secs, hour1, min1, elapsed);
-    return buffer;
 }
 
 void System::PrintVelocity(){
-    string type = "Ar";
     ofstream outfile ("velocityProfile.bin");
     for(int i = 0;i<particles; i++){
         if(particle[i].gettype() == type){

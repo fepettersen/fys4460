@@ -19,7 +19,7 @@ int main(/*int argc, char** argv*/)
     System MySys(ncells,timesteps,T);
 
     /*loop over time and evolve system*/
-//    MySys.Thermalize(500,dt,true,true);
+//    MySys.Thermalize(5,dt,true,true);
     MySys.SimulateFlow(dt,true);
     cout << "simulation finished" << endl;
     return 0;

@@ -28,6 +28,7 @@ public:
     char *distanceMoved();
     arma::vec3 distanceToAtom(Particle *atom, double L);
     void Drift(int direction, double size);
+    void getInfo(char *buffer);
 
     arma::vec3 r;
     arma::vec3 v;
