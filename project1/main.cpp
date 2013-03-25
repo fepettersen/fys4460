@@ -15,7 +15,7 @@ int main(/*int argc, char** argv*/)
     double dt = 5e-3;
 
 //    int timesteps = int (Time_end/dt);
-    int timesteps = 1000;
+    int timesteps = 200;
 
     System MySys(ncells,timesteps,T);
 

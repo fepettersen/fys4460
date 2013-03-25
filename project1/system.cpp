@@ -412,10 +412,15 @@ void System::force(vec3 dr,double &U_thread, double &p_thread,vec3 &F){
 vec3 System::grad_U_new(Cell *box,Particle *thisParticle,double &U_thread,double &p_thread){
     /*calculates sum F on an atom from all atoms in a cell*/
     vec3 F = zeros(3);
-    for(vector<Particle*>::iterator it2 = box->particles.begin(); it2 != box->particles.end(); it2++){
-        if(*it2 != thisParticle){
-            force(thisParticle->distanceToAtom(*it2,L),U_thread,p_thread,F);
-//            force(thisParticle,*it2,U_thread,p_thread);
+//    for(vector<Particle*>::iterator it2 = box->particles.begin(); it2 != box->particles.end(); it2++){
+//        if(*it2 != thisParticle){
+//            force(thisParticle->distanceToAtom(*it2,L),U_thread,p_thread,F);
+////            force(thisParticle,*it2,U_thread,p_thread);
+//        }
+//    }
+    for(int i=0; i< (box->particles.end() - box->particles.begin()); i++){
+        if(box->particles[i] != thisParticle){
+            force(thisParticle->distanceToAtom(box->particles[i],L),U_thread,p_thread,F);
         }
     }
     return -F;

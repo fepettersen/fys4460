@@ -35,14 +35,14 @@ int Cell::isincell(Particle *atom){
     /*checks if an atom is in the cell*/
     int x = 0;
 
-    vec3 dr = atom->r-pos;
-    if(dr[0]<cellLength && dr[0]>0){
+//    vec3 dr = atom->r-pos;
+    if((atom->r(0)-pos(0))<cellLength && (atom->r(0)>pos(0))){
         x += 1;
     }
-    if(dr[1]<cellLength && dr[1]>0){
+    if((atom->r(1)-pos(1))<cellLength && (atom->r(1)>pos(1))){
         x += 1;
     }
-    if(dr[2]<cellLength && dr[2]>0){
+    if((atom->r(2)-pos(2))<cellLength && (atom->r(2)>pos(2))){
         x += 1;
     }
     return x/3;
