@@ -18,6 +18,7 @@ Particle::Particle()
     cellID = 99;
     sysIndex = -1;
     inttype = -1;
+    IsNotPlaced = 1;
     };
 char *Particle::getpos()
 {

@@ -272,13 +272,19 @@ void System::accept(){
 
 void System::PlaceInCells(){
     /*Removes all atoms from cells and places new ones*/
+    for(int k=0; k<particles;k++){
+        particle[k].IsNotPlaced = 1;
+    }
     for(int i=0; i<cells;i++){
         cell[i]->particles.clear();
 //        cell[i]->particles.shrink_to_fit();
 //        cout<<cell[i]->particles.empty()<<endl;
         for(int j=0; j<particles; j++){
-            if(cell[i]->isincell(&particle[j])){
-                cell[i]->addParticle(&particle[j]);
+            if(particle[j].IsNotPlaced){
+                if(cell[i]->isincell(&particle[j])){
+                    cell[i]->addParticle(&particle[j]);
+                    particle[j].IsNotPlaced = 0;
+                }
             }
         }
     }
@@ -386,16 +392,20 @@ void System::Spheres(int numSpheres, double rmin, double rmax){
 
 /*Helper functions*/
 
-vec3 System::force(vec3 dr,double &U_thread, double &p_thread){
+void System::force(vec3 dr,double &U_thread, double &p_thread,vec3 &F){
     /*Calculates single-pair forces*/
-    double r2 = dot(dr,dr);
-//    double r2 = dr(0)*dr(0) + dr(1)*dr(1) + dr(2)*dr(2);
+//    double r2 = dot(dr,dr);
+    double r2 = dr(0)*dr(0) + dr(1)*dr(1) + dr(2)*dr(2);
     double r6 = r2*r2*r2;
     double r12 = r6*r6;
-    vec3 F = 24*(2.0/r12 -1.0/r6)*(dr/r2);
-    p_thread += F(0)*dr(0) + F(1)*dr(1) + F(2)*dr(2);
+//    vec3 F = 24*(2.0/r12 -1.0/r6)*(dr/r2);
+    r2 = 24*(2.0/r12 -1.0/r6)*(1.0/r2);
+    F(0) += r2*dr(0);
+    F(1) += r2*dr(1);
+    F(2) += r2*dr(2);
+    p_thread += r2*dr(0) + r2*dr(1) + r2*dr(2);
     U_thread += 4*(1.0/r12-1.0/r6);
-    return  F;
+//    return  F;
 }
 
 
@@ -404,7 +414,7 @@ vec3 System::grad_U_new(Cell *box,Particle *thisParticle,double &U_thread,double
     vec3 F = zeros(3);
     for(vector<Particle*>::iterator it2 = box->particles.begin(); it2 != box->particles.end(); it2++){
         if(*it2 != thisParticle){
-            F += force(thisParticle->distanceToAtom(*it2,L),U_thread,p_thread);
+            force(thisParticle->distanceToAtom(*it2,L),U_thread,p_thread,F);
 //            force(thisParticle,*it2,U_thread,p_thread);
         }
     }

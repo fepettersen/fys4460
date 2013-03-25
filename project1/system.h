@@ -47,7 +47,7 @@ public:
     std::string type;
 private:
     /*Methods*/
-    arma::vec3 force(arma::vec3, double &U_thread, double &p_thread);
+    void force(arma::vec3, double &U_thread, double &p_thread, arma::vec3 &F);
 
     /*values*/
     int particles;

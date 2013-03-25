@@ -11,6 +11,10 @@ QMAKE_CXXFLAGS += $$COMMON_CXXFLAGS
 QMAKE_CXXFLAGS_RELEASE += $$COMMON_CXXFLAGS
 QMAKE_CXXFLAGS_DEBUG += $$COMMON_CXXFLAGS
 
+release{
+    DEFINES += ARMA_NO_DEBUG
+}
+
 SOURCES += main.cpp \
     particle.cpp \
     system.cpp \

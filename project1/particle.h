@@ -39,6 +39,7 @@ public:
     int cellID;
     int sysIndex;
     int inttype;
+    int IsNotPlaced;
 
 private:
     std::string particlename;
