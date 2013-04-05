@@ -37,7 +37,7 @@ public:
     double timediff(double time1, double time2);
     void SimulateFlow(double dt, bool ToScreen);
     arma::vec3 distance(arma::vec3 r_new, arma::vec3 r_old);
-    void PrintVelocity();
+    void PrintVelocity(int nr);
 
     /*values*/
     arma::mat res;
