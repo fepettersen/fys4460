@@ -240,7 +240,7 @@ void System::update_all(double dt, bool drive){
                         cell[j]->particles[it1]->F +=grad_U_new(cell[n],cell[j]->particles[it1],U_thread,p_thread);
                     }
                     if(drive){
-                        cell[j]->particles[it1]->Drift(2,-1);
+                        cell[j]->particles[it1]->Drift(2,-0.1);
                     }
                     cell[j]->particles[it1]->v = cell[j]->particles[it1]->v + cell[j]->particles[it1]->F*(dt/2.0);
                 }
