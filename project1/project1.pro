@@ -4,12 +4,16 @@ CONFIG -= qt
 
 
 QMAKE_CXXFLAGS_DEBUG -= -O1 -O2 -O3
-QMAKE_CXXFLAGS -= -O1 -O2 -O3 -fopenmp
+QMAKE_CXXFLAGS -= -O1 -O2 -O3 #-fopenmp
 
-COMMON_CXXFLAGS = -std=c++0x -fopenmp
+COMMON_CXXFLAGS = -std=c++0x #-fopenmp
 QMAKE_CXXFLAGS += $$COMMON_CXXFLAGS
 QMAKE_CXXFLAGS_RELEASE += $$COMMON_CXXFLAGS
 QMAKE_CXXFLAGS_DEBUG += $$COMMON_CXXFLAGS
+
+release{
+    DEFINES += ARMA_NO_DEBUG
+}
 
 SOURCES += main.cpp \
     particle.cpp \
@@ -26,7 +30,7 @@ LIBS += \
     -llapack \
     -lblas \
     -larmadillo\
-    -fopenmp
+    #-fopenmp
 
 
 

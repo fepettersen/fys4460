@@ -1,0 +1,7 @@
+\select@language {english}
+\contentsline {section}{\numberline {1}About the problem}{3}
+\contentsline {section}{\numberline {2}The algorithm}{3}
+\contentsline {section}{\numberline {3}Points of progress}{3}
+\contentsline {section}{\numberline {4}Results}{4}
+\contentsline {section}{\numberline {5}Stability and precision}{4}
+\contentsline {section}{\numberline {6}Final comments}{4}

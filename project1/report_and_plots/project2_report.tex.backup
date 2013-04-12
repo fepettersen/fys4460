@@ -1,0 +1,109 @@
+\documentclass[a4paper,english, 10pt, twoside]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsfonts, amssymb, amsmath}
+\usepackage{listings}
+\usepackage{float}	%force figures in place with command \begin{figure}[H]
+
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+
+
+
+%opening
+\title{Project 2, FYS4460}
+\author{Fredrik E Pettersen\\ f.e.pettersen@fys.uio.no}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+% \begin{abstract}
+% In this project we will modell a collection of interacting Argon atoms confined in a box.\\
+% \end{abstract}
+\tableofcontents
+\newpage
+
+
+\section{About the problem}
+The goal of this project is to model flow in a nanoporous material. For simplicity we will do this using 
+the Lennard-Jones potential from project 1, and fix the positions of some of the Argon atoms.
+
+\section{The algorithm}
+The algorithm is in essence the same as in project 1 with some minor modifications. Since some of the 
+Argon atoms are supposed to be fixed i space, we only need to calculate forces and possitions for the 
+ones that are not fixed. Probably the most efficient way of doing this would be to make two separate lists 
+of atoms in the program; one containing movable, and one containing immovable atoms. However implementing 
+this would (I suspect) be a very demanding modification to my program from the first project, and so I have 
+solved this by testing. If the atom is marked as immovable, no calculations are done. In this way I only 
+had to add two lines to the force-part of the existing code, and everything worked as it should.
+
+\section{Points of progress}
+First of all we will make a cylinder with a radius of 2nm. This cylinder is shown in figure \ref{cylinder} 
+where I have visualized only the stationary atoms.
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.5]{cylinder.png}
+ \caption{Cylinder with radius 2nm}
+ \label{cylinder}
+ \end{figure}
+Next we generate a matrix consisting of 20 spherical pores at random positions and with random radii 
+ranging from 2nm to 3nm. The porosity of this system is $52.4\%$ which I have measured simply by counting 
+the number of atoms within the pores and dividing this by the total number of atoms. Compared to what we 
+would expect from 20 non-overlapping spherical pores with uniformly drawn random radii ranging from 2 to 
+3nm which makes a volume of between $670nm^3$ and $2250nm^3$ making the porosity somewhere between 
+$44.7\%$ and $100\%$ with an expectation value of ($\hat{r} = 2.5$) $\phi = 87\%$\\
+
+We would now like to study a fluid at half the density. The way I interpret this we would like to keep the 
+density of the  ``solid'' the same. The only way I can think of which lets us do this is by removing half 
+of the particles which are allowed to move. We do this by looping over the movable atoms and drawing a 
+random (uniform) number. If it is less than one half, the atom is removed. This will generalize to more 
+factors if it should be of interest.\\
+Figure \ref{meansquare} shows $\langle r^2(t)\rangle$ for the low-density fluid in the nanoporous matrix 
+without any external factors.
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.7]{nanoporous_meansquare.png}
+ \label{meansquare}
+\end{figure}
+
+Darcy's law states that
+$$
+U = {k\over\mu}\left(\nabla P - \rho g\right)
+$$
+inserting for $\rho = {nm\over V}$ and $n = {N\over V}\implies nV = N$ we obtain
+$$
+U = {k\over\mu}\left(\nabla P - nmg\right)
+$$
+From Newtons second law know that ma = F which in our case is $F_x$ and so wa canreplace $\rho g$ by 
+$nF_x$ 
+
+\section{Results}
+
+% \begin{figure}[H]
+% \centering
+%  \includegraphics[scale=0.6]{plot_radial_ncells10_T119K.png}
+%  \caption{Radial distribution of atoms for a crystal structure. Simulation with 4000 particles and no thermostat.}
+%  \label{radial_10cells}
+% \end{figure}
+% 
+% \begin{figure}[H]
+% \centering
+%  \includegraphics[scale=0.6]{plot_radial_ncells12_T200K_andersen.png}
+%  \caption{Radial distribution of atoms for a liquid phase. Simulation with 6912 particles and Andersen thermostat.}
+%  \label{radial_12cells}
+% \end{figure}
+
+\section{Stability and precision}
+
+\section{Final comments}
+
+% \appendix
+% \section{Source code}
+% \lstinputlisting{system.cpp}
+% \lstinputlisting{cell.cpp}
+% \lstinputlisting{particle.cpp}
+\end{document}

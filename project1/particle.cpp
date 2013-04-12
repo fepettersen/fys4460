@@ -18,6 +18,7 @@ Particle::Particle()
     cellID = 99;
     sysIndex = -1;
     inttype = -1;
+    IsNotPlaced = 1;
     };
 char *Particle::getpos()
 {
@@ -37,7 +38,7 @@ char *Particle::getvel()
 char *Particle::getForce()
 {
     /*for pretty output*/
-    char* buffer = new char[60];
+    char *buffer = new char[60];
     sprintf(buffer, "%.12g  %.12g  %.12g", F(0), F(1), F(2));
     return buffer;
 }
@@ -71,4 +72,8 @@ char *Particle::distanceMoved(){
 
 void Particle::Drift(int direction, double size){
     F(direction) += size;
+}
+
+void Particle::getInfo(char *buffer){
+    sprintf(buffer,"%d %.12g %.12g %.12g ", inttype,r(0),r(1),r(2));
 }
