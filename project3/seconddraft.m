@@ -40,21 +40,28 @@ beta = log(Prob(0.6/step:L))./log(x-pc);
 f = polyfit(x,beta,2);
 beta = f(1)*x.^2 + f(2)*x +f(3);
 %plot(x,(x-pc).^beta,'ro')
+%plot(x,(x-pc).^(0.5),'gx')
 %matlabpool('close');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%-------------Finding distribution--------------%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-z = rand(1e6,1).^(-3+1);
-Z = log10(z);
-N = zeros(1,100);
-p = linspace(0,max(Z));
-for i=1:100
-    n = Z<p(i);
+z = rand(1e6,1).^(-2);
+p = exp(linspace(0,log(max(z)),400));
+N = zeros(1,length(p));
+for i=1:length(p)
+    n = z>p(i);
     N(1,i) = sum(n);
 end
 N = N/1e6;
-plot(p,N)
-fit = polyfit(p,N,2);
-plot(p,fit(1)*p.^2 +fit(2)*p + fit(3),'ro');
+plot(log(p),log(N));
+ylabel('log(P(Z>z))');
+xlabel('log(Z)');
+figure()
+plot(log(p),N)
+legend('')
+hold on
+plot(log(p),(p).^(-1.0/2.0),'ro');
+legend('measurment','model')
+xlabel('log(Z)');
