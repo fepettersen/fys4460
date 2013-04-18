@@ -12,11 +12,16 @@ Prob = linspace(0,1,1/step);
 p = linspace(step,1,1/step);
 
 
-parfor i=1:1/step
+for i=1:1/step
     z = r<p(i);
-    [lw,num] = bwlabel(z,4);
+    [lw,num] = bwlabel(z,4);    
     %img = label2rgb(lw,'jet','r','shuffle');
     %image(img);
+    %sau = max(max%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%-----------Cluster number density---------------%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% logbins = exp(linspace(0,max(lw)));
     a = intersect(lw(1,:),lw(L,:));
     b = intersect(lw(:,1),lw(:,L));
     u = union(a,b);
@@ -55,13 +60,15 @@ for i=1:length(p)
     N(1,i) = sum(n);
 end
 N = N/1e6;
-plot(log(p),log(N));
-ylabel('log(P(Z>z))');
-xlabel('log(Z)');
-figure()
-plot(log(p),N)
-legend('')
-hold on
-plot(log(p),(p).^(-1.0/2.0),'ro');
-legend('measurment','model')
-xlabel('log(Z)');
+
+% plot(log(p),log(N));
+% ylabel('log(P(Z>z))');
+% xlabel('log(Z)');
+% figure()
+% plot(log(p),N)
+% legend('')
+% hold on
+% plot(log(p),(p).^(-1.0/2.0),'ro');
+% legend('measurment','model')
+% xlabel('log(Z)');
+
