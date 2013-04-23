@@ -1,4 +1,4 @@
-function[n,s] = numberdensity(p_in,L_in,N_in)
+function[n] = numberdensity(p_in,L_in,N_in)
 
 % Calculate the clusternumberdensity for a given 
 % porosity, p, and system size, L. 
@@ -14,8 +14,8 @@ L = L_in;
 r = rand(L,L);
 p = p_in;
 n = zeros(N,1);
-% s = floor((1.8).^(0:N-1));
-%innerend = length(s);
+s = floor((1.8).^(0:N-1));
+innerend = length(s);
 
 
     z = r<p;
@@ -25,8 +25,8 @@ n = zeros(N,1);
     u = union(a,b);
     tmp = regionprops(lw,'Area');
     area = cat(1,tmp.Area);
-    s = floor(exp(linspace(0,log(max(area)),N)));
-    for j=1:N-1
+    s = exp(linspace(0:floor(log(max(area)))));
+    for j=1:innerend
         tmp = find(area==s(j));
         clusters = length(tmp);
         n(j,1) = clusters/num;
@@ -68,5 +68,28 @@ n = zeros(N,1);
 % 
 % legend('L = 16','L = 32','L = 64','L = 128','L = 256','L = 512','L = 1024','L = 2048');
 % hold off
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%----------------Mass scaling-----------------%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+% M = zeros(length(L),length(L));
+% hold all
+% for j=1:length(L)
+%     for i=1:length(L);
+%         L2 = L(i)*L(i);
+%         r = rand(L(i),L(i));
+%         z = r<pc;
+%         [lw,num] = bwlabel(z,4);
+%         a = intersect(lw(1,:),lw(L(i),:));
+%         b = intersect(lw(:,1),lw(:,L(i)));
+%         u = union(a,b);
+%         tmp = regionprops(lw,'Area');
+%         area = cat(1,tmp.Area);
+%         if max(u)==0
+%             M(j,i) = 1;
+%         else
+%             M(j,i) = area(max(u));
+%         end
+%     end
+%     loglog(L,M(j,:))
+% end

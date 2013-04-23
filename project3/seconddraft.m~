@@ -7,17 +7,16 @@ clear all
 
 % L = 200;
 L = [25,50,100,200,400,800];
-step = 0.005; i = 1;
+r = rand(L,L);
+step = 0.01; i = 1;
 Prob = zeros(1/step,length(L));
 p = linspace(step,1,1/step);
-experiments = 50;
+experiments = 20;
 Pi = zeros(1/step,length(L));
 for matrices = 1:length(L)
     L2 = L(matrices)*L(matrices);
-    matrices
     for i=1:1/step
         for j=1:experiments
-            r = rand(L(matrices),L(matrices));
             z = r<p(i);
             [lw,num] = bwlabel(z,4);    
             %img = label2rgb(lw,'jet','r','shuffle');
@@ -41,12 +40,12 @@ end
 
 plot(p,Pi);
 hold on
-% x = p(0.6/step:L);
-% pc = 0.59275;
-% beta = log(Prob(0.6/step:L))./log(x-pc);
-% 
-% f = polyfit(x,beta,2);
-% beta = f(1)*x.^2 + f(2)*x +f(3);
+x = p(0.6/step:L);
+pc = 0.59275;
+beta = log(Prob(0.6/step:L))./log(x-pc);
+
+f = polyfit(x,beta,2);
+beta = f(1)*x.^2 + f(2)*x +f(3);
 %plot(x,(x-pc).^beta,'ro')
 %plot(x,(x-pc).^(0.5),'gx')
 %matlabpool('close');
