@@ -1,0 +1,73 @@
+\documentclass[a4paper,english, 10pt, twoside]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsfonts, amssymb, amsmath}
+\usepackage{listings}
+\usepackage{float}
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+
+%opening
+\title{Project 3 - Percolation \\ FYS4460}
+\author{Fredrik E Pettersen}
+
+\begin{document}
+ 
+ \maketitle
+ \section*{a}
+ Starting out with a uniform random matrix which we transform to a porous matrix consisting of
+ either filled (1) or empty (0) places we will now have clusters of connected, filled places. 
+ The ammount of filled and empty places depends on our chosen porosity for the random matrix. 
+ An example of a porous, labelled matrix is shown in figure \ref{perc_martix_example}.\\
+We want to find the probability distribution for a site in the porous matrix to be in a spanning cluster. A 
+spanning cluster is a cluster of connected sites which makes a path from one side of the matrix
+to the other. This can be done by finding the area of the spanning cluster, and divide it by
+the area of the entire matrix. We find the spanning cluster by labelling the connected clusters 
+and checking if the same labels can be found on each side of the matrix. The resulting ``distribution'' 
+is shown in figure \ref{P(p,L)}.
+This method lets me calculate at least for any rectangular matrix boundary, though I do not know how periodic
+bounday conditions will affect the calculations.
+
+\begin{figure}[H]
+\centering
+%\includegraphics[scale=0.7]{maxvalues.png}
+\label{perc_matrix_example}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+ \includegraphics[scale=0.85]{spanningcluster_L300.png}
+ \label{P(p,L)}
+\end{figure}
+
+\section*{b}
+For $p>p_c$ we have that $P(p,L) \propto (p-p_c)^\beta$ ($p_c = 0.59275$). We can find $\beta$ by doing 
+a double-logarithmic plot of our measured $P(p,L)$ versus $(p-p_c)$.
+
+
+\section{c}
+We are now gives a collection of random numbers on the form
+\begin{lstlisting}
+ z = rand(1e6,1).^(-2);
+\end{lstlisting}
+and area asked to find the distribution function $f_z(z)$ using that $f_z(z) = \frac{dP(Z>z)}{dz}$ and that 
+we know f is on the form $f_z(z)\propto z^\alpha$. We can plot the cumulative distribution function $P(Z>z)$ 
+(see figure INSERT REFERENCE) and use this to calculate the distribution function. Since 
+\begin{align*}
+z^\alpha\propto\frac{dP(Z>z)}{dz} \implies \int z^\alpha dz \propto \int dP(Z>z)\\
+\frac{1}{\alpha+1}z^{\alpha+1} \propto P(Z>z) \implies (\alpha +1)\log(z)\propto \log(P(Z>z))
+\end{align*}
+So we see that we are actually measuring $\alpha +1$ if we do a double logarithmic plot of z and the 
+cumulative distribution function. From this plot (figure \ref{loglog_f_z}) we find $\alpha = -3/2$. In figure 
+\ref{} we have plotted the measured cumulative distribution function and the modelled $f_z(z) = z^\alpha$. 
+We see that there is a good fit between the two graphs.
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.85]{loglog_f_z.png}
+ \label{loglog_f_z}
+\end{figure}
+
+\end{document}

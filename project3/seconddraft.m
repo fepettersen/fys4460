@@ -5,17 +5,19 @@ clear all
 %%------------P(p,L)------------------------------------%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 % L = 200;
 L = [25,50,100,200,400,800];
-step = 0.005; i = 1;
+step = 0.001; i = 1;
 Prob = zeros(1/step,length(L));
-p = linspace(step,1,1/step);
-experiments = 50;
+p = [linspace(0,0.44,10),linspace(0.45,0.70,1500),linspace(0.71,1.0,10)];
+experiments = 750;
 Pi = zeros(1/step,length(L));
 for matrices = 1:length(L)
+    tic
     L2 = L(matrices)*L(matrices);
     matrices
-    for i=1:1/step
+    for i=1:length(p)
         for j=1:experiments
             r = rand(L(matrices),L(matrices));
             z = r<p(i);
@@ -37,6 +39,7 @@ for matrices = 1:length(L)
         end
         Pi(i,matrices) = Pi(i,matrices)/experiments;
     end
+    toc
 end
 
 plot(p,Pi);
