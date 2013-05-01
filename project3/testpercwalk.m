@@ -26,13 +26,13 @@ for ind=1:length(p)
                 z=rand(lx,ly)<P;
                 [lw,num]=bwlabel(z,4);
                 perc_x = intersect(lw(1,:),lw(lx,:));
-                perc = find(perc_x >0);
+                perc = perc_x(perc_x~=0);
             end
-            s = regionprops(lw,'Area');
-            clusterareas = cat(1,s.Area);
-            maxarea = max(clusterareas);
-            i = find(clusterareas==maxarea);
-            zz = lw == i;
+%             s = regionprops(lw,'Area');
+%             clusterareas = cat(1,s.Area);
+%             maxarea = max(clusterareas);
+%             i = find(clusterareas==maxarea);
+            zz = lw == perc(1);
             % zz now contains the spanning cluster
             %imagesc(zz),axis equal ,axis tight
             rz = 1.0*zz;

@@ -4,6 +4,9 @@
 \usepackage[english]{babel}
 \usepackage{epsfig}
 \usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+
 \usepackage{amsfonts, amssymb, amsmath}
 \usepackage{listings}
 \usepackage{float}
@@ -39,6 +42,7 @@ bounday conditions will affect the calculations.
 \begin{figure}[H]
 \centering
  \includegraphics[scale=0.85]{spanningcluster_L300.png}
+ \caption{Probability for a randomly selected site to be a part of the spanningcluster}
  \label{P(p,L)}
 \end{figure}
 
@@ -54,19 +58,178 @@ We are now gives a collection of random numbers on the form
 \end{lstlisting}
 and area asked to find the distribution function $f_z(z)$ using that $f_z(z) = \frac{dP(Z>z)}{dz}$ and that 
 we know f is on the form $f_z(z)\propto z^\alpha$. We can plot the cumulative distribution function $P(Z>z)$ 
-(see figure INSERT REFERENCE) and use this to calculate the distribution function. Since 
+(see figure \ref{alpha}) and use this to calculate the distribution function. Since 
 \begin{align*}
 z^\alpha\propto\frac{dP(Z>z)}{dz} \implies \int z^\alpha dz \propto \int dP(Z>z)\\
 \frac{1}{\alpha+1}z^{\alpha+1} \propto P(Z>z) \implies (\alpha +1)\log(z)\propto \log(P(Z>z))
 \end{align*}
 So we see that we are actually measuring $\alpha +1$ if we do a double logarithmic plot of z and the 
 cumulative distribution function. From this plot (figure \ref{loglog_f_z}) we find $\alpha = -3/2$. In figure 
-\ref{} we have plotted the measured cumulative distribution function and the modelled $f_z(z) = z^\alpha$
+\ref{alpha} we have plotted the measured cumulative distribution function and the modelled $f_z(z) = z^\alpha$. 
+We see that there is a good fit between the two graphs.
 
 \begin{figure}[H]
  \centering
  \includegraphics[scale=0.85]{loglog_f_z.png}
+ \caption{Double logarithmic plot of the cumulative distribution function $P(Z>z)$}
  \label{loglog_f_z}
 \end{figure}
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.85]{fitted_alpha.png}
+  \caption{The measured cumulative distribution function (blue line) and the calculated model $f(z) = z^\alpha$ (red circles).}
+ \label{alpha}
+\end{figure}
+\section{d}
+There are quite a few ways to do logartihmic binning, some more elaborate than others. In the lecturenotes 
+we can find one quite elaborate method (which is probably very good). Another very simple method is to use 
+the following command i MatLab
+\begin{lstlisting}
+ z = floor((1.8)^(0:N));
+\end{lstlisting}
+The method I have settled on is also a quite simple one
+\begin{lstlisting}
+ z = floor(exp(linspace(1,log(max(s.area)),N)));
+\end{lstlisting}
+
+\section{e}
+We can find the cluster numberdensity $n(s,p)$ as the number of clusters with a certain area relative to the 
+total number of clusters in the matrix. This is done for different porosities on matrices of the same size. As 
+we can see from figure \ref{clustersize} the cluster numberdensity decreases as a power-law with increasing clustersize.
+\begin{figure}[H]
+\centering
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{cluster_numberdensity_large_p.png}
+    \caption{$p > p_c$}
+    \label{clustersize:larger}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{cluster_numberdensity_small_p.png}
+    \label{clustersize:smaller}
+    \caption{$p < p_c$}
+  \end{subfigure} 
+  \caption{Cluster numberdensity for various porosities.}
+  \label{clustersize}
+\end{figure}
+
+\section{f}\label{sect_f}
+
+Doing the same thing for differnt system sizes at the critical porosity will let us estimate the exponent $\tau$ from 
+the relation $n(s,p;L) = s^\tau$. Doing the usual loglog-plot will give us a straight line where $\tau$ is the 
+inclination of the line. Matlab's polyfit function gives us $\tau \approx -1.84$, which is not a perfect fit to the 
+tabulated value of $\tau = 2.05$, but still not to bad. The graph used is shown in figure \ref{tau}
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.85]{cluster_numberdensity2.png}
+ \caption{An estimate of $\tau$. The plot does not look exactly like it should, probably a result of a 
+ to large binsize in the logarithmic binning used for the clustersizes.}
+ \label{tau}
+\end{figure}
+
+\section{g}
+Using the dataset from the two previous sections we could estimate the typical clustersize $s_\xi$, however 
+there is a lot of noise in this data, and our estimate would be a poor one. A better way of estimating $s_\xi$ 
+is to make a data-collapse plot. We know that $s_\xi \sim |p-p_c|^{-1/\sigma}$. If we plot the cluster 
+numberdensity for increasing p-values (keeping L constant) and multiply with $s^\tau$ which we found in section 
+\ref{sect_f} we should get a data-collapse plot where the curves ``fall onto eachother'' for a good value of $\sigma$. 
+The tabulated value is $\sigma = 0.395$, and I found $\sigma \approx 0.4$. Figure \ref{sigma} shows the data-
+collapse.
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.55]{sigma_10values.png}
+ \label{sigma}
+ \caption{Datacollapse}
+\end{figure}
+
+\section{h}
+We will now find the ``mass'' of the percolating (spanning) cluster at $p = p_c$ as a function of the system size L. 
+In 3D the mass of an object is proportional to its volume, it stands to reason then that a 2D object will have a mass 
+proportional to it's area. We will also assume (more specifically) that the mass of the percolating cluster will 
+satisfy the following
+$$
+M(p,L) = L^D P(p,L).
+$$
+Doing a double logarithmic plot of M as a function of L lets us determind the exponent D. The plot is shown in 
+figure \ref{mass_D}, and using matlabs polyfit function we find $D \approx 1.89$ which is the tabulated value.
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.75]{mass.png}
+ \caption{Mass of the spanningcluster for increasing systemsize L.}
+ \label{mass_D}
+\end{figure}
+
+\section{i}
+
+Defining $\Pi(p,L)$ which is the probability of having a percolating cluster, this should go to a Heaviside 
+step-function in $p = p_c$ as the system size goes to infinity. We can of course check this (see figure \ref{Pi}), 
+but what is more interesting is to try and estimate another exponent using finite size scaling. Finding the probability 
+for $\Pi$ to be equal to some porbability (say $p_{\Pi = x}$) which is simply read of figure \ref{Pi} we have the 
+relation 
+\begin{equation}\label{blergh}
+ p_{\Pi = x_1} - p_{\Pi = x_2} = (C_{x_1} - C_{x_2})L^{-1/\nu}
+\end{equation}
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.85]{oppg_i_Pi.png}
+ \caption{Probability for there to be a percolating cluster on our matrix, plotted for different systemsizes.}
+ \label{Pi}
+\end{figure}
+
+\section{j}
+It should come as no surprise then that we can use equation \ref{blergh} to estimate $\nu$ by doing a double 
+logarithmic plot of $p_{\Pi = x_1} - p_{\Pi = x_2}$ vs L. This plot is shown in figure \ref{estimate_nu}.
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.75]{oppg_j_estimate_nu.png}
+ \caption{Estimate of $\nu$ for $x_1 = 0.8$ and $x_2 = 0.3$}
+ \label{estimate_nu}
+\end{figure}
+
+\section{k}
+
+\section{l}
+We are given the script ``exwalk'' which uses the function ``walk'' to find the singly connected bonds of a percolating 
+cluster. The script finds the percolating cluster of a matrix and starts a walker on this cluster. The walker mooves by 
+trying to turn left or right as much as possible. It's goal is to make it to the other side of the matrix. Two walkers 
+try walking across the cluster from top to bottom, and from right to left. A singly connected bond is a cluster of places 
+on the matrix where both walkers have visited. The singly connected bonds of a randomly chosen matrix is visaluzed in figure 
+\ref{output_exwalk}. The script finds theese singly connected bonds by storing the path of each walker, that is it's position 
+on the matrix, and how long it stayed at each position in the form of which direction it moved further in. Theese matrices 
+will be rather sparse, and so multiplying them will result in a matrix containing the places both walkers have visited. 
+Some of theese positions will have values larger than 1, and theese positions are the places where at least one of the 
+walkers have lingered.
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.95]{oppg_l_output.png}
+ \caption{Various output from the script ``exwalk.m``. The bottom left picture shows the singly connected bonds of the 
+ percolating cluster. The top left picture is the percolating cluster, and the top right is the percolating cluster 
+ with the singly connected bonds on top.}
+ \label{output_exwalk}
+\end{figure}
+
+\section{m}
+
+\section{q}
+We will now study random walks on the percolating cluster. Again, we are given the important parts of the code (one C 
+program which can be used in matlab through mex, and one matlab script which uses the program). The C program returns 
+two vectors containing the distance moved in x and y direction. We can find the distance $\langle R^2\rangle$ moved 
+by the walker by a simple conversion $\langle R^2\rangle = (x(end)-x(1))^2 + (y(end)-y(1))^2$. And to get more accurate 
+results we will average this over 5000 samples. We are interested in how $\langle R^2\rangle$ scales with the number of 
+steps the walker carries out for different porosities. The results can be found in figure \ref{rsquared} 
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.75]{oppg_q_take4_multiple.png}
+ \caption{$\langle R^2\rangle$ as a function of the number of steps done by the walker. Double logarithmic axes.}
+ \label{rsquared}
+\end{figure}
+
+\section{r}
 
 \end{document}

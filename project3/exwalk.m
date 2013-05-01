@@ -15,13 +15,13 @@ while (size(perc,1)==0)
    [lw,num] = bwlabel(z,4);
    perc_x = intersect(lw(1,:),lw(lx,:));
    perc_y = intersect(lw(:,1),lw(:,ly));
-   perc = find(perc_x>0);
+   perc = perc_x(perc_x ~= 0);
 end
-s = regionprops(lw,'Area');
-clustersize = cat(1,s.Area);
-maxarea = max(clustersize);
-i = find(clustersize == maxarea);
-zz = lw==i;
+% s = regionprops(lw,'Area');
+% clustersize = cat(1,s.Area);
+% maxarea = max(clustersize);
+% i = find(clustersize == maxarea);
+zz = lw==perc(1);
 
 %zz now contains the spanning cluster
 imagesc(zz); %visualize spanning cluster
