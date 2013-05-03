@@ -23,7 +23,7 @@
  Starting out with a uniform random matrix which we transform to a porous matrix consisting of
  either filled (1) or empty (0) places we will now have clusters of connected, filled places. 
  The ammount of filled and empty places depends on our chosen porosity for the random matrix. 
- An example of a porous, labelled matrix is shown in figure \ref{perc_martix_example}.\\
+ An example of a porous, labelled matrix is shown in figure \ref{perc_matrix_example}.\\
 We want to find the probability distribution for a site in the porous matrix to be in a spanning cluster. A 
 spanning cluster is a cluster of connected sites which makes a path from one side of the matrix
 to the other. This can be done by finding the area of the spanning cluster, and divide it by
@@ -35,7 +35,8 @@ bounday conditions will affect the calculations.
 
 \begin{figure}[H]
 \centering
-%\includegraphics[scale=0.7]{maxvalues.png}
+\includegraphics[scale=0.85]{oppg_a_percmatrix.png}
+\caption{An example of a porous $800\times800$ matrix with porosity $p = 0.6$.}
 \label{perc_matrix_example}
 \end{figure}
 
@@ -51,7 +52,7 @@ For $p>p_c$ we have that $P(p,L) \propto (p-p_c)^\beta$ ($p_c = 0.59275$). We ca
 a double-logarithmic plot of our measured $P(p,L)$ versus $(p-p_c)$.
 
 
-\section{c}
+\section*{c}
 We are now gives a collection of random numbers on the form
 \begin{lstlisting}
  z = rand(1e6,1).^(-2);
@@ -81,7 +82,9 @@ We see that there is a good fit between the two graphs.
   \caption{The measured cumulative distribution function (blue line) and the calculated model $f(z) = z^\alpha$ (red circles).}
  \label{alpha}
 \end{figure}
-\section{d}
+
+\section*{d}
+
 There are quite a few ways to do logartihmic binning, some more elaborate than others. In the lecturenotes 
 we can find one quite elaborate method (which is probably very good). Another very simple method is to use 
 the following command i MatLab
@@ -93,7 +96,8 @@ The method I have settled on is also a quite simple one
  z = floor(exp(linspace(1,log(max(s.area)),N)));
 \end{lstlisting}
 
-\section{e}
+\section*{e}
+
 We can find the cluster numberdensity $n(s,p)$ as the number of clusters with a certain area relative to the 
 total number of clusters in the matrix. This is done for different porosities on matrices of the same size. As 
 we can see from figure \ref{clustersize} the cluster numberdensity decreases as a power-law with increasing clustersize.
@@ -113,7 +117,7 @@ we can see from figure \ref{clustersize} the cluster numberdensity decreases as 
   \label{clustersize}
 \end{figure}
 
-\section{f}\label{sect_f}
+\section*{f}\label{sect_f}
 
 Doing the same thing for differnt system sizes at the critical porosity will let us estimate the exponent $\tau$ from 
 the relation $n(s,p;L) = s^\tau$. Doing the usual loglog-plot will give us a straight line where $\tau$ is the 
@@ -128,7 +132,8 @@ tabulated value of $\tau = 2.05$, but still not to bad. The graph used is shown 
  \label{tau}
 \end{figure}
 
-\section{g}
+\section*{g}
+
 Using the dataset from the two previous sections we could estimate the typical clustersize $s_\xi$, however 
 there is a lot of noise in this data, and our estimate would be a poor one. A better way of estimating $s_\xi$ 
 is to make a data-collapse plot. We know that $s_\xi \sim |p-p_c|^{-1/\sigma}$. If we plot the cluster 
@@ -144,7 +149,8 @@ collapse.
  \label{sigma}
 \end{figure}
 
-\section{h}
+\section*{h}
+
 We will now find the ``mass'' of the percolating (spanning) cluster at $p = p_c$ as a function of the system size L. 
 In 3D the mass of an object is proportional to its volume, it stands to reason then that a 2D object will have a mass 
 proportional to it's area. We will also assume (more specifically) that the mass of the percolating cluster will 
@@ -161,7 +167,7 @@ figure \ref{mass_D}, and using matlabs polyfit function we find $D \approx 1.89$
  \label{mass_D}
 \end{figure}
 
-\section{i}
+\section*{i}
 
 Defining $\Pi(p,L)$ which is the probability of having a percolating cluster, this should go to a Heaviside 
 step-function in $p = p_c$ as the system size goes to infinity. We can of course check this (see figure \ref{Pi}), 
@@ -179,9 +185,12 @@ relation
  \label{Pi}
 \end{figure}
 
-\section{j}
+\section*{j}
+
 It should come as no surprise then that we can use equation \ref{blergh} to estimate $\nu$ by doing a double 
-logarithmic plot of $p_{\Pi = x_1} - p_{\Pi = x_2}$ vs L. This plot is shown in figure \ref{estimate_nu}.
+logarithmic plot of $p_{\Pi = x_1} - p_{\Pi = x_2}$ vs L. This plot is shown in figure \ref{estimate_nu}. 
+Using MatLab's polyfit function I got $\nu \approx 1.262626$ compared to the analytical value of $\nu={4\over3}$. 
+I have only made a rough estimate using some 10 samples when estimating this. 
 
 \begin{figure}[H]
  \centering
@@ -190,9 +199,21 @@ logarithmic plot of $p_{\Pi = x_1} - p_{\Pi = x_2}$ vs L. This plot is shown in 
  \label{estimate_nu}
 \end{figure}
 
-\section{k}
+\section*{k}
 
-\section{l}
+Using the data we now have gathered we can make an estimate of the percolating thershold $p_c$. Plotting $p_{\Pi = x}$ 
+vs $L^{-1/\nu}$ theese lines will intersect the y-axis in $p_c$ (see figure \ref{estimate_pc}). This figure gives the 
+estimate of $p_c$ as $p_c \in [0.5923,0.594]$, which is not bad considering the small ammount of samples I have used.
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.75]{oppg_k_rough.png}
+ \caption{Estimate of $p_c$ for $x_1 = 0.8$ and $x_2 = 0.3$}
+ \label{estimate_pc}
+\end{figure}
+
+\section*{l}
+
 We are given the script ``exwalk'' which uses the function ``walk'' to find the singly connected bonds of a percolating 
 cluster. The script finds the percolating cluster of a matrix and starts a walker on this cluster. The walker mooves by 
 trying to turn left or right as much as possible. It's goal is to make it to the other side of the matrix. Two walkers 
@@ -213,15 +234,27 @@ walkers have lingered.
  \label{output_exwalk}
 \end{figure}
 
-\section{m}
+\section*{m}
 
-\section{q}
+We can also find the mass of the singly connected bonds as a function of system size from the relation $M_{SC} \propto L^{D_{SC}}$. 
+Figure \ref{mass_SC} shows this relation averaged over 500 samples. MatLab's polyfit function gives us $D_{SC}\approx  0.7745$.
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.75]{oppg_m_mass.png}
+ \caption{Estimate of $M_{SC}$ as a function of L for $L = 2.^{(3:9)}$. 500 samples used per L.}
+ \label{mass_SC}
+\end{figure}
+
+\section*{q}
+
 We will now study random walks on the percolating cluster. Again, we are given the important parts of the code (one C 
 program which can be used in matlab through mex, and one matlab script which uses the program). The C program returns 
 two vectors containing the distance moved in x and y direction. We can find the distance $\langle R^2\rangle$ moved 
 by the walker by a simple conversion $\langle R^2\rangle = (x(end)-x(1))^2 + (y(end)-y(1))^2$. And to get more accurate 
 results we will average this over 5000 samples. We are interested in how $\langle R^2\rangle$ scales with the number of 
-steps the walker carries out for different porosities. The results can be found in figure \ref{rsquared} 
+steps the walker carries out for different porosities. The results can be found in figure \ref{rsquared} .\\
+Producing a data collapse is not possible...
 
 \begin{figure}[H]
  \centering
@@ -230,6 +263,23 @@ steps the walker carries out for different porosities. The results can be found 
  \label{rsquared}
 \end{figure}
 
-\section{r}
+\section*{r}
+
+From figure \ref{rsquared} and figure \ref{xi} we can estimate the correlation length $\xi$. Though it might not 
+be very clear from fgure \ref{xi}, $\langle r^2\rangle$ will tend to a constant as N tends to infinity because the 
+walker is walking on a cluster of finite size (that is, not a spanning cluster). The correlation length squared, 
+$\xi^2$ is found where the graphs of $\langle r^2\rangle$ start to fall off. We read this off figures \ref{rsquared} 
+and \ref{xi} as happening at roughly $N = 10 000$, making $\xi^2 \approx 1000$ and $\xi \approx 32$.\\
+From figure \ref{rsquared} we can also finf the dimensionality of the walker by using the relation 
+$\langle r^2\rangle \propto N^{2/d_w}$ meaning that the incline of the curves in figure \ref{rsquared} is ${2\over d_w}$. 
+We find $d_w$ to be somewhere between $2.766$ and $2.986$. This means that the walker spanns more than 2 dimensions.
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.75]{oppg_r.png}
+ \caption{$\langle R^2\rangle$ as a function of the number of steps done by the walker.}
+ \label{xi}
+\end{figure}
+
 
 \end{document}

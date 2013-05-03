@@ -29,7 +29,7 @@ n = zeros(N,1);
     for j=1:N-1
         tmp = find(area==s(j));
         clusters = length(tmp);
-        n(j,1) = clusters/num;
+        n(j,1) = clusters*s(j)/(L*L);
     end
 
 % hold all

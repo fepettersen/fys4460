@@ -12,7 +12,7 @@ step = 0.001; i = 1;
 Prob = zeros(N+6,length(L));
 % p = [linspace(0,0.44,10),linspace(0.45,0.70,150),linspace(0.71,1.0,10)];
 p = zeros(length(L),N+6);
-experiments = 500;
+experiments = 5;
 Pi = zeros(N+6,length(L));
 pc = 0.59275;
 
@@ -38,12 +38,13 @@ for matrices = 1:length(L)
 %                 s = regionprops(lw,'Area');
 %                 area = cat(1,s.Area);
                 tmp = sum(sum(lw==perc(1)))/L2;
-                Prob(i,matrices) =tmp;
+                Prob(i,matrices) = Prob(i,matrices) +tmp;
             else
-                Prob(i,matrices) = 0;
+                Prob(i,matrices) = Prob(i,matrices) + 0;
             end
         end
         Pi(i,matrices) = Pi(i,matrices)/experiments;
+         Prob(i,matrices) =  Prob(i,matrices)/experiments;
     end
     toc
 end
