@@ -46,7 +46,14 @@ practical purposes no interaction between particles that are a certain length ap
 can skip the calculations of forces (which is very expensive) between theese particles. As a practical 
 measure we will therefore divide the system we are simulating into cells which are the same size as the 
 cutoff length and only calculate forces between particles in neighbouring cells. In this way we are sure 
-that no important calculations are left out
+that no important calculations are left out, and still gain a significant speedup. In fact, should we do 
+all pairwise force calculations we will at best need something like $\frac{n^2}{2}$ FLOPS, where as we 
+will only need something like $n$ FLOPS when we use cells.\\
+We initialize the system by placing it in a face centered cubic lattice (figure \ref{fcc}) and give each 
+atom a random velocity drawn from the uniform distribution. We will of course also need to remove any 
+initial drift in the system also by rescaling all velocities by the mean of all velocities. Finally, to 
+get around the boundary problems, where any potential we have chosen will strictly speaking be incorrect, 
+we implement periodic boundary conditions. That is, two particles on each side of the lattice are neighbouring.
 
 \begin{figure}[H]
 \centering
@@ -54,23 +61,105 @@ that no important calculations are left out
 \caption{Strength of Lennard-Jones potential as a function of distance between atoms}
 \label{LJ_cut}
 \end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.45]{fcc_lattice.png}
+\caption{Face centered cubic lattice}
+\label{fcc}
+\end{figure}
 
+\section{Molecular-dynamics in the micro-canonical ensemble}\label{section_2}
+If we leave the simulation to itself after setting it up, the temperature will drop quite dramatically 
+and then fluctuate around some steady state solution. This is first off all unwanted, and (possibly) 
+unphysical. One way to solve this problem is by introducing a thermostat. In theese simulations we are 
+in the microcanonical ensemble. That is, The number of particles, volume, and energy are all fixed. In 
+the microcanonical ensemble it can be shown that the temperature is 
+\begin{equation}\label{temperature}
+T = \frac{2E_k}{3N}
+\end{equation}
+
+where the kinetic energy is the sum of the kinetic energy off all the particles. This means that we can 
+manipulate the temperature of the system by rescaling the velocity of each particle. There are, as usual, 
+a few alternatives on how to do this. The berendsen thermostat lets us simulate the canonical ensemble (poorly) by 
+``surrounding'' our system with a heat bath, and rescaling the velocities accordingly. The scaling constant 
+is shown in eq \ref{berendsen}.
+\begin{equation}\label{berendsen}
+ \gamma = \sqrt{1+\frac{\Delta t}{\tau}\left(\frac{T_{bath}}{T}-1\right)}
+\end{equation}
+Another possibility is the Andersen thermostat which simulates collitions between atoms inside the system and in 
+the heat bath. Atoms which collide will gain a new, normally distributed velocity with standard deviation 
+$\sqrt{k_B T_{bath}/m}$. For all atoms a random, uniformly distributed number is drawn. If the number is less than 
+$\frac{\Delta t}{\tau}$, the atom is assigned a new velocity. A downside of the Andersen thermostat is that 
+it disturbs the dynamics of lattice vibrations.
 
 \section{Molecular-dynamics in the micro-canonical ensemble}
+The ultimate goal of molecular dynamics simuations is to measure macroscopic quantities such as the pressure, 
+permeability, viscosity etc. from the microscopical simulations. This can be achieved via statistical mechanics. 
+As mentioned in section \ref{section_2} the temperature can be expressed from the microcanonical ensemble as 
+equation \ref{temperature} (Insert mathematical argument).\\
+In a similar way we can find the pressure of the entire system as it is expressed in equation \ref{pressure}.
+\begin{equation}\label{pressure}
+p = \vec{F}\cdot\vec{r} 
+\end{equation}
+Theese quantities can for example be used to say something about how a system will react to a fluid beeing 
+driven through it.
 
-\section{Molecular-dynamics in the micro-canonical ensemble}
-
-\section{Measuring the diffusion constant in molecular-dynamics simulations}
+\section{Measuring the diffusion constant in molecular-dynamics simulations}\label{section_4}
+We can measure the diffusion constant by measuring the mean square displacement of the particles in the system. 
+This will relate to the diffusion constant as 
+\begin{equation}\label{einstein}
+ \langle r^2\rangle \simeq 2dtD
+\end{equation}
+where d denotes the dimensionality of the system (in most cases 3), t is directly relatable to the number of 
+timesteps that have passed and D is the diffusion constant. One problem by using this relation is that, to 
+my knowledge, it has only been derived for particles in a homogenous fluid which is much larger than the average 
+size of the particles. Also, one must account for the periodic boundary conditions. This is done by summing the 
+distance traveled by each particle at each timestep, and carefully accounting for ``jumping'' from one side of 
+the system to the other.\\
+Equation \ref{einstein} is also widely used to measure the diffusion constant in random walks computations. 
+For example we ca use it to measure the diffusion constant of random walkers on a spanning cluster in percolation 
+theory. INSERT SOME MORE STUFF
 
 \section{Measuring the radial distribution function in molecular-dynamics simulations}
+??
 
 \section{Thermostats in molecular-dynamics simulations}
+As mentioned in section \ref{section_2} the system will be represented by the microcanonical ensemble if we leave it to 
+itself. We can adjust the system so that it is represented by the canonical ensemble by ``surrounding'' it with 
+a heat bath. This is done by introducing a thermostat which (for example) rescales the velocities of the particles 
+so that the temperature of the system matches that of the heat bath. The best thermostat for simulations of the 
+canonical ensemble is the Nosè-Hoover thermostat, however this is (apparently) rather difficult to implement.\\
+In section \ref{section_2} two other alternatives are described, the Andersen and the Berendsen thermostats.
 
 \section{Generating a nano-porous material}
+Generally we generate a nanoporous matrix by first thermalizing a ``normal'' system at some temperature. 
+Next, we need some algorithm to make it porous. A typical way of doing this is by removing some of the particles 
+in the system by some rule, or at least mark them as stationary. The pores can be specified by, for example, 
+drawing spheres of a random radius placed at a random position. Atoms outside the sphere are marked as stationary 
+(or the other way around). In more complex simulations one usually heats the system a lot, expands it and rapidly cools 
+it again. This will give a more realistic geometry.\\
+HOW DO WE CHARACTERIZE THE STRUCTURE OF THE MATERIAL AND THE DYNAMICS OF FLUIDS IN SUCH MATERIALS?
 
 \section{Diffusion in a nano-porous material}
+The diffusion constant is measured in the same way as we described in section \ref{section_4}. \\
+I guess one could expect the diffusion constant to depend on the porosity of the system. 
+It would also make sense if the diffusion constant was different in different directions because the connectivity might depend on direction. This 
+should (at least for randomly generated matrices) cancel out on larger scales. \\
+Diffusion in larger scale porous media is governed by nonlinear diffusion equations which are immensely complicated 
+to model (using upwind differences etc). However, the thing all diffusion processes have in common is reaching a steady 
+state after some time. This is also expected from the low density fluid in the nanoporous system.
 
 \section{Flow in a nano-porous material}
+We can introduce flow in one direction in the nanoporous material by adding a driving force to all particles, much like a gravitational force.
+This should make all particles drift in one direction.\\
+HOW CAN YOU CHECK YOUR MODEL????\\
+To calculate the viscosity of the model we need the superficial velocity distribution of the fluid. One way to estimate the fluid viscosity is 
+by simulating flow through a cylindrical pore of a given radius and with a given driving force we find the viscosity from
+\begin{align*}
+ u(r) &= \frac{\Delta P}{4\mu L}\left(a^2-r^2\right)\\
+ \implies \mu &= \frac{nFa^2}{4u(0)}
+\end{align*}
+The permeability of the nanoporous material can be measured by...
 
 \section{Algorithms for percolation systems}
 

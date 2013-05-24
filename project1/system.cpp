@@ -603,39 +603,33 @@ void System::AdjustDensity(double factor){
 }
 
 void System::Thermalize(int steps, double dt, bool makespheres, bool ToScreen){
-    int totalsteps = (steps+11);
-    double Time_end = dt*totalsteps;
+
     double start = 0;
     double stop = 0;
-    int counter = 0;
-    double time = 0;
     double first = clock();
     bool drive = false;
     char* buffer = new char[100];
 
-    while(time<Time_end){
+   for(int t=0;t<steps;t++){
         start = clock();
         update_all(dt,drive);
-        if(counter < steps){
-            BerendsenThermostat();
-//            AndersenThermostat(dt);
-        }
-        if(counter == steps+10 && makespheres){
-            Spheres(14,20,30);
-//            Cylinder(20);
-        }
-        output(counter);
-        mean_square(counter);
+//        BerendsenThermostat();
+//        AndersenThermostat(dt);
+
+        output(t);
+        mean_square(t);
         stop = clock();
         if(ToScreen){
-            timeRemaining(timediff(start,stop),totalsteps,counter,timediff(first,stop),buffer);
-            cout<< "step "<<counter<<" of "<<totalsteps<<" : remaining "<<buffer<<endl;
+            timeRemaining(timediff(start,stop),steps,t,timediff(first,stop),buffer);
+            cout<< "step "<<t<<" of "<<steps<<" : remaining "<<buffer<<endl;
             buffer[0] = '\0';
         }
-        time += dt;
-        counter ++;
     }
 //    outputMeanSquare();
+   if(makespheres){
+       Spheres(14,20,30);
+//            Cylinder(20);
+   }
 }
 
 void System::SimulateFlow(double dt, bool ToScreen = true){
@@ -644,8 +638,8 @@ void System::SimulateFlow(double dt, bool ToScreen = true){
     double time = 0;
     double start = 0;
     double stop = 0;
-    Input();
-    AdjustDensity(2.0);
+//    Input();
+//    AdjustDensity(2.0);
     double first = clock();
     bool drive = true;
     char* buffer = new char[100];
@@ -653,7 +647,8 @@ void System::SimulateFlow(double dt, bool ToScreen = true){
     while(time<Time_end){
         start = clock();
         update_all(dt,drive);
-//        output(counter);
+//        BerendsenThermostat();
+        output(counter);
         mean_square(counter);
         stop = clock();
         if(ToScreen){

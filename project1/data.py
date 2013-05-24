@@ -55,10 +55,10 @@ class Data():
 		self.U_tot = float(self.infile.readline().split()[-1])
 		for i in xrange(self.nparticles):
 			tmp =self.infile.readline().split()
-			dummy = tmp[4:]
+			#dummy = tmp[4:]
 			dummy2 = tmp[1:4]
 			for j in xrange(3):
-				self.v[i,j] = float(dummy[j])
+				#self.v[i,j] = float(dummy[j])
 				self.r[i,j] = float(dummy2[j])
 		'''		
 		counter = 0
@@ -198,7 +198,7 @@ class Data():
 			else:
 				return yolo,rofl
 		else:
-			filename = "MD_results_atoms%d_timesteps%d_.txt"\
+			filename = "MD_results_atoms%d_timesteps%d.txt"\
 			%(self.nparticles,self.ntimesteps)
 			self.DiffusionConstant(filename)
 			energy = self.kineticEnergy + self.potentialEnergy
@@ -209,3 +209,25 @@ class Data():
 				mpl.show()
 			else:
 				return energy
+
+	def Pressure(self,makeplot = True):
+		if self.old:
+			print"sorry"
+			
+		else:
+			filename = "MD_results_atoms%d_timesteps%d.txt"\
+			%(self.nparticles,self.ntimesteps)
+			self.DiffusionConstant(filename)
+			if(makeplot):
+				temperature = 2*self.kineticEnergy/(3*self.nparticles)
+				fig1,a1 = self.makeplot(self.pressure,\
+					y_label="Pressure",x_label="Temperature")
+				mpl.show()
+			else:
+				return self.pressure
+
+if __name__ == "__main__":
+	obj = Data("run_240513_0904_results.bin")
+	#obj.ClaculateEnergy()
+	obj.radial_distribution(300,500,2)
+	#obj.Pressure()

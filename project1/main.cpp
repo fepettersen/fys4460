@@ -7,7 +7,7 @@ using namespace arma;
 int main(/*int argc, char** argv*/)
 {
     int ncells = 20;
-    double T_kelvin = 119.8*1.5;
+    double T_kelvin = 119.8*1.9;
     double T = T_kelvin/119.8;
 
     /*some time stuff*/
@@ -15,10 +15,10 @@ int main(/*int argc, char** argv*/)
     double dt = 5e-3;
 
 //    int timesteps = int (Time_end/dt);
-    int timesteps = 6;
+    int timesteps = 700;
 
     System MySys(ncells,timesteps,T);
-        MySys.Thermalize(1500,dt,true,true);
+//        MySys.Thermalize(1500,dt,true,true);
 //    MySys.Spheres(14,20,30);
     /*loop over time and evolve system*/
 
