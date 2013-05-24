@@ -225,7 +225,7 @@ void System::update_all(double dt, bool drive){
         double p_thread = 0;
 //        vec3 F_tmp = zeros(3);
 //        mat thread_forces = zeros(3,oldParticles);
-#pragma omp for schedule(static,4)
+#pragma omp for /*schedule(static,4)*/
         for(int j=0; j<cells;j++){
 //            cout<<"j = "<<j<<endl;
 //            for(it1 = cell[j]->particles.begin(); it1 != cell[j]->particles.end(); it1++){
@@ -240,7 +240,7 @@ void System::update_all(double dt, bool drive){
                         cell[j]->particles[it1]->F +=grad_U_new(cell[n],cell[j]->particles[it1],U_thread,p_thread);
                     }
                     if(drive){
-                        cell[j]->particles[it1]->Drift(2,-0.1);
+                        cell[j]->particles[it1]->Drift(2,-0.5);
                     }
                     cell[j]->particles[it1]->v = cell[j]->particles[it1]->v + cell[j]->particles[it1]->F*(dt/2.0);
                 }
@@ -303,7 +303,7 @@ void System::mean_square(int nr){
 }
 
 void System::BerendsenThermostat(){
-    /*rescales the velocities aff all atoms*/
+    /*rescales the velocities of all atoms*/
     double tau = 1.0/10;
     double E_k = 0;
     for(int i=0; i<particles;i++){
@@ -501,8 +501,8 @@ void System::output(int nr){
 void System::Input(){
     cout<<"Importing nanoporous matrix...";
     string line;
-    ifstream infile ("Cylinder.xyz");
-//    ifstream infile ("Setup.xyz");
+//    ifstream infile ("Cylinder.xyz");
+    ifstream infile ("Setup.xyz");
     getline(infile,line);
     int nparticles = atoi(line.c_str());
     vec tmp = zeros<vec>(10);
@@ -621,8 +621,8 @@ void System::Thermalize(int steps, double dt, bool makespheres, bool ToScreen){
 //            AndersenThermostat(dt);
         }
         if(counter == steps+10 && makespheres){
-//            Spheres(20,20,30);
-            Cylinder(20);
+            Spheres(14,20,30);
+//            Cylinder(20);
         }
         output(counter);
         mean_square(counter);
@@ -670,6 +670,9 @@ void System::SimulateFlow(double dt, bool ToScreen = true){
         if(counter%400 ==0){
             PrintVelocity(counter);
         }
+//        if(counter == 1750){
+//            drive = false;
+//        }
         time += dt;
         counter ++;
     }

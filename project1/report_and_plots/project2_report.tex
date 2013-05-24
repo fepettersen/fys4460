@@ -88,13 +88,29 @@ $nF_x$
 
 \section{Results}
 
-% \begin{figure}[H]
-% \centering
-%  \includegraphics[scale=0.6]{plot_radial_ncells10_T119K.png}
-%  \caption{Radial distribution of atoms for a crystal structure. Simulation with 4000 particles and no thermostat.}
-%  \label{radial_10cells}
-% \end{figure}
-% 
+Fluid dynamics tells us that a fluid flowing between two stationary plates (of infinite length) will have a 
+velocity distribution going as a parabola. We ca try to recreate this scenario in our molecular dynamics model 
+by having our Argon - Lennard Jones fluid flowing through a cylider by a driving force (scaled to 1 in the 
+dimensionless units) like a gravitational force. Figure \ref{veldir1} shows a plot where the cross section of 
+the cylindrical pore has been transformed onto an r. As we can see, the velocity is largest at the center of the 
+cylinder ($r=0$) as we expect. We also notice a decrease in velocity as we approach the edges of the pore.\\
+It can be shown that the velocity distribution takes the form 
+\begin{equation}\label{veldir_eq}
+ u(r) = \frac{\Delta P}{4\mu L}\left(a^2-r^2\right)
+\end{equation}
+
+where we have $\Delta P = \rho g \Delta h = \frac{NFL}{V}$ and where we know that $u(r) \propto a^2-r^2$. a 
+is our system length constant which is $a = 5.72\sigma$. Solving (\ref{veldir_eq}) for $\mu$ at $r=0$ gives us 
+$$
+\mu = \frac{nFa^2}{4u(0)} = ???
+$$
+\begin{figure}[H]
+\centering
+ \includegraphics[scale=0.6]{project2_velocitydistr_1200.png}
+ \caption{Radial distribution of velocity in z direction.}
+ \label{veldir1}
+\end{figure}
+
 % \begin{figure}[H]
 % \centering
 %  \includegraphics[scale=0.6]{plot_radial_ncells12_T200K_andersen.png}

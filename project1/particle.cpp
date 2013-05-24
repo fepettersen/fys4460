@@ -26,6 +26,7 @@ char *Particle::getpos()
     char* buffer = new char[60];
     sprintf(buffer, "%.12g  %.12g  %.12g", r(0), r(1), r(2));
     return buffer;
+//    clear(buffer);
 }
 
 char *Particle::getvel()

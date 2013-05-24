@@ -1,0 +1,124 @@
+\documentclass[a4paper,english, 10pt, twoside]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsfonts, amssymb, amsmath}
+\usepackage{listings}
+\usepackage{float}
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+
+%opening
+\title{Exam preperations FYS4460}
+\author{Fredrik E Pettersen\\ f.e.pettersen@fys.uio.no}
+\begin{document}
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\section{Molecular-dynamics algorithms}
+There are several different possibilities for ``variation'' when doing molecular dynamics. First of all 
+one can use different potenitals according to what one would like to model. The simplest beeing the 
+Lennard-Jones potential, which only includes two-particle interactions. The Lennard-Jones potential is 
+typically pretty good for simulations of noble gasses. If we should want to study another material we will 
+therefore need another potential. The weber-Stillinger potential includes both two- and three-particle 
+interactions, and can model silicone (Si). Silicone will, in equilibrium, form 4-coordinated tetrahedral 
+structures, which the Weber-Stillinger potential reproduces. The VKRE (Vashista, Kalia, Rino, and Ebbsjö) 
+potiential is another potential which includes both two and three particle interactions, but this potential 
+is made (specificly) to simulate $SiO_2$. The two-body part includes three terms, the Coulomb interaction, 
+steric repulsion due to ionic sizes, and a charge-dipole interaction resulting from the large
+electronic polarizability of $O_2^-$. Yet another example of a possible potential is the reaxFF potential 
+which also includes four-particle interactions. This potential lets us study water molecules in an $SiO_2$ 
+matrix.\\
+In our Lennard-Jones studies we used the Verlet algorithm for time-integration. It is a simple, yet quite 
+good integrator which conserves energy very well. It can be viewed as an advanced Euler-Chromer method, 
+where we first update the velocity of each particle at half the timestep, then the position is integrated 
+one full timestep using the new velocity. When this is completed for all paritcles we calculate two-body 
+forces using the new positions before we use the new forces to fully integrate the velocities.\\
+All of the potentials mentiones above decrease in strength with the distance between atoms. For the Lennard-
+Jones potential, this is illustrated in figure \ref{LJ_cut}. As we see from this figure, there is for all 
+practical purposes no interaction between particles that are a certain length apart. This means that we 
+can skip the calculations of forces (which is very expensive) between theese particles. As a practical 
+measure we will therefore divide the system we are simulating into cells which are the same size as the 
+cutoff length and only calculate forces between particles in neighbouring cells. In this way we are sure 
+that no important calculations are left out
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.75]{plot_potential.png}
+\caption{Strength of Lennard-Jones potential as a function of distance between atoms}
+\label{LJ_cut}
+\end{figure}
+
+
+\section{Molecular-dynamics in the micro-canonical ensemble}
+
+\section{Molecular-dynamics in the micro-canonical ensemble}
+
+\section{Measuring the diffusion constant in molecular-dynamics simulations}
+
+\section{Measuring the radial distribution function in molecular-dynamics simulations}
+
+\section{Thermostats in molecular-dynamics simulations}
+
+\section{Generating a nano-porous material}
+
+\section{Diffusion in a nano-porous material}
+
+\section{Flow in a nano-porous material}
+
+\section{Algorithms for percolation systems}
+
+\section{Percolation on small lattices}
+
+\section{Cluster number density in 1-d percolation}
+
+\section{Correlation length in 1-d percolation}
+
+\section{Cluster size in 1-d percolation}
+
+\section{Measurment and behavior of $P(p,L)$ and $\Pi(p,L)$}
+
+\section{The cluster number density}
+
+\section{Finite size scaling of $\Pi(p,L)$}
+
+\section{Subsets of the spanning cluster}
+
+\section{Random walks}
+% Figure - subfigure template (2 by 2 subfigures)
+% \begin{figure}[H]
+% \centering
+%   \begin{subfigure}[b]{0.48\textwidth}
+%     \includegraphics[width=\textwidth]{filename}
+%     \caption{small caption}
+%     \label{KM:age}
+%   \end{subfigure}
+%   \begin{subfigure}[b]{0.48\textwidth}
+%     \includegraphics[width=\textwidth]{filename.png}
+%     \caption{small caption}
+%     \label{KM:treat}
+%   \end{subfigure}
+%   
+%   \begin{subfigure}[b]{0.48\textwidth}
+%    \includegraphics[width=\textwidth]{filename.png}
+%    \caption{small caption}
+%    \label{KM:asc}
+%   \end{subfigure}
+%   \begin{subfigure}[b]{0.48\textwidth}
+%    \includegraphics[width=\textwidth]{filename.png}
+%    \caption{small caption}
+%    \label{KM:sex}
+%   \end{subfigure}
+%   \caption{some caption}
+%   \label{KM}
+% \end{figure}
+
+
+\end{document}
+

@@ -15,12 +15,13 @@ int main(/*int argc, char** argv*/)
     double dt = 5e-3;
 
 //    int timesteps = int (Time_end/dt);
-    int timesteps = 5000;
+    int timesteps = 6;
 
     System MySys(ncells,timesteps,T);
-
+        MySys.Thermalize(1500,dt,true,true);
+//    MySys.Spheres(14,20,30);
     /*loop over time and evolve system*/
-//    MySys.Thermalize(150,dt,true,true);
+
     MySys.SimulateFlow(dt,true);
     cout << "simulation finished" << endl;
     return 0;

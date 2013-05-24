@@ -3,17 +3,20 @@ import matplotlib.pyplot as plt
 import numpy,sys
 
 infile  = sys.argv[1] if len(sys.argv)>1 else "results.bin"
-infile = "velocityProfile_step4000.bin"
+step = 15*400
+infile = "velocityProfile_step%d.bin"%step
 
 #new = Data(infile)
 
 start = 0
 #stop = new.ntimesteps
-
+print "Timestep number %d"%step
+print"-------------------"
 tmp = open(infile,"rb")
 res = tmp.readlines()
-rx = []
+rz = []
 vz = []
+
 tmp.close()
 length = 33.6/2.
 zone = 5.72/2.
@@ -21,16 +24,37 @@ zone = 5.72/2.
 for line in res:
 	tmp  =line.split()
 	ry = float(tmp[1])
-	rz = float(tmp[2])
-	if abs(ry-length)<zone and abs(rz-length)<zone:
-		rx.append(float(tmp[0]))
-		vz.append(float(tmp[-1]))
-b = min(rx)
-for i in xrange(len(rx)):
-	rx[i] -=  b
+	rx = float(tmp[0])
+	r = numpy.sqrt((rx-length)*(rx-length) + (ry-length)*(ry-length))
+	rz.append(r)
+	vz.append(float(tmp[-1]))
+
+
+bin = numpy.linspace(0,max(rz),50);
+r = numpy.zeros(len(bin))
+counter = numpy.zeros(len(bin))
+for i in xrange(len(rz)-1):
+	for k in xrange(len(bin)):
+		a = 0
+		if (rz[i]-bin[k])>0 and (rz[i]-bin[k+1])<0:
+			r[k] += abs(vz[i])
+			counter[k] += 1
+			a += 1
+		if a>1:
+			print k,a
+
+print r,counter, sum(counter), len(res)
+for k in xrange(len(bin)):
+	r[k] /= counter[k]
+
 #mpl.hist(vz,50)
-#mpl.hist(rx,50,color='grey')
-mpl.plot(rx,vz,'o')
+#mpl.hist(r,50,color='grey')
+mpl.plot(bin,r)
+#mpl.plot(numpy.log(rz),numpy.log(numpy.abs(vz)),'o')
+#print fig
+mpl.xlabel("r_xy")
+mpl.ylabel("mean(abs(v_z))")
+mpl.title("velocity distribution at timestep #%d"%step)
 mpl.show()
 #print yolo.mean()/yolo.std()
 
