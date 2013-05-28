@@ -11,7 +11,7 @@ System::System(int ncells, int Timesteps, double Temperature)
     timesteps = Timesteps;
     T = Temperature;
     particles = 4*ncells*ncells*ncells;
-    b = 5.72/3.405; //Aangstroms 5.260
+    b = 7.0/3.405;//5.72/3.405; //Aangstroms 5.260
     L = ncells*b;
     r_cut = 3;
     Ncells = ncells;
@@ -641,13 +641,27 @@ void System::SimulateFlow(double dt, bool ToScreen = true){
 //    Input();
 //    AdjustDensity(2.0);
     double first = clock();
-    bool drive = true;
+    bool drive = false;
     char* buffer = new char[100];
 
     while(time<Time_end){
         start = clock();
         update_all(dt,drive);
-//        BerendsenThermostat();
+        if(counter<3000){
+            BerendsenThermostat();
+        }
+        if(counter==1302){
+            T /=3.0;
+        }
+        if(counter==1305){
+            T /= 3.0;
+        }
+        if(counter==1307){
+            T /= 3.0;
+        }
+        if(counter==1310){
+            T /= 10.0;
+        }
         output(counter);
         mean_square(counter);
         stop = clock();

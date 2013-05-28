@@ -131,18 +131,20 @@ class Data():
 		self.kineticEnergy = results[:,2]
 		self.potentialEnergy = results[:,-1]
 
-	def makeplot(self,vector,other=None, y_label= "",x_label = "timestep number"):
+	def makeplot(self,vector,other=None, y_label= "",\
+		x_label = "timestep number",title=""):
 		
 		if other is not None:
 			against = other 
 		else:
-			against = range(len(vector))
+			against = np.linspace(0,len(vector)*0.05,len(vector))
 
 		fig3 = mpl.figure()
 		a3 = fig3.add_subplot(111)
 		a3.plot(against,vector)
 		a3.set_xlabel(x_label)
 		a3.set_ylabel(y_label)
+		mpl.title(title)
 		return fig3, a3
 
 	def make_histogram(self,vector,x_label="",y_label="Probability"):
@@ -227,7 +229,10 @@ class Data():
 				return self.pressure
 
 if __name__ == "__main__":
-	obj = Data("run_240513_0904_results.bin")
+	obj = Data("run_280513_1220_results.bin")
 	#obj.ClaculateEnergy()
 	obj.radial_distribution(300,500,2)
-	#obj.Pressure()
+	obj.Pressure(makeplot=False)
+	#obj.makeplot(obj.meanr2[0:1000],y_label="<r^2>",\
+		#x_label="Time (MD units)",title = "Bulk diffusion")
+	#mpl.show()

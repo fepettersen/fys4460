@@ -9,7 +9,7 @@ s = zeros(length(p),N);
 ss = zeros(length(p),N);
 nn = zeros(length(p),N);
 P = linspace(pc,0.9,N);
-L = 2.^(4:11);
+L = [200,400,600,800];
 n = zeros(length(L),N);
 nsamples = 1e4;
 hold all

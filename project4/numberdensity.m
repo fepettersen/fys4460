@@ -16,7 +16,9 @@ p = p_in;
 n = zeros(N,1);
 % s = floor((1.8).^(0:N-1));
 %innerend = length(s);
-
+for k=1:length(L)
+    wildcard = sprintf('Hubble*_%d.bmp',L(k));
+    infiles =dir(wildcard);
 
     z = r<p;
     [lw,num] = bwlabel(z,4);
@@ -31,3 +33,4 @@ n = zeros(N,1);
         clusters = length(tmp);
         n(j,1) = clusters*s(j)/(L*L);
     end
+end

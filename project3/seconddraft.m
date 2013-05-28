@@ -5,14 +5,14 @@ clear all
 %%------------P(p,L)------------------------------------%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-N = 100;
+N = 400;
 % L = 200;
 L = [25,50,100,200,400,800];
 step = 0.001; i = 1;
 Prob = zeros(N+6,length(L));
 % p = [linspace(0,0.44,10),linspace(0.45,0.70,150),linspace(0.71,1.0,10)];
 p = zeros(length(L),N+6);
-experiments = 5;
+experiments = 500;
 Pi = zeros(N+6,length(L));
 pc = 0.59275;
 
@@ -21,7 +21,8 @@ for matrices = 1:length(L)
     tic
     lx = L(matrices);
     L2 = lx*lx;
-    p(matrices,:) = [linspace(0.1,pc-6/L(matrices),3),linspace(pc-6/L(matrices),pc+6/L(matrices),N),linspace(pc+6/L(matrices),1,3)];
+    %p(matrices,:) = [linspace(0.1,pc-6/L(matrices),3),linspace(pc-6/L(matrices),pc+6/L(matrices),N),linspace(pc+6/L(matrices),1,3)];
+    p(matrices,:) = linspace(0,1,N+6);
     matrices
     for i=1:length(p)
         for j=1:experiments
@@ -52,10 +53,10 @@ end
 hold all
 leg = {};
 for i=1:length(L)
-    plot(p(i,:),Pi(:,i));
+    plot(p(i,:),Prob(:,i));
     leg{i} = sprintf('L = %d',L(i));
 end
-legend(leg)
+legend(leg,2)
 % x = p(0.6/step:L);
 % pc = 0.59275;
 % beta = log(Prob(0.6/step:L))./log(x-pc);

@@ -10,11 +10,11 @@
 \contentsline {section}{\numberline {9}Flow in a nano-porous material}{7}
 \contentsline {section}{\numberline {10}Algorithms for percolation systems}{7}
 \contentsline {section}{\numberline {11}Percolation on small lattices}{7}
-\contentsline {section}{\numberline {12}Cluster number density in 1-d percolation}{7}
-\contentsline {section}{\numberline {13}Correlation length in 1-d percolation}{7}
-\contentsline {section}{\numberline {14}Cluster size in 1-d percolation}{7}
-\contentsline {section}{\numberline {15}Measurment and behavior of $P(p,L)$ and $\Pi (p,L)$}{7}
-\contentsline {section}{\numberline {16}The cluster number density}{7}
-\contentsline {section}{\numberline {17}Finite size scaling of $\Pi (p,L)$}{7}
-\contentsline {section}{\numberline {18}Subsets of the spanning cluster}{7}
-\contentsline {section}{\numberline {19}Random walks}{7}
+\contentsline {section}{\numberline {12}Cluster number density in 1-d percolation}{8}
+\contentsline {section}{\numberline {13}Correlation length in 1-d percolation}{8}
+\contentsline {section}{\numberline {14}Cluster size in 1-d percolation}{8}
+\contentsline {section}{\numberline {15}Measurment and behavior of $P(p,L)$ and $\Pi (p,L)$}{8}
+\contentsline {section}{\numberline {16}The cluster number density}{9}
+\contentsline {section}{\numberline {17}Finite size scaling of $\Pi (p,L)$}{9}
+\contentsline {section}{\numberline {18}Subsets of the spanning cluster}{10}
+\contentsline {section}{\numberline {19}Random walks}{10}

@@ -162,51 +162,154 @@ by simulating flow through a cylindrical pore of a given radius and with a given
 The permeability of the nanoporous material can be measured by...
 
 \section{Algorithms for percolation systems}
+To generate percolation systems for simulation we need a (square) matrix of random numbers. Commonly theese are drawn from the 
+uniform distribution. Next we will need to set a porosity for the system, and mark all matrix entries smaller than the porosity 
+as filled sites, and all entries larger than the porosity as unfilled sites. This gives us clusters of filles sites which have 
+neighbours that are filled as well (or clusters of connected, filled sites), see figure \ref{perc_matrix}. Theese clusters are labelled with a number.
+We then find the spanning cluster (should it exist) by checking if the same label exists at both sides of the matrix (and remove the label 0). 
+The percolation probability, which is the ptobability of there beeing a spanning/percolating cluster, is measured by checking wther or not there is 
+a percolating cluster, and averaging the measurments over several matrices.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.75]{oppg_a_percmatrix.png}
+\caption{Percolation matrix of size $800\times800$ with porosity $p=0.6$}
+\label{perc_matrix}
+\end{figure}
 
 \section{Percolation on small lattices}
+If we want to study percolation on vey small lattices, say $2\times2$ lattices, we can find excact solutions for $\Pi(p,L)$. As we found 
+in project 3, $\Pi(p,L)$ goes to a step function as L goes to infinity. Similarly, we would expect $\Pi(p,L)$ to go to a polynomial of 
+degree 1 as L goes to 1. This can be shown mathematically.\\
+The porosity of a $1\times1$ s system is either 0 or 1, in which case the percolation probability is either 0 or 1. This means that the 
+percolation probability has to be a straight line from $(0,0)$ to $(1,1)$ since we cannot well define any ``path'' the function should take.
+For the $2\times2$ case the system can be in either of the states shown in figure \ref{L2}.
+
+\begin{figure}[H]
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{c1.png}
+    \caption{c=1}
+    \label{L2:c1}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{c5.png}
+    \caption{c=2, degeneracy 4}
+    \label{L2:c2}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{c3.png}
+    \caption{c=3, degeneracy 2}
+    \label{L2:c3}
+  \end{subfigure}
+  
+  \begin{subfigure}[b]{0.3\textwidth}
+   \includegraphics[width=\textwidth]{c4.png}
+   \caption{c=4, degeneracy 4}
+   \label{L2:c4}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.3\textwidth}
+   \includegraphics[width=\textwidth]{c2.png}
+   \caption{c=5, degeneracy 4}
+   \label{L2:c5}
+  \end{subfigure}
+    \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{c6.png}
+    \caption{c=6}
+    \label{L2:c6}
+  \end{subfigure}
+  \caption{Possible states and their degeneracy for a $2\times2$ system}
+  \label{L2}
+\end{figure}
+From figure \ref{L2} we can find $\Pi$ directly
+\begin{align*}
+ \Pi &= 0\cdot1\cdot p^0(1-p)^4 + 0\cdot4\cdot p^1(1-p)^3 + 0\cdot2\cdot p^2(1-p)^2 +\\
+ 1\cdot4&\cdot p^2(1-p)^2 + 1\cdot4\cdot p^3(1-p)^1 + 1\cdot1\cdot p^4(1-p)^0 \\
+ \Pi &=4\cdot p^2(1-p)^2 + 4\cdot p^3(1-p) + p^4
+\end{align*}
 
 \section{Cluster number density in 1-d percolation}
+The cluster number density is defined as the probability for a site to belong to a cluster of exactly s filled 
+sites with a unfilled site at each side. We 
 
 \section{Correlation length in 1-d percolation}
 
 \section{Cluster size in 1-d percolation}
 
-\section{Measurment and behavior of $P(p,L)$ and $\Pi(p,L)$}
+\section{Measurment and behavior of $P(p,L)$ and $\Pi(p,L)$}\label{section_15}
+The percolation probability is the simplest quantity to describe the behavior of of finite matrices. As we have 
+allready mentioned, $\Pi(p,L)\to_{L\to\infty}H(p-p_c)$, and will be more like a hyperbolic tangent for small L. 
+This is measured in the trivial way of averaging over several matrices (see figure \ref{sect_15:pi}). The probability 
+for a site to belong to the percolating cluster $P(p,L)$ will of course be zero as long as there is no percolating 
+cluster, and will then increase very repidly for a little while before (more or less) linearly going to 1 as the 
+porosity of the system goes to 1. $P(p,L)$ will behave (naturally) in much the same way as $\Pi(p,L)$ does for finite 
+system sizes. This quantity is also measured in the trivial way of counting and averaging.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+ \includegraphics[width=\textwidth]{oppg_i_Pi.png}
+ \caption{$\Pi(p,L)$ for different system sizes.}
+ \label{sect_15:pi}
+\end{subfigure}
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{oppg_a_P.png}
+ \caption{$\Pi(p,L)$ for different system sizes.}
+ \label{sect_15:P}
+\end{subfigure}
+\caption{blergh}
+\label{sect_15}
+\end{figure}
 
 \section{The cluster number density}
 
 \section{Finite size scaling of $\Pi(p,L)$}
+As we discussed in section \ref{section_15}, the percolation probability will behave in a predictable manner for finite 
+system sizes. This is a characteristic we can make good use of to measure important exponents with high precicion, and also 
+maesure the percolation threshold.
+\begin{align*}
+ \Pi(p,L) &= \xi^0f\left(\frac{L}{\xi}\right) = f\left(\frac{L}{\xi}\right)\\
+ &= f\left(\frac{L}{\xi_0(p-p_c)^{-\nu}}\right)\\
+ &= f\left(\frac{L(p-p_c)^\nu}{\xi_0}\right)\\
+  &= \tilde{f}\left(\left[L^{1/\nu}(p-p_c)\right]^\nu\right)\\
+  &= \Phi\left[\left(p-p_c\right)L^{1/\nu}\right]
+\end{align*}
+Where we have used that $\xi = \xi_0(p-p_c)^{-\nu}$ when $p>p_c$, $\tilde{f}(u) = f\left(\frac{u}{\xi_0}\right)$ and $\Phi(u)
+= \tilde{f}(u^\nu)$. This scaling ansatz can be used as follows. We start by fixing $p$ which gives $\Pi(p) = x$. This can be 
+denoted as 
+\begin{equation}
+ p_{\Pi=x}\left(L\right)
+\end{equation}
+The scaling ansatz now gives us
+\begin{equation}
+ x = \Phi\left[\left( p_{\Pi=x}\left(L\right)-p_c\right)L^{1/\nu}\right]
+\end{equation}
+which we solve as 
+$$
+\left(p_{\Pi=x}\left(L\right)-p_c\right)L^{1/\nu} = \Phi^{-1}(x) = C_x
+$$
+and finally rewrite as
+\begin{equation}\label{measure_nu}
+ p_{\Pi=x}\left(L\right)-p_c = C_xL^{-1/\nu}
+\end{equation}
+From equation \ref{measure_nu} we see that we can easily measure $\nu$ by doing a double logarithmic plot. This should give a 
+straight line which has the incline $\frac{-1}{\nu}$. \\
+If we now reverse the situation we can find $p_c$ by plotting $L^{-1/\nu}$ as a function of $p$. This should also give a straight 
+line which intersects the y-axis at $p_c$. An example of this is shown in figure \ref{measure_pc}.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.75]{oppg_k_rough.png}
+\caption{Estimating $p_c$. This is only a rough estimate, where some 5-10 matrices have been used to average the measurments. 
+This plot puts $p_c$ somwhere in the interval $[0.5923, 0.594]$}
+\label{measure_pc}
+\end{figure}
 
 \section{Subsets of the spanning cluster}
+Singly connected bonds...
 
 \section{Random walks}
-% Figure - subfigure template (2 by 2 subfigures)
-% \begin{figure}[H]
-% \centering
-%   \begin{subfigure}[b]{0.48\textwidth}
-%     \includegraphics[width=\textwidth]{filename}
-%     \caption{small caption}
-%     \label{KM:age}
-%   \end{subfigure}
-%   \begin{subfigure}[b]{0.48\textwidth}
-%     \includegraphics[width=\textwidth]{filename.png}
-%     \caption{small caption}
-%     \label{KM:treat}
-%   \end{subfigure}
-%   
-%   \begin{subfigure}[b]{0.48\textwidth}
-%    \includegraphics[width=\textwidth]{filename.png}
-%    \caption{small caption}
-%    \label{KM:asc}
-%   \end{subfigure}
-%   \begin{subfigure}[b]{0.48\textwidth}
-%    \includegraphics[width=\textwidth]{filename.png}
-%    \caption{small caption}
-%    \label{KM:sex}
-%   \end{subfigure}
-%   \caption{some caption}
-%   \label{KM}
-% \end{figure}
+Behaviour of $\langle r^2\rangle$ of a random walker on the percolating cluster. Compare with diffusion in a bulk fluid and in 
+a nanoporous system.
 
 
 \end{document}
