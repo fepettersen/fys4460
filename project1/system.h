@@ -1,6 +1,7 @@
 
 #ifndef SYSTEM_H
 #define SYSTEM_H
+#define PI = 3.141592653;
 /*
   The system object updates and keeps track of the cells and the particles.
   Though it has a lot of values, theese are mostly service values. The system
@@ -38,6 +39,7 @@ public:
     void SimulateFlow(double dt, bool ToScreen);
     arma::vec3 distance(arma::vec3 r_new, arma::vec3 r_old);
     void PrintVelocity(int nr);
+    void RadialDistribution(int n);
 
     /*values*/
     arma::mat res;

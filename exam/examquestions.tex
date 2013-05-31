@@ -121,7 +121,38 @@ For example we ca use it to measure the diffusion constant of random walkers on 
 theory. INSERT SOME MORE STUFF
 
 \section{Measuring the radial distribution function in molecular-dynamics simulations}
-??
+The radial distribution function can be measured in by counting the number of particles in spherical shell with 
+increasing radius. \\
+To calculate the pair distribution function from a simulation, the neighbors around each atom or molecule are sorted 
+into distance bins. The number of neighbors in each bin is averaged over the entire simulation. For example, a count 
+is made of the number of neighbors between $2.5$ and $2.75$, $2.75$ and $3.0$ Å and so on for every atom or molecule 
+in the simulation. This count can be performed during the simulation itself or by analyzing the configurations that 
+are generated. \\
+The radial distribution function tells us something about the density distribution in a material, and can be used to 
+calculate several macroscopic quantities such as the pressure, structure factor, compressibility, etc.
+Diffuculties in measuring $g(r)$ include it beeing computationally intensive, troubles with getting the scaling right 
+(I still have not gotten it right), and similar problems.
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{radial_distr.png}
+    \caption{Liquid at $T=100$K}
+    \label{g(r):liquid} 
+\end{subfigure}
+\begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{radial_distr2.png}
+    \caption{Solid}
+    \label{g(r):solid} 
+\end{subfigure}
+\begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{radial_distr3.png}
+    \caption{Dilute gas as $T=300$K}
+    \label{g(r):gas} 
+\end{subfigure}
+\caption{Radial distriburion function for liquid, solid and gas. x-axis shows distance in $\sigma$}
+\label{g(r)}
+\end{figure}
+HOW DOES IT COMPARE TO THE PROBABILITY DENSITIES FROM RANDOM WALKS?
 
 \section{Thermostats in molecular-dynamics simulations}
 As mentioned in section \ref{section_2} the system will be represented by the microcanonical ensemble if we leave it to 
@@ -228,13 +259,58 @@ From figure \ref{L2} we can find $\Pi$ directly
  \Pi &=4\cdot p^2(1-p)^2 + 4\cdot p^3(1-p) + p^4
 \end{align*}
 
-\section{Cluster number density in 1-d percolation}
-The cluster number density is defined as the probability for a site to belong to a cluster of exactly s filled 
-sites with a unfilled site at each side. We 
+\section{Cluster number density in 1-d percolation}\label{section_12}
+The cluster number density $n(s,p)$ is defined as the probability for a site to be a specific site (say the leftmost) in a cluster 
+of size s. The probabiity of this is quite simply defined from equation \ref{nsp_def}; there are s sites filled, with a probability 
+p, and one unfilled site on each site, with a probability (1-p). The probability for this site to be any part of a cluster of size s 
+is $s\cdot n(s,p)$.
+\begin{equation}\label{nsp_def}
+ n(s,p) = (1-p)p^s(1-p) = p^s(1-p)^2
+\end{equation}
+If we write the number of clusters of size s as $N_s$ and the number of filled sites $\mathcal{N} = pL$, this should logically be 
+equal to the sum over all clustersizes times the number of clusters of that size $pL = \sum\limits_{s=1}^\infty sN_s$. We can now 
+esitmate the probability for a given, filled site to belong to a cluster of size s as 
+\begin{equation*}
+ (sn(s,p))' = \frac{sN_s}{\mathcal{N}}
+\end{equation*}
+Now, in order to estimate whether a given site (filled or not) to be a part of a cluster of size s, all we need to do is multiply 
+by p, giving us $sn(s,p) = \frac{psN_s}{pL} \implies n(s,p) = \frac{N_s}{L^d}$, where d is the dimensionality of our system.\\
+Rewwriting eqution \ref{nsp_def} gives us $n(s,p) = (1-p)^2e^{s\ln(p)} = (1-p)^2e^{-s/s_\xi}$ where $s_\xi = \frac{-1}{\ln(p)} 
+\simeq (p_c -p)^{-1/\sigma}$. As we can see, $s_\xi$ is going to diverge as $p\to p_c$. This will make $n(s,p)$ a decaying exponential 
+function with decreasing slope.\\
+The expression $n(s,p) = \frac{N_s}{L^d}$ is the same as we use to measure the cluster number density in 2-D. The resulting curves 
+are also similar (see f.eks figure \ref{nsp}).
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{cluster_numberdensity_small_p}
+\caption{Cluster number density measured for $p<p_c$.}
+\label{nsp}
+\end{figure}
 
 \section{Correlation length in 1-d percolation}
+The correlation function $g(r)$ describes the probability for two sites separated by a distace r to belong to the same cluster, given 
+that both sites are filled. I 1-D, the only way for this to happen is if all the sites between the two sites are filled as well. This 
+means that we get 
+\begin{equation}
+g(r) = p^r = e^{r\ln(p)} = e^{\frac{-r}{\xi}}
+\end{equation}
+Where we, again, set $\xi = \frac{-1}{\ln(p)}$. $\xi$ diverges as $p\to 1=p_c$. Utilizing this, we can find the way it diverges by 
+expanding $\ln(p) \to_{p\to p_c} -(p_c-p)$. This gives $\xi = \xi_0(p_c-p)^{-\nu}$ with $\nu = 1$
 
 \section{Cluster size in 1-d percolation}
+As mentioned in section \ref{section_12}, the characteristic clustersize, $s_\xi$, is defined from the cluster number density where 
+it enters as $n(s,p) = (1-p)^2e^{-s/s_\xi}$ and $s_\xi = (p_c-p)^{-1/\sigma}$ where $\sigma=1$ in 1-d. From this it is obvious that $s_\xi$ 
+will diverge as $p\to p_c$. In two dimensions, this is true when $p\to p_c$ both from above and below. \\
+In the 2-d simulations we can (not without trouble) measure $\sigma$ either by plotting $n(s,p)$ as a function of s and measure where 
+$n(s,p)$ is halved, or we can cheat by making a datacollapse plot (rescaling the axes by $s_\xi$) for various values of $\sigma$ untill 
+we find a decent value. This will give us $s_\xi$ since we have all values entering in its expression. See figure \ref{sigma}.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{sigma_10values.png}
+\caption{Data collapse plot estimating $\sigma \simeq 0.4$.}
+\label{sigma}
+\end{figure}
+
 
 \section{Measurment and behavior of $P(p,L)$ and $\Pi(p,L)$}\label{section_15}
 The percolation probability is the simplest quantity to describe the behavior of of finite matrices. As we have 

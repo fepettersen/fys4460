@@ -6,8 +6,8 @@ using namespace arma;
 
 int main(/*int argc, char** argv*/)
 {
-    int ncells = 10;
-    double T_kelvin = 119.8*2.0;
+    int ncells = 12;
+    double T_kelvin = 300;//119.8*2.0;
     double T = T_kelvin/119.8;
 
     /*some time stuff*/
@@ -15,7 +15,7 @@ int main(/*int argc, char** argv*/)
     double dt = 2e-3;
 
 //    int timesteps = int (Time_end/dt);
-    int timesteps = 6000;
+    int timesteps = 2500;
 
     System MySys(ncells,timesteps,T);
 //        MySys.Thermalize(1500,dt,true,true);

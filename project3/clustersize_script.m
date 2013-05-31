@@ -12,11 +12,11 @@ nn = zeros(length(p),N);
 P = linspace(pc,0.9,N);
 L = 2.^(4:11);
 n = zeros(length(L),N);
-nsamples = 1e4;
+nsamples = 2.5e3;
 hold all
 
 l = {};
-for i=1:length(L)
+parfor i=1:length(L)
     i
     for j=1:nsamples
         [ntmp,stmp] = numberdensity(pc,L(i),N);

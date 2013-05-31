@@ -158,23 +158,31 @@ class Data():
 		return fig,a
 
 	def radial_distribution(self,start,stop,n):
-		r_max = 0.5*self.b*(self.nparticles/4)**(1/3.0)
-		zones = np.linspace(0,r_max,n)
-		print zones
+		L = self.b*(self.nparticles/4)**(1/3.0)
+		zones = np.linspace(0,L/2,n)
+		dr = (zones[-1]-zones[0])/(len(zones)-1)
+		# print dr, zones[1]-zones[0]
+		# print zones
 		counter = np.zeros(n)
 		for s in xrange(stop-start):
 			self.getResults(start+s)
 			for i in xrange(self.nparticles):
-				r =np.linalg.norm(self.r[i,:],2)
+				r =np.linalg.norm((self.r[i,:]-L/2),2)
 				#r = self.r[i,0]
 				for j in xrange(1,n,1):
 					if (r-zones[j])<0 and (r-zones[j-1])>=0:
 						counter[j-1]+=1
 		counter /= (stop-start)
-		print np.sum(counter), "  ", self.nparticles
+		Vol = []
+		for i in range(len(zones)):
+			#Vol.append(4*np.pi*((zones[i]+dr)**3)-zones[i]**3)
+			Vol.append(4*np.pi*zones[i]*zones[i]*dr)
+			counter[i] /= Vol[i]
+		#print np.sum(counter), "  ", self.nparticles
 		fig,a = self.makeplot(counter,zones,x_label="position",\
 			y_label="number of particles")
 		mpl.show()
+		#print Vol, counter
 
 	def ClaculateEnergy(self,start = 0, stop = None , makeplot = True):
 		if(stop==None):
@@ -229,9 +237,9 @@ class Data():
 				return self.pressure
 
 if __name__ == "__main__":
-	obj = Data("run_280513_1220_results.bin")
+	obj = Data("run_290513_0912_results.bin")
 	#obj.ClaculateEnergy()
-	obj.radial_distribution(300,500,2)
+	obj.radial_distribution(3000,3500,401)
 	obj.Pressure(makeplot=False)
 	#obj.makeplot(obj.meanr2[0:1000],y_label="<r^2>",\
 		#x_label="Time (MD units)",title = "Bulk diffusion")

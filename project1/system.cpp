@@ -11,7 +11,7 @@ System::System(int ncells, int Timesteps, double Temperature)
     timesteps = Timesteps;
     T = Temperature;
     particles = 4*ncells*ncells*ncells;
-    b = 7.0/3.405;//5.72/3.405; //Aangstroms 5.260
+    b = 8.0/3.405;//5.72/3.405; //Aangstroms 5.260
     L = ncells*b;
     r_cut = 3;
     Ncells = ncells;
@@ -642,6 +642,7 @@ void System::SimulateFlow(double dt, bool ToScreen = true){
 //    AdjustDensity(2.0);
     double first = clock();
     bool drive = false;
+    bool out = false;
     char* buffer = new char[100];
 
     while(time<Time_end){
@@ -650,19 +651,22 @@ void System::SimulateFlow(double dt, bool ToScreen = true){
         if(counter<3000){
             BerendsenThermostat();
         }
-        if(counter==1302){
-            T /=3.0;
+//        if(counter==1302){
+//            T /=3.0;
+//        }
+//        if(counter==1305){
+//            T /= 3.0;
+//        }
+//        if(counter==1307){
+//            T /= 3.0;
+//        }
+        if(counter==2490){
+//            T /= 10.0;
+            RadialDistribution(401);
         }
-        if(counter==1305){
-            T /= 3.0;
+        if(out){
+            output(counter);
         }
-        if(counter==1307){
-            T /= 3.0;
-        }
-        if(counter==1310){
-            T /= 10.0;
-        }
-        output(counter);
         mean_square(counter);
         stop = clock();
         if(ToScreen){
@@ -718,4 +722,50 @@ void System::PrintVelocity(int nr){
         }
     }
     free(buffer);
+}
+
+void System::RadialDistribution(int n){
+    double Pi = 3.141592653;
+    double dx = L/(2*n);
+//    cout<<dx;
+    vec counter = zeros<vec>(n);
+    vec3 tmp2;
+    int tmp = 0;
+    int Counter = 0;
+    double dr = 0;
+//    vec zones = linspace<vec>(0,sqrt(3*L*L/4.0),n);
+        vec zones = linspace<vec>(0,L/2.0,n);
+    for(int i=0;i<particles;i++){
+        for(int j=0;j<particles;j++){
+            if(j!=i){
+                tmp2 = particle[i].distanceToAtom(&particle[j],L);
+                dr = sqrt(tmp2[0]*tmp2[0]+tmp2[1]*tmp2[1]+tmp2[2]*tmp2[2]);
+                tmp =0;
+                for(int k=0;k<n-1;k++){
+                    if((dr-zones[k])>=0 &&(dr-zones[k+1])<0){
+                        counter[k] +=1;
+                        tmp=1;
+                        break;
+                    }
+
+                }
+                if(tmp==0){
+                    Counter ++;
+                }
+
+            }
+        }
+    }
+    cout<<"counter = "<<Counter<<endl;
+//    counter.print("counter:");
+    for(int i=0;i<n-1;i++){
+        counter[i]  /= ((4/3.0)*Pi*(pow(zones[i+1],3)-pow(zones[i],3))*particles);
+    }
+    cout<<"hei!"<<endl;
+    ofstream outfile;
+    outfile.open("radial_distr.txt");
+    for(int i=0;i<n;i++){
+        outfile<<counter[i]<<setprecision(12)<<"  "<<zones[i]<<setprecision(12)<<endl;
+    }
+    outfile.close();
 }
