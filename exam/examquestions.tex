@@ -306,8 +306,16 @@ $n(s,p)$ is halved, or we can cheat by making a datacollapse plot (rescaling the
 we find a decent value. This will give us $s_\xi$ since we have all values entering in its expression. See figure \ref{sigma}.
 \begin{figure}[H]
 \centering
+\begin{subfigure}[b]{\textwidth}
 \includegraphics[scale=0.5]{sigma_10values.png}
 \caption{Data collapse plot estimating $\sigma \simeq 0.4$.}
+\end{subfigure}
+
+\begin{subfigure}[b]{0.9\textwidth}
+ \includegraphics[scale=0.5]{sigma_7values.png}
+ \caption{Data collapse plot estimating $\sigma \simeq 0.4$ using a more correct algorithm.}
+\end{subfigure}
+\caption{Data collapse plots}
 \label{sigma}
 \end{figure}
 
@@ -330,7 +338,7 @@ system sizes. This quantity is also measured in the trivial way of counting and 
 \end{subfigure}
 \begin{subfigure}[b]{0.48\textwidth}
   \includegraphics[width=\textwidth]{oppg_a_P.png}
- \caption{$\Pi(p,L)$ for different system sizes.}
+ \caption{$P(p,L)$ for different system sizes.}
  \label{sect_15:P}
 \end{subfigure}
 \caption{blergh}
@@ -338,6 +346,25 @@ system sizes. This quantity is also measured in the trivial way of counting and 
 \end{figure}
 
 \section{The cluster number density}
+As we discussed in section \ref{section_12} the cluster number density is the probability for a given site to be a specific 
+site in a cluster of size s. In 1-d this is given by equation \ref{nsp_def}, but this will (of course) break down in more than 
+1-d because itwill be more difficult to define the boundary, and because there are several ways of having a cluster of size s. 
+To meet this challenge, we can in sted set $n(s,p) = \sum\limits_t g_{s,t}p^s(1-p)^t$, where $g_{s,t}$ is the degeneracy of the 
+custer of size s, and t is all the possible numbers of neighbours.\\
+The cluster number density is still measured in much the same way as in 1-d, with some more details. We will now have to do 
+logarithmic binning of the cluster size, s, beacause most of the cluster sizes will be rather small, but a few will be very large. 
+So we divide the ``s-axis'' into increasingly larger bins, and count the number of clusters within each bin.
+$$
+n(s,p)\Delta s = \frac{N_s}{L^d}
+$$
+Dividing by the bin size gives us our estimate for $n(s,p)$.\\
+We can estimate $\sigma$ by producing a data collapse plot of $n(s,p)$ as shown in figure \ref{sigma}.
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.8]{cluster_numberdensity_revisited.png}
+ \caption{The cluster number density behaves as shown with increasing system size.}
+\end{figure}
 
 \section{Finite size scaling of $\Pi(p,L)$}
 As we discussed in section \ref{section_15}, the percolation probability will behave in a predictable manner for finite 

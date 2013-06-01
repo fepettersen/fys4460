@@ -11,24 +11,25 @@ function[n,s] = numberdensity(p_in,L_in,N_in)
 N = N_in;
 % pc = 0.59275;
 L = L_in;
-r = rand(L,L);
+%r = rand(L,L);
 p = p_in;
 n = zeros(N,1);
 % s = floor((1.8).^(0:N-1));
 %innerend = length(s);
 
 
-    z = r<p;
+    z = rand(L,L)<p;
     [lw,num] = bwlabel(z,4);
     a = intersect(lw(1,:),lw(L,:));
     b = intersect(lw(:,1),lw(:,L));
-    u = union(a,b);
+    %u = union(a,b);
     tmp = regionprops(lw,'Area');
     area = cat(1,tmp.Area);
-    s = floor(exp(linspace(0,log(max(area)),N)));
+    s = floor(exp(linspace(0,log(L*L),N)));
     for j=1:N-1
-        tmp = find(area==s(j));
-        clusters = length(tmp);
+        ds = s(j+1) - s(j);
+        tmp = find(area<=s(j+1) & area >=s(j));
+        clusters = length(tmp)/ds;
 %         n(j,1) = clusters*s(j)/(L*L);
         n(j,1) = clusters/(L*L);
     end

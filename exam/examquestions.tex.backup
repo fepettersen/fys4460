@@ -259,7 +259,7 @@ From figure \ref{L2} we can find $\Pi$ directly
  \Pi &=4\cdot p^2(1-p)^2 + 4\cdot p^3(1-p) + p^4
 \end{align*}
 
-\section{Cluster number density in 1-d percolation}
+\section{Cluster number density in 1-d percolation}\label{section_12}
 The cluster number density $n(s,p)$ is defined as the probability for a site to be a specific site (say the leftmost) in a cluster 
 of size s. The probabiity of this is quite simply defined from equation \ref{nsp_def}; there are s sites filled, with a probability 
 p, and one unfilled site on each site, with a probability (1-p). The probability for this site to be any part of a cluster of size s 
@@ -295,8 +295,22 @@ means that we get
 g(r) = p^r = e^{r\ln(p)} = e^{\frac{-r}{\xi}}
 \end{equation}
 Where we, again, set $\xi = \frac{-1}{\ln(p)}$. $\xi$ diverges as $p\to 1=p_c$. Utilizing this, we can find the way it diverges by 
-expanding $\ln(p) \to_{p\to p_c} -(p_c-p)$. This gives $\xi = \xi_0(p_c-p)^{-\nu}$
+expanding $\ln(p) \to_{p\to p_c} -(p_c-p)$. This gives $\xi = \xi_0(p_c-p)^{-\nu}$ with $\nu = 1$
+
 \section{Cluster size in 1-d percolation}
+As mentioned in section \ref{section_12}, the characteristic clustersize, $s_\xi$, is defined from the cluster number density where 
+it enters as $n(s,p) = (1-p)^2e^{-s/s_\xi}$ and $s_\xi = (p_c-p)^{-1/\sigma}$ where $\sigma=1$ in 1-d. From this it is obvious that $s_\xi$ 
+will diverge as $p\to p_c$. In two dimensions, this is true when $p\to p_c$ both from above and below. \\
+In the 2-d simulations we can (not without trouble) measure $\sigma$ either by plotting $n(s,p)$ as a function of s and measure where 
+$n(s,p)$ is halved, or we can cheat by making a datacollapse plot (rescaling the axes by $s_\xi$) for various values of $\sigma$ untill 
+we find a decent value. This will give us $s_\xi$ since we have all values entering in its expression. See figure \ref{sigma}.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{sigma_10values.png}
+\caption{Data collapse plot estimating $\sigma \simeq 0.4$.}
+\label{sigma}
+\end{figure}
+
 
 \section{Measurment and behavior of $P(p,L)$ and $\Pi(p,L)$}\label{section_15}
 The percolation probability is the simplest quantity to describe the behavior of of finite matrices. As we have 
@@ -316,7 +330,7 @@ system sizes. This quantity is also measured in the trivial way of counting and 
 \end{subfigure}
 \begin{subfigure}[b]{0.48\textwidth}
   \includegraphics[width=\textwidth]{oppg_a_P.png}
- \caption{$\Pi(p,L)$ for different system sizes.}
+ \caption{$P(p,L)$ for different system sizes.}
  \label{sect_15:P}
 \end{subfigure}
 \caption{blergh}
@@ -324,7 +338,11 @@ system sizes. This quantity is also measured in the trivial way of counting and 
 \end{figure}
 
 \section{The cluster number density}
-
+As we discussed in section \ref{section_12} the cluster number density is the probability fro a given site to be a specific 
+site in a cluster of size s. In 1-d this is given by equation \ref{nsp_def}, but this will (of course) break down in more than 
+1-d because itwill be more difficult to define the boundary, and because there are several ways of having a cluster of size s. 
+To meet this challenge, we can in sted set $n(s,p) = \sum\limits_t g_{s,t}p^s(1-p)^t$, where $g_{s,t}$ is the degeneracy of the 
+custer of size s, and t is all the possible numbers of neighbours.
 \section{Finite size scaling of $\Pi(p,L)$}
 As we discussed in section \ref{section_15}, the percolation probability will behave in a predictable manner for finite 
 system sizes. This is a characteristic we can make good use of to measure important exponents with high precicion, and also 
