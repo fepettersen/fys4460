@@ -35,7 +35,7 @@ toc
 for i=1:length(L)
     plot(log10(s(i,:)),log10(n(i,:)))
     drawnow
-    l{i} = sprintf('L = %d',L(i));
+    l{i} = sprintf('p = %d',p(i));
 end
 legend(l)
 xlabel('$$Clustersize; \log_{10}(s)$$','interpreter','latex')

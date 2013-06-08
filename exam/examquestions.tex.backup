@@ -152,7 +152,6 @@ Diffuculties in measuring $g(r)$ include it beeing computationally intensive, tr
 \caption{Radial distriburion function for liquid, solid and gas. x-axis shows distance in $\sigma$}
 \label{g(r)}
 \end{figure}
-HOW DOES IT COMPARE TO THE PROBABILITY DENSITIES FROM RANDOM WALKS?
 
 \section{Thermostats in molecular-dynamics simulations}
 As mentioned in section \ref{section_2} the system will be represented by the microcanonical ensemble if we leave it to 
@@ -169,7 +168,12 @@ in the system by some rule, or at least mark them as stationary. The pores can b
 drawing spheres of a random radius placed at a random position. Atoms outside the sphere are marked as stationary 
 (or the other way around). In more complex simulations one usually heats the system a lot, expands it and rapidly cools 
 it again. This will give a more realistic geometry.\\
-HOW DO WE CHARACTERIZE THE STRUCTURE OF THE MATERIAL AND THE DYNAMICS OF FLUIDS IN SUCH MATERIALS?
+The structure of a nanoporous matrix can be characterised by its porosity (which we have a somewhat poor measure for), but 
+this raises the problem of having several possible permeabilities for each porosity. One could have all the pores in one 
+large sphere (no permeability), or in one large cylindrical pore which has a large permeability. The fluid is typically 
+characterized by its viscosity and its density. This also poses somewhat of a problem in that the viscosity is not 
+independent of the geometry of the matrix or (by extension) its permeability. It is also ``strongly'' dependent on 
+density. In short the viscosity is a hard measurment.
 
 \section{Diffusion in a nano-porous material}
 The diffusion constant is measured in the same way as we described in section \ref{section_4}. \\
@@ -183,14 +187,28 @@ state after some time. This is also expected from the low density fluid in the n
 \section{Flow in a nano-porous material}
 We can introduce flow in one direction in the nanoporous material by adding a driving force to all particles, much like a gravitational force.
 This should make all particles drift in one direction.\\
-HOW CAN YOU CHECK YOUR MODEL????\\
+The model can be checked by simulating the flow through a cylindrical pore. From continuum mechanichs we know that the velocity profile for 
+such a system should be a parabola, and we expect this to be the case for our MD simulations as well. Figure \ref{vel_profile} shows this 
+if you really put your imagination into it.\\
 To calculate the viscosity of the model we need the superficial velocity distribution of the fluid. One way to estimate the fluid viscosity is 
 by simulating flow through a cylindrical pore of a given radius and with a given driving force we find the viscosity from
 \begin{align*}
  u(r) &= \frac{\Delta P}{4\mu L}\left(a^2-r^2\right)\\
  \implies \mu &= \frac{nFa^2}{4u(0)}
 \end{align*}
-The permeability of the nanoporous material can be measured by...
+The permeability of the nanoporous material can be measured by counting the flux of particles through one part of the system (say one square 
+area). The easiest part to pick is the periodic boundary. We have from Darcy's law that
+\begin{equation}
+ \frac{Q}{V} = \frac{k}{\mu}\left(\frac{\Delta P}{L}-\rho g\right) = \frac{kN}{\mu V}F \Longleftrightarrow k = \frac{\mu Q}{NF}
+\end{equation}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.7]{project2_velocitydistr_0800.png}
+\caption{$v_z$ for all moving particles projected onto a radius centered in the middle of the cylinder.}
+\label{vel_profile}
+\end{figure}
+
 
 \section{Algorithms for percolation systems}
 To generate percolation systems for simulation we need a (square) matrix of random numbers. Commonly theese are drawn from the 
@@ -306,10 +324,19 @@ $n(s,p)$ is halved, or we can cheat by making a datacollapse plot (rescaling the
 we find a decent value. This will give us $s_\xi$ since we have all values entering in its expression. See figure \ref{sigma}.
 \begin{figure}[H]
 \centering
+\begin{subfigure}[b]{\textwidth}
 \includegraphics[scale=0.5]{sigma_10values.png}
 \caption{Data collapse plot estimating $\sigma \simeq 0.4$.}
+\end{subfigure}
+
+\begin{subfigure}[b]{0.9\textwidth}
+ \includegraphics[scale=0.5]{sigma_7values.png}
+ \caption{Data collapse plot estimating $\sigma \simeq 0.4$ using a more correct algorithm.}
+\end{subfigure}
+\caption{Data collapse plots}
 \label{sigma}
 \end{figure}
+
 
 
 \section{Measurment and behavior of $P(p,L)$ and $\Pi(p,L)$}\label{section_15}
@@ -319,7 +346,22 @@ This is measured in the trivial way of averaging over several matrices (see figu
 for a site to belong to the percolating cluster $P(p,L)$ will of course be zero as long as there is no percolating 
 cluster, and will then increase very repidly for a little while before (more or less) linearly going to 1 as the 
 porosity of the system goes to 1. $P(p,L)$ will behave (naturally) in much the same way as $\Pi(p,L)$ does for finite 
-system sizes. This quantity is also measured in the trivial way of counting and averaging.
+system sizes. This quantity is also measured in the trivial way of counting and averaging.\\
+We can make a similar finite size scaling theory for $P(p,L)$ from the relation $P(p,L) \propto \frac{M(p,L)}{L^d}$. 
+We also have for $M(p,L)$:
+\begin{equation*}
+M(p,L) \propto \begin{cases}
+	    \xi^{D-d}L^d & , L>>\xi \\
+	    L^D & , L<<\xi
+               \end{cases}
+\end{equation*}
+Inserting for $\xi \propto (p-p_c)^{-\nu}$ gives us 
+\begin{equation*}
+P(p,L) \propto \begin{cases}
+	    (p-p_c)^{-\nu(D-d)}L^d & , L>>\xi \\
+	    L^{D-d} & , L<<\xi
+               \end{cases}
+\end{equation*}
 
 \begin{figure}[H]
 \centering
@@ -338,11 +380,26 @@ system sizes. This quantity is also measured in the trivial way of counting and 
 \end{figure}
 
 \section{The cluster number density}
-As we discussed in section \ref{section_12} the cluster number density is the probability fro a given site to be a specific 
+As we discussed in section \ref{section_12} the cluster number density is the probability for a given site to be a specific 
 site in a cluster of size s. In 1-d this is given by equation \ref{nsp_def}, but this will (of course) break down in more than 
 1-d because itwill be more difficult to define the boundary, and because there are several ways of having a cluster of size s. 
 To meet this challenge, we can in sted set $n(s,p) = \sum\limits_t g_{s,t}p^s(1-p)^t$, where $g_{s,t}$ is the degeneracy of the 
-custer of size s, and t is all the possible numbers of neighbours.
+custer of size s, and t is all the possible numbers of neighbours.\\
+The cluster number density is still measured in much the same way as in 1-d, with some more details. We will now have to do 
+logarithmic binning of the cluster size, s, beacause most of the cluster sizes will be rather small, but a few will be very large. 
+So we divide the ``s-axis'' into increasingly larger bins, and count the number of clusters within each bin.
+$$
+n(s,p)\Delta s = \frac{N_s}{L^d}
+$$
+Dividing by the bin size gives us our estimate for $n(s,p)$.\\
+We can estimate $\sigma$ by producing a data collapse plot of $n(s,p)$ as shown in figure \ref{sigma}.
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[scale=0.8]{cluster_numberdensity_revisited.png}
+ \caption{The cluster number density behaves as shown with increasing system size.}
+\end{figure}
+
 \section{Finite size scaling of $\Pi(p,L)$}
 As we discussed in section \ref{section_15}, the percolation probability will behave in a predictable manner for finite 
 system sizes. This is a characteristic we can make good use of to measure important exponents with high precicion, and also 
@@ -385,11 +442,34 @@ This plot puts $p_c$ somwhere in the interval $[0.5923, 0.594]$}
 \end{figure}
 
 \section{Subsets of the spanning cluster}
-Singly connected bonds...
+To look at subsets of the spanning cluster we will need to look at flow on the spanning cluster. The spanning cluster typically has 
+an immensely complex geometry where there may at some places be a high degree of connectivity, and at other places there may be 
+connectivity through only one narrow cannel. Theese places will, during simulations of flow on the spanning cluster be places where 
+all the ``liquid'' will have to pass through. We call theese places the singly connected bonds.\\
+Other subsets of the spanning cluster include dangling ends, which in principle are simply dead ends, and so-called blobs which is a 
+place where we have two ``singly'' connected bonds connecting to each other.\\
+We can measure the singly connected bonds by placing (random) walkers on the spanning cluster from two directions and let them walk 
+across the spanning cluster. The singly connected bonds will now have been visited by both walkers. We typically measure the 
+singly connected bonds by their mass (area), and we want to find out how they scale with system size. This is shown in figure 
+\ref{singly_connected}. We see that this as well behaves as a power law with the exponent $M_{SC} \propto L^{D_{SC}}$, where we measure 
+$D_{SC} \simeq 0.7745$.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.7]{oppg_m_mass.png}
+\caption{Mass scaling of the singly connected bonds for increasing system size. Estimate of MSC as a function of L for L = 2.(3:9) . 500 samples used per L.
+}
+\label{singly_connected}
+\end{figure}
+
+
 
 \section{Random walks}
 Behaviour of $\langle r^2\rangle$ of a random walker on the percolating cluster. Compare with diffusion in a bulk fluid and in 
-a nanoporous system.
+a nanoporous system.\\
+
+Generally we can say that as long as the cluster we land upon is a spanning cluster, $\langle r^2\rangle$ will (after a brief 
+overlinar period) scale linearly with the number of steps just like 
 
 
 \end{document}
