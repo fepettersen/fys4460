@@ -362,7 +362,7 @@ P(p,L) \propto \begin{cases}
 	    L^{D-d} & , L<<\xi
                \end{cases}
 \end{equation*}
-Which means that 
+Which means that we can easily determine $\beta = -\nu(D-d) = \frac{-4}{3}(1.89-2) = 0.146666...$
 \begin{figure}[H]
 \centering
 \begin{subfigure}[b]{0.48\textwidth}
@@ -469,8 +469,18 @@ Behaviour of $\langle r^2\rangle$ of a random walker on the percolating cluster.
 a nanoporous system.\\
 
 Generally we can say that as long as the cluster we land upon is a spanning cluster, $\langle r^2\rangle$ will (after a brief 
-overlinar period) scale linearly with the number of steps just like 
+overlinar period) scale linearly with the number of steps just like \\
 
+\begin{itemize}
+ \item Draw expected behavior of $\langle r^2\rangle$
+ \item Relate diffusion coeddicient to the contuctivity $D\propto \sigma(p) \propto (p-p_c)^\mu$
+ \item For small times in confined clusters we expect $\langle r^2\rangle \propto (p-p_c)^{\beta-2\nu}$
+ \item Assume behavior between $\langle r^2\rangle\propto t^{2k}f((p-p_c)t^x)$
+ \item We end up having an expression for the characteristic time $t_0 \propto \frac{\langle R_s^2\rangle}
+ {D}$
+ \item Adjusted expression for the diffusion constant $\langle r^2\rangle \propto \frac{P}{\rho}D't +R_s^2$
+ \item 
+\end{itemize}
 
 \end{document}
 
