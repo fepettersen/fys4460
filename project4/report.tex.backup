@@ -1,0 +1,56 @@
+\documentclass[a4paper,english, 10pt, twoside]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsfonts, amssymb, amsmath}
+\usepackage{listings}
+\usepackage{float}
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+
+%opening
+\title{Some title}
+\author{Fredrik E Pettersen\\ f.e.pettersen@fys.uio.no}
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+
+% Figure - subfigure template (2 by 2 subfigures)
+% \begin{figure}[H]
+% \centering
+%   \begin{subfigure}[b]{0.48\textwidth}
+%     \includegraphics[width=\textwidth]{filename}
+%     \caption{small caption}
+%     \label{KM:age}
+%   \end{subfigure}
+%   \begin{subfigure}[b]{0.48\textwidth}
+%     \includegraphics[width=\textwidth]{filename.png}
+%     \caption{small caption}
+%     \label{KM:treat}
+%   \end{subfigure}
+%   
+%   \begin{subfigure}[b]{0.48\textwidth}
+%    \includegraphics[width=\textwidth]{filename.png}
+%    \caption{small caption}
+%    \label{KM:asc}
+%   \end{subfigure}
+%   \begin{subfigure}[b]{0.48\textwidth}
+%    \includegraphics[width=\textwidth]{filename.png}
+%    \caption{small caption}
+%    \label{KM:sex}
+%   \end{subfigure}
+%   \caption{some caption}
+%   \label{KM}
+% \end{figure}
+
+
+\end{document}
+

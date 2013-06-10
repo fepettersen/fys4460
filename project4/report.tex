@@ -1,0 +1,70 @@
+\documentclass[a4paper,english, 10pt, twoside]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsfonts, amssymb, amsmath}
+\usepackage{listings}
+\usepackage{float}
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+
+%opening
+\title{Some title}
+\author{Fredrik E Pettersen\\ f.e.pettersen@fys.uio.no}
+\begin{document}
+
+\maketitle
+% 
+% \begin{abstract}
+% 
+% \end{abstract}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.9]{oppg_a_56pictures.png}
+\caption{$P(p,L)$ for 14 samples pr system size.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.9]{oppg_i_estimate_nu.png}
+\caption{Estimate of the exponent $\nu$ from finite size scaling of $\Pi(p,L)$}
+\end{figure}
+% 
+% \begin{figure}
+% \centering
+% \includegraphics[scale=0.8]{oppg_i_estimate_nu.png}
+% \caption{Estimate of the exponent $\nu$ from finite size scaling of $\Pi(p,L)$}
+% \end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.9]{oppg_i_Pi_56pictures.png}
+\caption{$\Pi(p,L)$ using 14 samples per system size}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+  \begin{subfigure}[b]{\textwidth}
+    \includegraphics[width=\textwidth]{oppg_i_estimate_pc1.png}
+    \caption{}
+  \end{subfigure}
+  
+  \begin{subfigure}[b]{\textwidth}
+    \includegraphics[width=\textwidth]{oppg_i_estimate_pc2.png}
+    \caption{}
+  \end{subfigure}
+  \caption{estimate of $p_c$ using finite size scaling of $\Pi(p,L)$ and the estimated $\nu$}
+\end{figure}
+
+% \begin{figure}
+% \centering
+% \includegraphics[scale=0.9]{oppg_i_Pi_56pictures.png}
+% \caption{$\Pi(p,L)$ using 14 samples per system size}
+% \end{figure}
+
+\end{document}
+
